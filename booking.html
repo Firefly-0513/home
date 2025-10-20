@@ -9,34 +9,44 @@
       body {
         height: 100%;
         margin: 0;
+        padding: 0;
+        overflow-x: hidden;
       }
 
       .inline-container {
         display: flex;
         align-items: center;
-        position: fixed;
+        position: sticky;
+        top: 0;
         width: 100%;
         height: 15vh;
         background-color: #fb85b4;
         padding: 0 0% 0 2%;
         box-sizing: border-box;
+        z-index: 100;
       }
       .inline-container img {
         margin-right: 3%;
-        height: 80%;
+        height: auto;
+        max-height: 12vh;
+        max-width: 12vw;
       }
       .inline-container p {
         font-size: 2.5vw;
         color: #ffffff;
-        margin: 0;
+        margin: 90px;
       }
+
+      .layout-container {
+        display: flex;
+        min-height: calc(100% - 15vh);
+      }
+
       .left {
         width: 12%;
-        height: 100vh;
         background-color: #c2353a;
-        position: fixed;
+        position: sticky;
         top: 15vh;
-        left: 0;
         padding: 2%;
         box-sizing: border-box;
       }
@@ -57,11 +67,10 @@
       }
 
       .main {
-        margin-left: 14%;
-        padding: 15vh 0vw 2vh 2vw;
+        flex: 1;
+        padding: 2vh 2vw;
         font-size: 2.5vw;
         box-sizing: border-box;
-        width: 100vw;
       }
     </style>
   </head>
@@ -69,22 +78,30 @@
   <body>
     <!-- top -->
     <div class="inline-container">
-      <img src="school logo(nb).png" alt="LKPFC Logo" />
+      <a href="index.html">
+        <img src="school logo(nb).png" alt="LKPFC Logo" />
+      </a>
       <p><b>LKPFC Classroom Booking System</b></p>
     </div>
-    <!-- left -->
-    <div class="left">
-      <ul class="left_text">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="booking.html">Booking</a></li>
-        <li><a href="#">View </a></li>
-      </ul>
-    </div>
 
-    <!-- main -->
-    <div class="main">
-      <p>歡迎預約。</p>
-      <img src="23c2477e8256a859e4d7399d2af902abea3876e61c439-A3xa69.png" style="width: 60%; height: auto" />
+    <div class="layout-container">
+      <!-- left -->
+      <div class="left">
+        <ul class="left_text">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="booking.html">Booking</a></li>
+          <li><a href="#">View </a></li>
+        </ul>
+      </div>
+
+      <!-- main -->
+      <div class="main">
+        <p>歡迎預約。</p>
+        <img
+          src="23c2477e8256a859e4d7399d2af902abea3876e61c439-A3xa69.png"
+          style="width: 60%; height: auto"
+        />
+      </div>
     </div>
   </body>
 </html>
