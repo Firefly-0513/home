@@ -1,0 +1,8 @@
+{
+  "name": "classroom-booking-system",
+  "version": "1.0.0",
+  "description": "class booking system",
+  "dependencies": {
+    "@vercel/postgres": "^0.5.1"  // Vercel Postgres 连接依赖（必须安装）
+  }
+}
