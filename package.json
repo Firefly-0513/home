@@ -1,9 +1,0 @@
-{
-  "name": "classroom-booking-system",
-  "version": "1.0.0",
-  "description": "class booking system",
-  "dependencies": {
-    "@vercel/postgres": "^0.5.1"  
-  }
-}
-
