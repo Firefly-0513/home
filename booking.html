@@ -71,7 +71,34 @@
         padding: 2vh 2vw;
         font-size: 2.5vw;
         box-sizing: border-box;
+        text-align: center;
       }
+
+
+      .form-input {
+        padding: 0 0 15px 30vw;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.5vw; 
+        margin-right: 20px;
+      }
+      
+      .form-input label {
+        padding: 0 0 1vh 0;
+        margin-right: 30px; 
+        white-space: nowrap;
+      }
+
+      .form-input input,
+      .form-input select {
+         flex: 1; 
+         width: 80%; 
+         height: 36px;
+         max-width: 200px; 
+         min-width: 70px;  
+      }
+
     </style>
   </head>
 
@@ -84,8 +111,9 @@
       <p><b>LKPFC Classroom Booking System</b></p>
     </div>
 
+
+    <!-- left -->
     <div class="layout-container">
-      <!-- left -->
       <div class="left">
         <ul class="left_text">
           <li><a href="index.html">Home</a></li>
@@ -96,10 +124,70 @@
 
       <!-- main -->
       <div class="main">
-        <p>歡迎預約。</p>
-        <img
-          src="image/23c2477e8256a859e4d7399d2af902abea3876e61c439-A3xa69.png"
-          style="width: 60%; height: auto"
+        <p>Welcome for booking</p>
+        <form id="bookingForm">
+
+          <div class="form-input">
+           <label for="TID">Teacher ID :</label>
+           <input type="text" id="TID"  required >
+          </div>
+
+          <div class="form-input">
+            <label for="classroom">Classroom :</label>
+            <select id="classroom" required>
+              <option value="101">1A</option>
+              <option value="102">1B</option>
+              <option value="103">1C</option>
+              <option value="104">1D</option>
+              <option value="105">1E</option>
+              <option value="201">2A</option>
+              <option value="202">2B</option>
+              <option value="203">2C</option>
+              <option value="204">2D</option>
+              <option value="205">2E</option>
+              <option value="301">3A</option>
+              <option value="302">3B</option>
+              <option value="303">3C</option>
+              <option value="304">3D</option>
+              <option value="305">3E</option>
+              <option value="206">AAR</option>
+              <option value="207">MUSIC ROOM</option>              
+              <option value="106">SAC</option>
+              <option value="107">HALL</option>              
+              <option value="306">BIO LAB</option>
+              <option value="307">PHY LAB</option>              
+            </select>
+          </div>
+
+          <div class="form-input">
+            <label for="date">Date :</label>
+            <input type="date" id="date"  required >
+          </div>
+
+          <div class="form-input">
+           <label for="stime">Starting Time :</label>
+           <input type="time" id="stime" required>
+          </div>
+
+          <div class="form-input">
+           <label for="etime">Ending Time :</label>
+           <input type="time" id="etime" required>
+          </div>          
+
+          <div class="form-input">
+           <label for="reason">Reason :</label>
+           <input type="text" id="reason"  required >
+          </div>
+
+
+
+
+
+
+
+        </form>
+        </div>
+
         />
       </div>
     </div>
