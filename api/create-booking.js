@@ -1,11 +1,21 @@
 import { sql } from "@vercel/postgres";
-import { NextApiRequest, NextApiResponse } from 'next';
-
-try {
-    const { TID, classroom,date, stime, etime, reason, people, special } = req.body;
-
-    if (!TID || !classroom || !date || !stime || !etime || !reason || !people || !special) {
-      return res.status(400).json({ error: 'Please fill all the fields' });
+export default async function handler(req, res) {
+  try {
+    const { TID, classroom, date, stime, etime, reason, people, special } =
+      req.body;
+    const cid = parseInt(classroom);
+    const bdate = date;
+    if (
+      !TID ||
+      !classroom ||
+      !date ||
+      !stime ||
+      !etime ||
+      !reason ||
+      !people ||
+      !special
+    ) {
+      return res.status(400).json({ error: "Please fill all the fields" });
     }
 
     const result = await sql`
@@ -14,16 +24,23 @@ try {
       RETURNING bid; 
     `;
 
-res.status(200).json({ 
-    success: true, 
-    message: 'Booking successful！', 
-    booking_bid: result.rows[0].bid 
+    return res.status(200).json({
+      success: true,
+      message: "Booking successful！",
+      booking_bid: result.rows[0].bid,
     });
 
   } catch (error) {
-    res.status(500).json({ 
-     error: error.message,
-     message: 'Error,Try it later！',
+    console.error(error); 
+    return res.status(500).json({
+      success: false,
+      error: error.message || "ERROR,Please try again later.",
     });
   }
 } 
+
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
