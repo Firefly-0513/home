@@ -1,9 +1,14 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const bookingForm = document.getElementById("bookingForm");
+  const submit = document.getElementById("submit");
 
-submit.addEventListener('click', async () => {
+
+
+  submit.addEventListener("click", async () => {
     try {
-      const response = await fetch('/api/create-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/create-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           TID: formData.TID,
           classroom: formData.classroom,
@@ -12,8 +17,8 @@ submit.addEventListener('click', async () => {
           etime: formData.etime,
           reason: formData.reason,
           people: formData.people,
-          special: formData.special
-        })
+          special: formData.special,
+        }),
       });
 
       const result = await response.json();
@@ -22,16 +27,16 @@ submit.addEventListener('click', async () => {
         alert(`预约成功！您的预约ID是：${result.booking_bid}`);
         bookingForm.reset();
       } else {
-        alert('预约失败：' + result.error);
+        alert("预约失败：" + result.error);
       }
     } catch (error) {
-      alert('网络错误：' + error.message);
+      alert("网络错误：" + error.message);
     }
   });
 
   // 3. 点击“返回修改”：隐藏确认区域，允许重新编辑
-  cancelBtn.addEventListener('click', () => {
-    confirmArea.style.display = 'none';
-    nextBtn.style.display = 'block'; // 显示“下一步”按钮
+  cancelBtn.addEventListener("click", () => {
+    confirmArea.style.display = "none";
+    nextBtn.style.display = "block"; // 显示“下一步”按钮
   });
 });
