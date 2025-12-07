@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 
-    ry {
+    try {
       const response = await fetch('/api/create-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
