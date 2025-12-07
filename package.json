@@ -1,8 +1,8 @@
 {
   "name": "booking-system",
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "dependencies": {
-    "@vercel/postgres": "^0.8.0",
+    "@vercel/postgres": "^0.8.0"
   }
 }
