@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     }
 
     const result = await sql`
-      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, special)
-      VALUES (${TID}, ${cid}, ${bdate}, ${stime}, ${etime}, ${reason}, ${special})
+      INSERT INTO booking (tid, cid, bdate, stime, etime, reason)
+      VALUES (${TID}, ${cid}, ${bdate}, ${stime}, ${etime}, ${reason})
       RETURNING bid
     `;
 
