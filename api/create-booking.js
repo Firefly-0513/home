@@ -1,14 +1,15 @@
 import { sql } from "@vercel/postgres";
+import { NextApiRequest, NextApiResponse } from 'next';
 
 try {
     const { TID, classroom,date, stime, etime, reason, people, special } = req.body;
 
-    if (!TID || !classroom || !date || !stime || !|| !etime || !reason || !people || !special) {
+    if (!TID || !classroom || !date || !stime || !etime || !reason || !people || !special) {
       return res.status(400).json({ error: 'Please fill all the fields' });
     }
 
     const result = await sql`
-      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, reason)
+      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, special)
       VALUES (${TID}, ${classroom}, ${date}, ${stime}, ${etime}, ${reason},  ${special})
       RETURNING bid; 
     `;

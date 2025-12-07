@@ -4,17 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-  submit.addEventListener("click", async () => {
+  submit.addEventListener("click", async (e) => {
+    e.preventDefault();
+    
     try {
     const formData = {
-      userName: document.getElementById("TID").value, // 对应HTML中id="userName"的输入框
-      userPhone: document.getElementById("classroom").value,
-      classroomId: document.getElementById("date").value,
-      bookingDate: document.getElementById("stime").value,
-      startTime: document.getElementById("etime").value,
-      endTime: document.getElementById("reason").value,
-      endTime: document.getElementById("people").value,
-      reason: document.getElementById("special").value,
+      TID: document.getElementById("TID").value, // 对应HTML中id="userName"的输入框
+      classroom: document.getElementById("classroom").value,
+      date: document.getElementById("date").value,
+      stime: document.getElementById("stime").value,
+      etime: document.getElementById("etime").value,
+      reason: document.getElementById("reason").value,
+      people: document.getElementById("people").value,
+      special: document.getElementById("special").value,
     };
 
 
