@@ -2,8 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const bookingForm = document.getElementById("bookingForm");
   const submit = document.getElementById("submit");
 
-
-
   submit.addEventListener("click", async (e) => {
     e.preventDefault();
 
@@ -12,9 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("请填写所有必填项");
       return;
     }
-    
+
     const formData = {
-      TID: document.getElementById("TID").value, 
+      TID: document.getElementById("TID").value,
       classroom: document.getElementById("classroom").value,
       date: document.getElementById("date").value,
       stime: document.getElementById("stime").value,
@@ -24,12 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
       special: document.getElementById("special").value,
     };
 
-
     try {
-      const response = await fetch('/api/create-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData) 
+      const response = await fetch("/api/create-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
@@ -45,5 +42,4 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(error);
     }
   });
-}); 
-
+});

@@ -29,17 +29,14 @@ export default async function handler(req, res) {
       message: "Booking successful！",
       booking_bid: result.rows[0].bid,
     });
-    
   } catch (error) {
-    console.error("数据库插入失败:", error);
-
-    // 关键：把真实错误返回给前端！！！
+    console.error(error);
     return res.status(500).json({
       success: false,
-      error: error.message, // 这一行让你马上看到到底哪里错
+      error: error.message || "ERROR,Please try again later.",
     });
   }
-} 
+}
 
 export const config = {
   api: {
