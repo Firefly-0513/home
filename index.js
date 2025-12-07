@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 3. 点击“返回修改”：隐藏确认区域，允许重新编辑
+  // 3. 点击“返回修改”：隐藏确认区域，允许重新编
   cancelBtn.addEventListener("click", () => {
     confirmArea.style.display = "none";
     nextBtn.style.display = "block"; // 显示“下一步”按钮
