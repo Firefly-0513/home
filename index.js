@@ -6,19 +6,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   submit.addEventListener("click", async () => {
     try {
-      const response = await fetch("/api/create-booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          TID: formData.TID,
-          classroom: formData.classroom,
-          date: formData.date,
-          stime: formData.stime,
-          etime: formData.etime,
-          reason: formData.reason,
-          people: formData.people,
-          special: formData.special,
-        }),
+    const formData = {
+      userName: document.getElementById("TID").value, // 对应HTML中id="userName"的输入框
+      userPhone: document.getElementById("classroom").value,
+      classroomId: document.getElementById("date").value,
+      bookingDate: document.getElementById("stime").value,
+      startTime: document.getElementById("etime").value,
+      endTime: document.getElementById("reason").value,
+      endTime: document.getElementById("people").value,
+      reason: document.getElementById("special").value,
+    };
+
+
+    ry {
+      const response = await fetch('/api/create-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData) 
       });
 
       const result = await response.json();
