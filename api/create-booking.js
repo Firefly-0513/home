@@ -20,8 +20,8 @@ export default async function handler(req, res) {
 
     const result = await sql`
       INSERT INTO booking (tid, cid, bdate, stime, etime, reason, special)
-      VALUES (${TID}, ${classroom}, ${date}, ${stime}, ${etime}, ${reason},  ${special})
-      RETURNING bid; 
+      VALUES (${TID}, ${cid}, ${bdate}, ${stime}, ${etime}, ${reason}, ${special})
+      RETURNING bid
     `;
 
     return res.status(200).json({
