@@ -1,28 +1,49 @@
 document.addEventListener("DOMContentLoaded", () => {
   const bookingForm = document.getElementById("bookingForm");
-  const submit = document.getElementById("submit");
+  const submitBtn = document.getElementById("submit");
 
-  submit.addEventListener("click", async (e) => {
-    e.preventDefault();
+  // 检查是否成功获取到了按钮，如果没有，说明HTML ID写错了
+  if (!submitBtn) {
+    console.error("Error: Cannot find button with id='submit'");
+    return;
+  }
 
-    // 简单前端校验（可选，但强烈建议加）
-    if (!bookingForm.checkValidity()) {
-      alert("请填写所有必填项");
+  submitBtn.addEventListener("click", async (e) => {
+    e.preventDefault(); // 防止表单默认提交刷新页面
+
+    // 1. 获取数据
+    const TID = document.getElementById("TID")?.value;
+    const classroom = document.getElementById("classroom")?.value;
+    const date = document.getElementById("date")?.value;
+    const stime = document.getElementById("stime")?.value;
+    const etime = document.getElementById("etime")?.value;
+    const reason = document.getElementById("reason")?.value;
+    const people = document.getElementById("people")?.value;
+    const special = document.getElementById("special")?.value;
+
+    // 2. 前端校验
+    if (!TID || !classroom || !date || !stime || !etime || !reason || !people) {
+      alert("Please fill in all required fields.");
       return;
     }
 
     const formData = {
-      TID: document.getElementById("TID").value,
-      classroom: document.getElementById("classroom").value,
-      date: document.getElementById("date").value,
-      stime: document.getElementById("stime").value,
-      etime: document.getElementById("etime").value,
-      reason: document.getElementById("reason").value,
-      people: document.getElementById("people").value,
-      special: document.getElementById("special").value,
+      TID,
+      classroom,
+      date,
+      stime,
+      etime,
+      reason,
+      people,
+      special,
     };
 
+    // 按钮变更为加载状态
+    submitBtn.textContent = "Submitting...";
+    submitBtn.disabled = true;
+
     try {
+      // 3. 发送请求
       const response = await fetch("/api/create-booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,14 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert(`预约成功！您的预约ID是：${result.booking_bid}`);
-        bookingForm.reset();
+        alert(`Success! Booking ID: ${result.booking_bid}`);
+        bookingForm.reset(); // 清空表单
       } else {
-        alert("预约失败：" + (result.error || "未知错误"));
+        alert("Failed: " + (result.error || "Unknown error"));
       }
     } catch (error) {
-      alert("网络错误，请检查控制台：" + error.message);
-      console.error(error);
+      console.error("Network Error:", error);
+      alert("Network error. Please check console for details.");
+    } finally {
+      // 恢复按钮状态
+      submitBtn.textContent = "Confirm Booking";
+      submitBtn.disabled = false;
     }
   });
 });
