@@ -13,24 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 1. 获取数据
     const TID = document.getElementById("TID")?.value;
-    const classroom = document.getElementById("classroom")?.value;
-    const date = document.getElementById("date")?.value;
+    const CID = document.getElementById("classroom")?.value;
+    const Bdate = document.getElementById("date")?.value;
     const stime = document.getElementById("stime")?.value;
     const etime = document.getElementById("etime")?.value;
     const reason = document.getElementById("reason")?.value;
-    const people = document.getElementById("people")?.value;
     const special = document.getElementById("special")?.value;
 
     // 2. 前端校验
-    if (!TID || !classroom || !date || !stime || !etime || !reason || !people) {
+    if (!TID || !CID || !Bdate || !stime || !etime || !reason || !special) {
       alert("Please fill in all required fields.");
       return;
     }
 
     const formData = {
       TID,
-      classroom,
-      date,
+      CID,
+      Bdate,
       stime,
       etime,
       reason,
