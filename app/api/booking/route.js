@@ -31,6 +31,9 @@ export async function POST(request) {
 
     return Response.json({ bid: result.rows[0].bid });
   } catch (error) {
-    return new Response(error.message, { status: 500 });
+    console.error("POST Error:", error); // 添加日志，便于 Vercel Functions 日志查看
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
 }
