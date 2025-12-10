@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>教室预约 - 手动测试版</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 40px auto; line-height: 1.6; }
+    input, select, button { padding: 12px; margin: 8px 0; font-size: 16px; width: 100%; }
+    button { background: #0066ff; color: white; border: none; cursor: pointer; font-size: 20px; }
+    button:hover { background: #0050cc; }
+    .success { color: green; font-size: 24px; margin-top: 20px; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>教室预约系统 - 手动测试版</h1>
+  <p>填写下面资料 → 点提交 → 就会真的插入到你的 Vercel 数据库！</p>
+
+  <label>教師編號 TID（如 0001）</label>
+  <input type="text" id="tid" value="0001" placeholder="0001~0011" required>
+
+  <label>選擇教室</label>
+  <input type="text" id="cid" required>
+
+  <label>日期</label>
+  <input type="date" id="bdate" required>
+
+  <label>開始時間</label>
+  <input type="time" id="stime" required>
+
+  <label>結束時間</label>
+  <input type="time" id="etime" required>
+
+  <label>用途</label>
+  <input type="text" id="reason" placeholder="例如：班会、补课、自习" required>
+
+  <label>特別要求（可留空）</label>
+  <input type="text" id="special" placeholder="例如：需要投影仪">
+
+  <button onclick="submitBooking()">提交预约（插入数据库）</button>
+
+  <div id="result"></div>
+
+  <script>
+    // 页面打开就自动加载所有教室
+    fetch('/api/booking?classrooms=true')
+      .then(r => r.json())
+      .then(rooms => {
+        const select = document.getElementById('cid');
+        rooms.forEach(room => {
+          const opt = new Option(`${room.cid} - ${room.cname} (容量 ${room.capacity})`, room.cid);
+          select.add(opt);
+        });
+      });
+
+    async function submitBooking() {
+      const result = document.getElementById('result');
+      result.innerHTML = '提交中...';
+
+      const data = {
+        tid: document.getElementById('tid').value.trim(),
+        cid: parseInt(document.getElementById('cid').value),
+        bdate: document.getElementById('bdate').value,
+        stime: document.getElementById('stime').value + ':00',
+        etime: document.getElementById('etime').value + ':00',
+        reason: document.getElementById('reason').value,
+        special: document.getElementById('special').value || null
+      };
+
+      try {
+        const res = await fetch('/api/booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          const newRecord = await res.json();
+          result.innerHTML = `<div class="success">
+            成功插入！<br>
+            新预约编号 BID: ${newRecord.bid}
+          </div>`;
+        } else {
+          result.innerHTML = `<div class="error">失败：${await res.text()}</div>`;
+        }
+      } catch (e) {
+        result.innerHTML = `<div class="error">网络错误：${e.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

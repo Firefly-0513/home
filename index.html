@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="cn-HK">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>booking system</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .inline-container {
+        display: flex;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 15vh;
+        background-color: #fb85b4;
+        padding: 0 0% 0 2%;
+        box-sizing: border-box;
+        z-index: 100;
+      }
+      .inline-container img {
+        margin-right: 3%;
+        height: auto;
+        max-height: 12vh;
+        max-width: 12vw;
+      }
+      .inline-container p {
+        font-size: 2.5vw;
+        color: #ffffff;
+        margin: 90px;
+      }
+
+      .layout-container {
+        display: flex;
+        min-height: calc(100% - 15vh);
+      }
+
+      .left {
+        width: 12%;
+        background-color: #c2353a;
+        position: sticky;
+        top: 15vh;
+        padding: 2%;
+        box-sizing: border-box;
+      }
+      .left_text {
+        list-style-type: none;
+        padding: 0;
+        margin: 2%;
+        line-height: 3;
+        font-size: 1.2vw;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .left_text a {
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .main {
+        flex: 1;
+        padding: 2vh 2vw;
+        font-size: 2.5vw;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- top -->
+    <div class="inline-container">
+      <a href="index.html">
+        <img src="public/image/school logo(nb).png" alt="LKPFC Logo" />
+      </a>
+      <p><b>LaKPFC Classroom Booking System</b></p>
+    </div>
+
+    <div class="layout-container">
+      <!-- left -->
+      <div class="left">
+        <ul class="left_text">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="booking.html">Booking</a></li>
+          <li><a href="test.html">est </a></li>
+        </ul>
+      </div>
+
+      <!-- main -->
+      <div class="main">
+        <p>前面的區域，以後再來探索吧.</p>
+        <img src="image/yae-miko-yae.gif" style="width: 80%; height: auto" />
+      </div>
+    </div>
+</html>
