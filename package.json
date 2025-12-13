@@ -22,5 +22,6 @@
     "url": "https://github.com/Firefly-0513/home/issues"
   },
   "homepage": "https://github.com/Firefly-0513/home#readme",
-  "description": ""
+  "description": "",
+  "type": "commonjs"
 }
