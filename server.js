@@ -31,6 +31,7 @@ app.post("/book", async (req, res) => {
     res.send("预约成功！");
   } catch (err) {
     console.error(err);
+    console.error("Database insert error:", err);
     res.status(500).send("预约失败");
   }
 });
