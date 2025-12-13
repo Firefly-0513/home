@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { Pool } = require("pg");
+const { Pool } = require("@neondatabase/serverless");
 const path = require("path");
 
 const app = express();
@@ -8,10 +8,7 @@ app.use(express.json()); // 解析 JSON 请求
 app.use(express.static(path.join(__dirname, "public"))); // 提供静态文件（HTML）
 
 // 数据库连接，使用环境变量（本地从 .env 读，Vercel 从面板读）
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Neon 需要 SSL
-});
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 // 欢迎页面路由
 app.get("/", (req, res) => {
