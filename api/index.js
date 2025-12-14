@@ -81,7 +81,7 @@ app.post("/book", async (req, res) => {
       "SELECT capacity FROM classroom WHERE cid = $1",
       [cidNum]
     );
-    
+
     if (capacityResult.rows.length === 0) {
       return res.status(400).json({ error: "Classroom not found (invalid CID)" });
     }
@@ -93,9 +93,9 @@ app.post("/book", async (req, res) => {
       });
     }
 
-  // 房間是否被book？
-  const conflict = await pool.query(`
-      SELECT * FROM booking 
+    // 是否被book？
+    const conflict = await pool.query(`
+      SELECT 1 FROM booking 
       WHERE cid = $1 
       AND bdate = $2 
       AND (
@@ -109,29 +109,28 @@ app.post("/book", async (req, res) => {
       return res.status(400).json({ error: "The room is already booked for this time slot." });
     }
 
-  try {
-    const result = await pool.query(
-      `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-       RETURNING bid`,
-      [tid, cid, bdate, stime, etime, reason, people, special]
-    );
+    // 3. 插入預約
+    const result = await pool.query(`
+      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+      RETURNING bid
+    `, [tid, cidNum, bdate, stime, etime, reason, peopleNum, special]);
 
     const newBookingId = result.rows[0].bid;
 
     res.json({
       success: true,
       bookingId: newBookingId,
-      message: "Booking successful!",
-    }); // 确保是 JSON
+      message: "Booking successful!"
+    });
+
   } catch (err) {
-    console.error(err);
-    console.error("Database insert error:", err);
-    res
-      .status(500)
-      .json({ error: "Some Data is wrong,Try it again", details: err.message }); // 总是 JSON
+    console.error("Database error:", err);
+    res.status(500).json({ 
+      error: "Server error, please try again later", 
+      details: err.message 
+    });
   }
-});
 
 
 
