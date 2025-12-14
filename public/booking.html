@@ -273,20 +273,29 @@
                   special: document.getElementById("special").value.trim(),
                 };
 
+
                 // 驗證輸入
 
-                // time驗證
+                // date驗證
+                const today = new Date().toISOString().split('T')[0];
+                if (data.bdate < today) {
+                  alert('Error: Booking date cannot be in the past.');
+                  return;
+                }
+
+                // time驗證（不能是今天之前的時間）
+                const now = new Date().toISOString().split('T')[1].split('.')[0];
+                if (data.stime < now) {
+                  alert('Error: Booking time cannot be in the past.');
+                  return;
+                }
+
+                // time驗證(etime必須大於stime)
                 if (data.stime >= data.etime) {
                   alert('Error: Starting time must be before ending time.');
                   return;
                 }
 
-                // date驗證
-                const today = new Date().toLocaleDateString('en-CA');
-                if (data.bdate < today) {
-                  alert('Error: Booking date cannot be in the past.');
-                  return;
-                }
 
                 try {
                   const res = await fetch("/book", {

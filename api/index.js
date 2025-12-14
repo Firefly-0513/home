@@ -26,22 +26,77 @@ app.get("/reserve", (req, res) => {
 });
 
 
-
-
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
-  const {
-    tid, 
-    cid, 
-    bdate,
-    stime, 
-    etime,
-    reason, 
-    people, 
-    special, 
-  } = req.body;
+  const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
+  // Must have all fields
+  if (
+    !tid ||
+    !cid ||
+    !bdate ||
+    !stime ||
+    !etime ||
+    !reason ||
+    !people ||
+    !special
+  ) {
+    return res.status(400).json({ error: "You must enter all fields" });
+  }
+
+  // date驗證
+  const today = new Date().toISOString().split("T")[0];
+  if (data.bdate < today) {
+    return res
+      .status(400)
+      .json({ error: "Booking date cannot be in the past." });
+  }
+
+  // time驗證（不能是今天之前的時間）
+  const now = new Date().toISOString().split("T")[1].split(".")[0];
+  if (data.stime < now) {
+    return res
+      .status(400)
+      .json({ error: "Booking time cannot be in the past." });
+  }
+
+  //  time驗證(etime必須大於stime)
+  if (stime >= etime) {
+    return res
+      .status(400)
+      .json({ error: "End time must be later than start time." });
+  }
+  
+  //  課室人數驗證
+  try {
+    const capacityResult = await pool.query(
+      `SELECT capacity FROM classroom WHERE cid = $1`,
+      [cidNum]
+    );
+
+    if (peopleNum > capacity) {
+      return res.status(400).json({ 
+        error: `The room only can caontain ${capacity} peoples,please change another room ` 
+      });
+    }
+
+  // 房間是否被book？
+  try {
+    const conflict = await pool.query(`
+      SELECT * FROM booking 
+      WHERE cid = $1 
+      AND bdate = $2 
+      AND (
+        (stime < $3 AND etime > $3) OR  
+        (stime < $4 AND etime > $4) OR  
+        (stime >= $3 AND etime <= $4)   
+      )
+    `, [cidNum, bdate, etime, stime]);  
+
+    if (conflict.rows.length > 0) {
+      return res.status(400).json({ error: 'The room is already booked for this time slot.' });
+    }
 
   try {
     const result = await pool.query(
