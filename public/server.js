@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const { Pool } = require("@neondatabase/serverless");
+const { Pool } = require("@neondatabase/serverless"); // 改用 Neon serverless driver
+const ws = require("ws");
 const path = require("path");
 
 const app = express();
@@ -8,7 +9,11 @@ app.use(express.json()); // 解析 JSON 请求
 app.use(express.static(path.join(__dirname, "public"))); // 提供静态文件（HTML）
 
 // 数据库连接，使用环境变量（本地从 .env 读，Vercel 从面板读）
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+pool.options.webSocketConstructor = ws;
 
 // 欢迎页面路由
 app.get("/", (req, res) => {
@@ -17,17 +22,29 @@ app.get("/", (req, res) => {
 
 // 预约页面路由
 app.get("/reserve", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "reserve.html"));
+  res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
-  const { room, time } = req.body;
+  // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
+  const {
+    tid = , 
+    cid, 
+    bdate ,
+    stime, 
+    etime = ,
+    reason = , 
+    people = , 
+    special = , 
+  } = req.body;
+
+
   try {
-    await pool.query("INSERT INTO bookings (room, time) VALUES ($1, $2)", [
-      room,
-      time,
-    ]);
+    await pool.query(
+      "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [tid, cid, bdate, stime, etime, reason, people, special]
+    );
     res.send("预约成功！");
   } catch (err) {
     console.error(err);
@@ -37,9 +54,9 @@ app.post("/book", async (req, res) => {
 });
 
 // 从数据库读取数据（GET 请求）
-app.get("/bookings", async (req, res) => {
+app.get("/booking", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM bookings");
+    const result = await pool.query("SELECT * FROM booking");
     res.json(result.rows);
   } catch (err) {
     console.error(err);

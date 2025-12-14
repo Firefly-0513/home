@@ -35,7 +35,7 @@
 
     // 从数据库读取数据并显示
     async function loadBookings() {
-      const response = await fetch('/bookings');
+      const response = await fetch('/get-booking');
       const bookings = await response.json();
       const list = document.getElementById('bookingsList');
       list.innerHTML = '';

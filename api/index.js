@@ -22,17 +22,32 @@ app.get("/", (req, res) => {
 
 // 预约页面路由
 app.get("/reserve", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "reserve.html"));
+  res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
+
+
+
 
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
-  const { room, time } = req.body;
+  // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
+  const {
+    tid = , 
+    cid, 
+    bdate ,
+    stime, 
+    etime = ,
+    reason = , 
+    people = , 
+    special = , 
+  } = req.body;
+
+
   try {
-    await pool.query("INSERT INTO bookings (room, time) VALUES ($1, $2)", [
-      room,
-      time,
-    ]);
+    await pool.query(
+      "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [tid, cid, bdate, stime, etime, reason, people, special]
+    );
     res.send("预约成功！");
   } catch (err) {
     console.error(err);
@@ -41,10 +56,14 @@ app.post("/book", async (req, res) => {
   }
 });
 
+
+
+
+
 // 从数据库读取数据（GET 请求）
-app.get("/bookings", async (req, res) => {
+app.get("/get-booking", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM bookings");
+    const result = await pool.query("SELECT * FROM booking");
     res.json(result.rows);
   } catch (err) {
     console.error(err);

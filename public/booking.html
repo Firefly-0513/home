@@ -128,13 +128,13 @@
         <form id="bookingForm">
 
           <div class="form-input">
-           <label for="TID">Teacher ID :</label>
+           <label >Teacher ID :</label>
            <input type="text" id="TID"  required >
           </div>
 
           <div class="form-input">
-            <label for="classroom">Classroom :</label>
-            <select id="classroom" required>
+            <label >Classroom :</label>
+            <select id="cid" required>
               <option value="101">1A</option>
               <option value="102">1B</option>
               <option value="103">1C</option>
@@ -160,41 +160,81 @@
           </div>
 
           <div class="form-input">
-            <label for="date">Booking Date :</label>
-            <input type="date" id="date"  required >
+            <label >Booking Date :</label>
+            <input type="date" id="bdate"  required >
           </div>
 
           <div class="form-input">
-           <label for="stime">Starting Time :</label>
+           <label >Starting Time :</label>
            <input type="time" id="stime" required>
           </div>
 
           <div class="form-input">
-           <label for="etime">Ending Time :</label>
+           <label >Ending Time :</label>
            <input type="time" id="etime" required>
           </div>          
 
           <div class="form-input">
-           <label for="reason">Reason :</label>
+           <label >Reason :</label>
            <input type="text" id="reason"  required >
           </div>
 
           <div class="form-input">
-           <label for="people">Number of People Using :</label>
+           <label>Number of People Using :</label>
            <input type="text" id="people"  required >
           </div>
 
           <div class="form-input">
            <label for="special">Special Requirements :</label>
-           <input type="text" id="special"  required >
+           <input type="text" id="special"  value="NA" required >
            <p style="font-size: 0.8vw;">(if no, please type "NA")</p>
           </div>          
 
           <div class="form-input">
-           <button type="submit" id="submit">Confirm Booking</button>
+           <button type="submit" >Confirm Booking</button>
           </div> 
+        </form>
+
+        <p id="book"></p>
 
 
+
+  <script>
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        tid: document.getElementById('tid').value,
+        cid: parseInt(document.getElementById('cid').value),
+        bdate: document.getElementById('bdate').value,
+        stime: document.getElementById('stime').value,
+        etime: document.getElementById('etime').value,
+        reason: document.getElementById('reason').value,
+        people: parseInt(document.getElementById('people').value),
+        special: document.getElementById('special').value || ''
+      };
+
+      const res = await fetch('/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+          document.getElementById('book').style.color = 'green';
+          document.getElementById('book').textContent = result.message || '预约成功！';
+          document.getElementById('bookingForm').reset();  
+        } else {
+          document.getElementById('book').style.color = 'red';
+          document.getElementById('book').textContent = result.error || result.details || '预约失败';
+        }
+      } catch (err) {
+        document.getElementById('book').style.color = 'red';
+        document.getElementById('book').textContent = '网络错误，请稍後再試';
+      }
+    });
+  </script>
 
 
 
