@@ -43,6 +43,13 @@ app.post("/book", async (req, res) => {
   ) {
     return res.status(400).json({ error: "缺少必要字段" });
   }
+
+  const cidNum = parseInt(cid, 10);
+  const peopleNum = parseInt(people, 10);
+  if (isNaN(cidNum) || isNaN(peopleNum)) {
+    return res.status(400).json({ error: "教室 ID 或人數必須是數字" });
+  }
+
   // 时间逻辑验证
   if (stime >= etime) {
     return res.status(400).json({ error: "结束时间必须晚于开始时间" });
@@ -58,6 +65,27 @@ app.post("/book", async (req, res) => {
     alert("Error: Booking time cannot be in the past.");
     return;
   }
+
+  try {
+    // Step 1: 查詢該教室的容量
+    const capacityResult = await pool.query(
+      `SELECT capacity FROM classroom WHERE cid = $1`,
+      [cidNum]
+    );
+
+    if (capacityResult.rows.length === 0) {
+      return res.status(400).json({ error: "找不到該教室（CID 不存在）" });
+    }
+
+    const capacity = capacityResult.rows[0].capacity;
+
+    // Step 2: 檢查人數是否超過容量
+    if (peopleNum > capacity) {
+      return res.status(400).json({ 
+        error: `預約失敗：該教室最多容納 ${capacity} 人，您輸入 ${peopleNum} 人，已超額` 
+      });
+    }
+    
 
   try {
     const result = await pool.query(
