@@ -215,10 +215,10 @@
 
             try {
               const res = await fetch('/book', {  // 這裡是您改的路由，確認正確
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(data)
-            });
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+              }); 
 
               const result = await res.json();
 
