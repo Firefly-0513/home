@@ -52,7 +52,7 @@ app.post("/book", async (req, res) => {
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);
-    res.status(500).json({ error: "Failed", details: err.message }); // 总是 JSON
+    res.status(500).json({ error: "Some Data is wrong,Try it again", details: err.message }); // 总是 JSON
   }
 });
 
