@@ -30,6 +30,35 @@ app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
   const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
+  // 后端必填检查
+  if (
+    !tid ||
+    !cid ||
+    !bdate ||
+    !stime ||
+    !etime ||
+    !reason ||
+    !people ||
+    !special
+  ) {
+    return res.status(400).json({ error: "缺少必要字段" });
+  }
+  // 时间逻辑验证
+  if (stime >= etime) {
+    return res.status(400).json({ error: "结束时间必须晚于开始时间" });
+  }
+  // 日期不能是过去
+  const today = new Date().toISOString().split("T")[0];
+  if (bdate < today) {
+    return res.status(400).json({ error: "不能预约过去的日期" });
+  }
+  // time驗證（不能是今天之前的時間）
+  const now = new Date().toISOString().split("T")[1].split(".")[0];
+  if (bdate === today && stime < now) {
+    alert("Error: Booking time cannot be in the past.");
+    return;
+  }
+
   try {
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
