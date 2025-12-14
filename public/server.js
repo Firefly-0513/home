@@ -25,23 +25,10 @@ app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
-
-
-
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
-  const {
-    tid = , 
-    cid, 
-    bdate ,
-    stime, 
-    etime = ,
-    reason = , 
-    people = , 
-    special = , 
-  } = req.body;
-
+  const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
   try {
     await pool.query(
@@ -55,10 +42,6 @@ app.post("/book", async (req, res) => {
     res.status(500).send("预约失败");
   }
 });
-
-
-
-
 
 // 从数据库读取数据（GET 请求）
 app.get("/get-booking", async (req, res) => {

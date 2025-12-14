@@ -129,7 +129,7 @@
 
           <div class="form-input">
            <label >Teacher ID :</label>
-           <input type="text" id="TID"  required >
+           <input type="text" id="tid"  required >
           </div>
 
           <div class="form-input">
@@ -195,46 +195,50 @@
           </div> 
         </form>
 
-        <p id="book"></p>
+        <p id="msg"></p>
+
+        <script>
+          document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+              tid: document.getElementById('tid').value.trim(),
+              cid: document.getElementById('cid').value.trim(),
+              bdate: document.getElementById('bdate').value,
+              stime: document.getElementById('stime').value,
+              etime: document.getElementById('etime').value,
+              reason: document.getElementById('reason').value.trim(),
+              people: parseInt(document.getElementById('people').value),
+              special: document.getElementById('special').value.trim()
+            };
+ 
+
+            try {
+              const res = await fetch('/book', {  // 這裡是您改的路由，確認正確
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+
+              const result = await res.json();
+
+              if (res.ok) {
+                document.getElementById('msg').style.color = 'green';
+                document.getElementById('msg').textContent = result.message || '预约成功！';
+                document.getElementById('bookingForm').reset();
+                document.getElementById('tid').value = 'T001';  // 保留預設教師ID
+              } else {
+                document.getElementById('msg').style.color = 'red';
+                document.getElementById('msg').textContent = result.error || result.details || '预约失败';
+              }
+              } catch (err) {
+                document.getElementById('msg').style.color = 'red';
+                document.getElementById('msg').textContent = '网络错误，无法连接服务器';
+              }  
+            });
+          </script>
 
 
-
-  <script>
-    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = {
-        tid: document.getElementById('tid').value,
-        cid: parseInt(document.getElementById('cid').value),
-        bdate: document.getElementById('bdate').value,
-        stime: document.getElementById('stime').value,
-        etime: document.getElementById('etime').value,
-        reason: document.getElementById('reason').value,
-        people: parseInt(document.getElementById('people').value),
-        special: document.getElementById('special').value || ''
-      };
-
-      const res = await fetch('/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-          document.getElementById('book').style.color = 'green';
-          document.getElementById('book').textContent = result.message || '预约成功！';
-          document.getElementById('bookingForm').reset();  
-        } else {
-          document.getElementById('book').style.color = 'red';
-          document.getElementById('book').textContent = result.error || result.details || '预约失败';
-        }
-      } catch (err) {
-        document.getElementById('book').style.color = 'red';
-        document.getElementById('book').textContent = '网络错误，请稍後再試';
-      }
-    });
-  </script>
 
 
 
