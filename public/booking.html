@@ -231,16 +231,12 @@
                 document.getElementById('msg').style.color = 'red';
                 document.getElementById('msg').textContent = result.error || result.details || '预约失败';
               }
-              } catch (err) {
-                document.getElementById('msg').style.color = 'red';
-                document.getElementById('msg').textContent = '网络错误，无法连接服务器';
-              }  
-            });
-          </script>
-
-
-
-
+            } catch (err) {
+              document.getElementById('msg').style.color = 'red';
+              document.getElementById('msg').textContent = '网络错误，无法连接服务器';
+            }  
+          });
+        </script>
 
         </div>
         </div> 
