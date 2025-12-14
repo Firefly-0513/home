@@ -41,52 +41,52 @@ app.post("/book", async (req, res) => {
     !people ||
     !special
   ) {
-    return res.status(400).json({ error: "缺少必要字段" });
+    return res.status(400).json({ error: "Your must fill all fields" });
   }
 
   const cidNum = parseInt(cid, 10);
   const peopleNum = parseInt(people, 10);
   if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res.status(400).json({ error: "教室 ID 或人數必須是數字" });
+    return res.status(400).json({ error: "It must be a number" });
   }
 
-  // 时间逻辑验证
+  // time驗證（結束時間必須大於開始）
   if (stime >= etime) {
-    return res.status(400).json({ error: "结束时间必须晚于开始时间" });
+    return res
+      .status(400)
+      .json({ error: "Starting time must be before ending time." });
   }
-  // 日期不能是过去
+  // date驗證
   const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
-    return res.status(400).json({ error: "不能预约过去的日期" });
+    return res
+      .status(400)
+      .json({ error: "Booking date cannot be in the past." });
   }
   // time驗證（不能是今天之前的時間）
   const now = new Date().toISOString().split("T")[1].split(".")[0];
   if (bdate === today && stime < now) {
-    alert("Error: Booking time cannot be in the past.");
-    return;
+    return res
+      .status(400)
+      .json({ error: "Booking time cannot be in the past." });
   }
 
+  // 課室容量驗證
   try {
-    // Step 1: 查詢該教室的容量
     const capacityResult = await pool.query(
       `SELECT capacity FROM classroom WHERE cid = $1`,
       [cidNum]
     );
 
-    if (capacityResult.rows.length === 0) {
-      return res.status(400).json({ error: "找不到該教室（CID 不存在）" });
-    }
-
     const capacity = capacityResult.rows[0].capacity;
 
-    // Step 2: 檢查人數是否超過容量
     if (peopleNum > capacity) {
-      return res.status(400).json({ 
-        error: `預約失敗：該教室最多容納 ${capacity} 人，您輸入 ${peopleNum} 人，已超額` 
+      return res.status(400).json({
+        error: `The venue only can contain ${capacity} peoples, you need to change another venue.`,
       });
     }
-    
 
+    // 輸入資料
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
