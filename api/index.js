@@ -55,7 +55,7 @@ app.post("/book", async (req, res) => {
 
   // time驗證（不能是今天之前的時間）
   const now = new Date().toISOString().split("T")[1].split(".")[0];
-  if (data.stime < now) {
+  if (data.bdate === today && data.stime < now) {
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
@@ -72,10 +72,10 @@ app.post("/book", async (req, res) => {
   try {
     const capacityResult = await pool.query(
       `SELECT capacity FROM classroom WHERE cid = $1`,
-      [cidNum]
+      [cid]
     );
 
-    if (peopleNum > capacity) {
+    if (people > capacity) {
       return res.status(400).json({ 
         error: `The room only can caontain ${capacity} peoples,please change another room ` 
       });
@@ -92,7 +92,7 @@ app.post("/book", async (req, res) => {
         (stime < $4 AND etime > $4) OR  
         (stime >= $3 AND etime <= $4)   
       )
-    `, [cidNum, bdate, etime, stime]);  
+    `, [cid, bdate, etime, stime]);  
 
     if (conflict.rows.length > 0) {
       return res.status(400).json({ error: 'The room is already booked for this time slot.' });
