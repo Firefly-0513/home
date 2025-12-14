@@ -81,6 +81,10 @@ app.post("/book", async (req, res) => {
       "SELECT capacity FROM classroom WHERE cid = $1",
       [cidNum]
     );
+    
+    if (capacityResult.rows.length === 0) {
+      return res.status(400).json({ error: "Classroom not found (invalid CID)" });
+    }
 
     const capacity = capacityResult.rows[0].capacity;
     if (peopleNum > capacity) {
