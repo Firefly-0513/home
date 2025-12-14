@@ -221,29 +221,29 @@
               }); 
 
               const text = await res.text();  // 先读文本，避免 json() 失败
-              console.log('后端响应文本:', text);  // 在浏览器 Console 查看完整响应
+              console.log('console:', text);  // 在浏览器 Console 查看完整响应
 
               let result;
               try {
                 result = JSON.parse(text);  // 尝试解析 JSON
               } catch (parseErr) {
                 document.getElementById('book').style.color = 'red';
-                document.getElementById('book').textContent = '响应格式错误: ' + text;
+                document.getElementById('book').textContent = 'error: ' + text;
                 return;
               }
 
               if (res.ok) {
                 document.getElementById('book').style.color = 'green';
-                document.getElementById('book').textContent = result.message || '预约成功！';
+                document.getElementById('book').textContent = result.message || 'Booking success!';
                 document.getElementById('bookingForm').reset();
                 document.getElementById('tid').value = 'T001';  // 保留預設教師ID
               } else {
                 document.getElementById('book').style.color = 'red';
-                document.getElementById('book').textContent = result.error || result.details || '预约失败';
+                document.getElementById('book').textContent = result.error || result.details || 'Booking failed!';
               }
             } catch (err) {
               document.getElementById('book').style.color = 'red';
-              document.getElementById('book').textContent = '网络错误，无法连接服务器';
+              document.getElementById('book').textContent = 'Cant connect to server. Please try again later.';
             }  
           });
         </script>

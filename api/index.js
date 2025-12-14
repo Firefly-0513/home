@@ -48,11 +48,11 @@ app.post("/book", async (req, res) => {
       "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
       [tid, cid, bdate, stime, etime, reason, people, special]
     );
-    res.json({ success: true, message: "预约成功！" }); // 确保是 JSON
+    res.json({ success: true, message: "Booking successful!" }); // 确保是 JSON
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);
-    res.status(500).json({ error: "失败", details: err.message }); // 总是 JSON
+    res.status(500).json({ error: "Failed", details: err.message }); // 总是 JSON
   }
 });
 
@@ -67,7 +67,7 @@ app.get("/get-booking", async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send("读取失败");
+    res.status(500).send("read error");
   }
 });
 
