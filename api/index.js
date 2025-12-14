@@ -51,7 +51,11 @@ app.post("/book", async (req, res) => {
 
     const newBookingId = result.rows[0].bid;
     
-    res.json({ success: true, bookingId: newBookingId, message: "Booking successful!" }); // 确保是 JSON
+    res.json({
+       success: true, 
+       bookingId: newBookingId, 
+       message: "Booking successful!"
+    }); // 确保是 JSON
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);
