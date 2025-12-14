@@ -61,7 +61,7 @@ app.post("/book", async (req, res) => {
   }
 
   // time驗證（不能是今天之前的時間）
-  JavaScriptconst now = new Date().toISOString().split("T")[1].slice(0, 5); 
+  const now = new Date().toISOString().split("T")[1].slice(0, 5); 
   if (bdate === today && stime < now) {
     return res
       .status(400)
