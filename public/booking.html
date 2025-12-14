@@ -285,7 +285,7 @@
 
                 // time驗證（不能是今天之前的時間）
                 const now = new Date().toISOString().split('T')[1].split('.')[0];
-                if (data.stime < now) {
+                if (data.bdate === today && data.stime < now) {
                   alert('Error: Booking time cannot be in the past.');
                   return;
                 }

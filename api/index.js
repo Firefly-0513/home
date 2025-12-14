@@ -45,6 +45,13 @@ app.post("/book", async (req, res) => {
     return res.status(400).json({ error: "You must enter all fields" });
   }
 
+  // convert
+  const cidNum = parseInt(cid, 10);
+  const peopleNum = parseInt(people, 10);
+  if (isNaN(cidNum) || isNaN(peopleNum)) {
+    return res.status(400).json({ error: "CID and people must be numbers" });
+  }
+
   // date驗證
   const today = new Date().toISOString().split("T")[0];
   if (data.bdate < today) {
@@ -71,19 +78,19 @@ app.post("/book", async (req, res) => {
   //  課室人數驗證
   try {
     const capacityResult = await pool.query(
-      `SELECT capacity FROM classroom WHERE cid = $1`,
-      [cid]
+      "SELECT capacity FROM classroom WHERE cid = $1",
+      [cidNum]
     );
 
-    if (people > capacity) {
-      return res.status(400).json({ 
-        error: `The room only can caontain ${capacity} peoples,please change another room ` 
+    const capacity = capacityResult.rows[0].capacity;
+    if (peopleNum > capacity) {
+      return res.status(400).json({
+        error: `The room can only accommodate ${capacity} people. You entered ${peopleNum}. Please choose another room.`
       });
     }
 
   // 房間是否被book？
-  try {
-    const conflict = await pool.query(`
+  const conflict = await pool.query(`
       SELECT * FROM booking 
       WHERE cid = $1 
       AND bdate = $2 
@@ -92,10 +99,10 @@ app.post("/book", async (req, res) => {
         (stime < $4 AND etime > $4) OR  
         (stime >= $3 AND etime <= $4)   
       )
-    `, [cid, bdate, etime, stime]);  
+    `, [cidNum, bdate, etime, stime]);
 
     if (conflict.rows.length > 0) {
-      return res.status(400).json({ error: 'The room is already booked for this time slot.' });
+      return res.status(400).json({ error: "The room is already booked for this time slot." });
     }
 
   try {
