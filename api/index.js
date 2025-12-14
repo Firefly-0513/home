@@ -86,6 +86,27 @@ app.post("/book", async (req, res) => {
       });
     }
 
+    // 2. 是否被book？
+    const conflict = await pool.query(
+      `
+      SELECT 1 FROM booking 
+      WHERE cid = $1 
+      AND bdate = $2 
+      AND (
+        (stime < $3 AND etime > $3) OR  
+        (stime < $4 AND etime > $4) OR  
+        (stime >= $3 AND etime <= $4)   
+      )
+    `,
+      [cidNum, bdate, etime, stime]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "The room is already booked for this time slot." });
+    }
+
     // 輸入資料
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
