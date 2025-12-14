@@ -61,8 +61,8 @@ app.post("/book", async (req, res) => {
   }
 
   // time驗證（不能是今天之前的時間）
-  const now = new Date().toISOString().split("T")[1].split(".")[0];
-  if (data.bdate === today && data.stime < now) {
+  JavaScriptconst now = new Date().toISOString().split("T")[1].slice(0, 5); 
+  if (bdate === today && stime < now) {
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
