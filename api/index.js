@@ -25,116 +25,34 @@ app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
-
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
   const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
-  // Must have all fields
-  if (
-    !tid ||
-    !cid ||
-    !bdate ||
-    !stime ||
-    !etime ||
-    !reason ||
-    !people ||
-    !special
-  ) {
-    return res.status(400).json({ error: "You must enter all fields" });
-  }
-
-  // convert
-  const cidNum = parseInt(cid, 10);
-  const peopleNum = parseInt(people, 10);
-  if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res.status(400).json({ error: "CID and people must be numbers" });
-  }
-
-  // date驗證
-  const today = new Date().toISOString().split("T")[0];
-  if (bdate < today) {
-    return res
-      .status(400)
-      .json({ error: "Booking date cannot be in the past." });
-  }
-
-  // time驗證（不能是今天之前的時間）
-  const now = new Date().toISOString().split("T")[1].slice(0, 5); 
-  if (bdate === today && stime < now) {
-    return res
-      .status(400)
-      .json({ error: "Booking time cannot be in the past." });
-  }
-
-  //  time驗證(etime必須大於stime)
-  if (stime >= etime) {
-    return res
-      .status(400)
-      .json({ error: "End time must be later than start time." });
-  }
-  
-  //  課室人數驗證
   try {
-    const capacityResult = await pool.query(
-      "SELECT capacity FROM classroom WHERE cid = $1",
-      [cidNum]
+    const result = await pool.query(
+      `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+       RETURNING bid`,
+      [tid, cid, bdate, stime, etime, reason, people, special]
     );
-
-    if (capacityResult.rows.length === 0) {
-      return res.status(400).json({ error: "Classroom not found (invalid CID)" });
-    }
-
-    const capacity = capacityResult.rows[0].capacity;
-    if (peopleNum > capacity) {
-      return res.status(400).json({
-        error: `The room can only accommodate ${capacity} people. You entered ${peopleNum}. Please choose another room.`
-      });
-    }
-
-    // 是否被book？
-    const conflict = await pool.query(`
-      SELECT 1 FROM booking 
-      WHERE cid = $1 
-      AND bdate = $2 
-      AND (
-        (stime < $3 AND etime > $3) OR  
-        (stime < $4 AND etime > $4) OR  
-        (stime >= $3 AND etime <= $4)   
-      )
-    `, [cidNum, bdate, etime, stime]);
-
-    if (conflict.rows.length > 0) {
-      return res.status(400).json({ error: "The room is already booked for this time slot." });
-    }
-
-    // 3. 插入預約
-    const result = await pool.query(`
-      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-      RETURNING bid
-    `, [tid, cidNum, bdate, stime, etime, reason, peopleNum, special]);
 
     const newBookingId = result.rows[0].bid;
 
     res.json({
       success: true,
       bookingId: newBookingId,
-      message: "Booking successful!"
-    });
-
+      message: "Booking successful!",
+    }); // 确保是 JSON
   } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({ 
-      error: "Server error, please try again later", 
-      details: err.message 
-    });
+    console.error(err);
+    console.error("Database insert error:", err);
+    res
+      .status(500)
+      .json({ error: "Some Data is wrong,Try it again", details: err.message }); // 总是 JSON
   }
-
-
-
-
+});
 
 // 从数据库读取数据（GET 请求）
 app.get("/get-booking", async (req, res) => {
