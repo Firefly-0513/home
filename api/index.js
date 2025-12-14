@@ -45,10 +45,13 @@ app.post("/book", async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING bid",
       [tid, cid, bdate, stime, etime, reason, people, special]
     );
-    res.json({ success: true, message: "Booking successful!" }); // 确保是 JSON
+
+    const newBookingId = result.rows[0].bid;
+    
+    res.json({ success: true, bookingId: newBookingId, message: "Booking successful!" }); // 确保是 JSON
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);

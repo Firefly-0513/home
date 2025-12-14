@@ -172,7 +172,7 @@
           <div
             style="
               width: 100%;
-              height: 10px;
+              height: 1vh;
               background-color: #fb85b4;
               margin-top: 10px;
               border-radius: 20px;
@@ -273,6 +273,14 @@
                   special: document.getElementById("special").value.trim(),
                 };
 
+                // 驗證輸入
+
+                // time驗證
+                if (data.stime >= data.etime) {
+                  alert('Error: Starting time must be before ending time.');
+                  return;
+                }
+
                 try {
                   const res = await fetch("/book", {
                     // 這裡是您改的路由，確認正確
@@ -295,7 +303,10 @@
                   }
 
                   if (res.ok) {
-                    alert(result.message || "Booking success!");
+                    alert(
+                      result.message + 
+                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : 'Please keep it for future reference.')
+                    );
                     document.getElementById("bookingForm").reset();
                   } else {
                     alert(result.error || result.details || "Booking failed!");
