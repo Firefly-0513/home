@@ -305,7 +305,7 @@
                   if (res.ok) {
                     alert(
                       result.message + 
-                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : 'Please keep it for future reference.')
+                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : '')
                     );
                     document.getElementById("bookingForm").reset();
                   } else {
