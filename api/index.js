@@ -32,14 +32,14 @@ app.get("/reserve", (req, res) => {
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
   const {
-    tid = , 
+    tid, 
     cid, 
-    bdate ,
+    bdate,
     stime, 
-    etime = ,
-    reason = , 
-    people = , 
-    special = , 
+    etime,
+    reason, 
+    people, 
+    special, 
   } = req.body;
 
 
