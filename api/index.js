@@ -54,7 +54,7 @@ app.post("/book", async (req, res) => {
 
   // date驗證
   const today = new Date().toISOString().split("T")[0];
-  if (data.bdate < today) {
+  if (bdate < today) {
     return res
       .status(400)
       .json({ error: "Booking date cannot be in the past." });
