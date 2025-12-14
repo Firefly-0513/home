@@ -104,7 +104,7 @@ app.post("/book", async (req, res) => {
     if (conflict.rows.length > 0) {
       return res
         .status(400)
-        .json({ error: "The room is already booked for this time slot." });
+        .json({ error: "This venue is already booked for this time slot." });
     }
 
     // 輸入資料
