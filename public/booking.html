@@ -220,7 +220,17 @@
                 body: JSON.stringify(data)
               }); 
 
-              const result = await res.json();
+              const text = await res.text();  // 先读文本，避免 json() 失败
+              console.log('后端响应文本:', text);  // 在浏览器 Console 查看完整响应
+
+              let result;
+              try {
+                result = JSON.parse(text);  // 尝试解析 JSON
+              } catch (parseErr) {
+                document.getElementById('msg').style.color = 'red';
+                document.getElementById('msg').textContent = '响应格式错误: ' + text;
+                return;
+              }
 
               if (res.ok) {
                 document.getElementById('msg').style.color = 'green';
