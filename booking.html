@@ -42,7 +42,7 @@
         min-height: calc(100% - 15vh);
       }
 
-      .left {
+      .left_colour {
         width: 12%;
         background-color: #c2353a;
         position: sticky;
@@ -67,38 +67,82 @@
       }
 
       .main {
-        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
         padding: 2vh 2vw;
         font-size: 2.5vw;
         box-sizing: border-box;
         text-align: center;
+        font-weight: bold;
+      }
+
+      .main .top {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
       }
 
 
+      .main .left {
+        width: 40vw;
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+      }
+
+      .main .right {
+        width: 40vw;
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh;
+      }
+
       .form-input {
-        padding: 0 0 15px 10vw;
+        padding: 0 0 15px 2vw;
         display: flex;
         align-items: center;
         margin-bottom: 15px;
-        font-size: 1.5vw; 
+        font-size: 1.5vw;
         margin-right: 20px;
       }
-      
+
       .form-input label {
         padding: 0 0 1vh 0;
-        margin-right: 30px; 
+        margin-right: 30px;
         white-space: nowrap;
+        font-weight: bold;
       }
 
-      .form-input input,
+      .form-input input {
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
+      }
+
       .form-input select {
-         flex: 1; 
-         width: 80%; 
-         height: 36px;
-         max-width: 400px; 
-         min-width: 70px;  
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
       }
 
+      .form-input button {
+        font-size: 1vw;
+        padding: 10px 20px;
+        background-color: rgb(28, 190, 28);
+        color: white;
+        border-radius: 12px;
+      }
     </style>
   </head>
 
@@ -108,147 +152,175 @@
       <a href="index.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>LKPFC Classroom Booking System V1.1</b></p>
+      <p><b>LKPFC Classroom Booking System </b></p>
     </div>
-
 
     <!-- left -->
     <div class="layout-container">
-      <div class="left">
+      <div class="left_colour">
         <ul class="left_text">
           <li><a href="index.html">Home</a></li>
           <li><a href="booking.html">Booking</a></li>
-          <li><a href="test.html">test </a></li>
+          <li><a href="test.html">Test </a></li>
         </ul>
       </div>
 
       <!-- main -->
       <div class="main">
-        <p>Welcome for booking</p>
-        <form id="bookingForm">
-
-          <div class="form-input">
-           <label >Teacher ID :</label>
-           <input type="text" id="tid"  required >
-          </div>
-
-          <div class="form-input">
-            <label >Classroom :</label>
-            <select id="cid" required>
-              <option value="101">1A</option>
-              <option value="102">1B</option>
-              <option value="103">1C</option>
-              <option value="104">1D</option>
-              <option value="105">1E</option>
-              <option value="201">2A</option>
-              <option value="202">2B</option>
-              <option value="203">2C</option>
-              <option value="204">2D</option>
-              <option value="205">2E</option>
-              <option value="301">3A</option>
-              <option value="302">3B</option>
-              <option value="303">3C</option>
-              <option value="304">3D</option>
-              <option value="305">3E</option>
-              <option value="206">AAR</option>
-              <option value="207">MUSIC ROOM</option>              
-              <option value="106">SAC</option>
-              <option value="107">HALL</option>              
-              <option value="306">BIO LAB</option>
-              <option value="307">PHY LAB</option>              
-            </select>
-          </div>
-
-          <div class="form-input">
-            <label >Booking Date :</label>
-            <input type="date" id="bdate"  required >
-          </div>
-
-          <div class="form-input">
-           <label >Starting Time :</label>
-           <input type="time" id="stime" required>
-          </div>
-
-          <div class="form-input">
-           <label >Ending Time :</label>
-           <input type="time" id="etime" required>
-          </div>          
-
-          <div class="form-input">
-           <label >Reason :</label>
-           <input type="text" id="reason"  required >
-          </div>
-
-          <div class="form-input">
-           <label>Number of People Using :</label>
-           <input type="text" id="people"  required >
-          </div>
-
-          <div class="form-input">
-           <label for="special">Special Requirements :</label>
-           <input type="text" id="special"  value="NA" required >
-           <p style="font-size: 0.8vw;">(if no, please type "NA")</p>
-          </div>          
-
-          <div class="form-input">
-           <button type="submit" >Confirm Booking</button>
-          </div> 
-        </form>
-
-        <p id="book"></p>
-
-        <script>
-          document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const data = {
-              tid: document.getElementById('tid').value.trim(),
-              cid: document.getElementById('cid').value.trim(),
-              bdate: document.getElementById('bdate').value,
-              stime: document.getElementById('stime').value,
-              etime: document.getElementById('etime').value,
-              reason: document.getElementById('reason').value.trim(),
-              people: parseInt(document.getElementById('people').value),
-              special: document.getElementById('special').value.trim()
-            };
- 
-
-            try {
-              const res = await fetch('/book', {  // 這裡是您改的路由，確認正確
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-              }); 
-
-              const text = await res.text();  // 先读文本，避免 json() 失败
-              console.log('console:', text);  // 在浏览器 Console 查看完整响应
-
-              let result;
-              try {
-                result = JSON.parse(text);  // 尝试解析 JSON
-              } catch (parseErr) {
-                document.getElementById('book').style.color = 'red';
-                document.getElementById('book').textContent = 'error: ' + text;
-                return;
-              }
-
-              if (res.ok) {
-                document.getElementById('book').style.color = 'green';
-                document.getElementById('book').textContent = result.message || 'Booking success!';
-                document.getElementById('bookingForm').reset();
-              } else {
-                document.getElementById('book').style.color = 'red';
-                document.getElementById('book').textContent = result.error || result.details || 'Booking failed!';
-              }
-            } catch (err) {
-              document.getElementById('book').style.color = 'red';
-              document.getElementById('book').textContent = 'Cant connect to server. Please try again later.';
-            }  
-          });
-        </script>
-
+        <div class="top">
+          <p>Welcome for booking</p>
+          <div
+            style="
+              width: 100%;
+              height: 1vh;
+              background-color: #fb85b4;
+              margin-top: 10px;
+              border-radius: 20px;
+            "
+          ></div>
         </div>
-        </div> 
+
+        <div class="left">
+          <form id="bookingForm">
+            <div class="form-input">
+              <label>Teacher ID :</label>
+              <input type="text" id="tid" placeholder="e.g. 0001" required />
+            </div>
+
+            <div class="form-input">
+              <label>Classroom :</label>
+              <select id="cid" required>
+                <option value="101">1A （101）</option>
+                <option value="102">1B （102）</option>
+                <option value="103">1C （103）</option>
+                <option value="104">1D （104）</option>
+                <option value="105">1E （105）</option>
+                <option value="201">2A （201）</option>
+                <option value="202">2B （202）</option>
+                <option value="203">2C （203）</option>
+                <option value="204">2D （204）</option>
+                <option value="205">2E （205）</option>
+                <option value="301">3A （301）</option>
+                <option value="302">3B （302）</option>
+                <option value="303">3C （303）</option>
+                <option value="304">3D （304）</option>
+                <option value="305">3E （305）</option>
+                <option value="206">AAR （206）</option>
+                <option value="207">MUSIC ROOM（207）</option>
+                <option value="106">SAC（106）</option>
+                <option value="107">HALL（107）</option>
+                <option value="306">BIO LAB（306）</option>
+                <option value="307">PHY LAB（307）</option>
+              </select>
+            </div>
+
+            <div class="form-input">
+              <label>Booking Date :</label>
+              <input type="date" id="bdate" required />
+            </div>
+
+            <div class="form-input">
+              <label>Starting Time :</label>
+              <input type="time" id="stime" required />
+            </div>
+
+            <div class="form-input">
+              <label>Ending Time :</label>
+              <input type="time" id="etime" required />
+            </div>
+
+            <div class="form-input">
+              <label>Reason :</label>
+              <input type="text" id="reason" required />
+            </div>
+
+            <div class="form-input">
+              <label>Number of People Using :</label>
+              <input type="text" id="people" required />
+            </div>
+
+            <div class="form-input">
+              <label for="special">Special Requirements :</label>
+              <input
+                type="text"
+                id="special"
+                placeholder="If no, please type （NA）  "
+                required
+              />
+            </div>
+
+            <div class="form-input">
+              <button type="submit">Confirm Booking</button>
+            </div>
+          </form>
+
+          <p id="book"></p>
+
+          <script>
+            document
+              .getElementById("bookingForm")
+              .addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const data = {
+                  tid: document.getElementById("tid").value.trim(),
+                  cid: document.getElementById("cid").value.trim(),
+                  bdate: document.getElementById("bdate").value,
+                  stime: document.getElementById("stime").value,
+                  etime: document.getElementById("etime").value,
+                  reason: document.getElementById("reason").value.trim(),
+                  people: parseInt(document.getElementById("people").value),
+                  special: document.getElementById("special").value.trim(),
+                };
+
+                // 驗證輸入
+
+                // time驗證
+                if (data.stime >= data.etime) {
+                  alert('Error: Starting time must be before ending time.');
+                  return;
+                }
+
+                try {
+                  const res = await fetch("/book", {
+                    // 這裡是您改的路由，確認正確
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                  });
+
+                  const text = await res.text(); // 先读文本，避免 json() 失败
+                  console.log("console:", text); // 在浏览器 Console 查看完整响应
+
+                  let result;
+                  try {
+                    result = JSON.parse(text); // 尝试解析 JSON
+                  } catch (parseErr) {
+                    document.getElementById("book").style.color = "red";
+                    document.getElementById("book").textContent =
+                      "error: " + text;
+                    return;
+                  }
+
+                  if (res.ok) {
+                    alert(
+                      result.message + 
+                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : '')
+                    );
+                    document.getElementById("bookingForm").reset();
+                  } else {
+                    alert(result.error || result.details || "Booking failed!");
+                  }
+                } catch (err) {
+                  alert("Cant connect to server. Please try again later.");
+                }
+              });
+          </script>
+        </div>
+        <div class="right">
+          <p>View Booking</p>
+        </div>
       </div>
-</body>
+    </div>
+  </body>
 </html>

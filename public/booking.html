@@ -281,6 +281,13 @@
                   return;
                 }
 
+                // date驗證
+                const today = new Date().toLocaleDateString('en-CA');
+                if (data.bdate < today) {
+                  alert('Error: Booking date cannot be in the past.');
+                  return;
+                }
+
                 try {
                   const res = await fetch("/book", {
                     // 這裡是您改的路由，確認正確
@@ -305,7 +312,8 @@
                   if (res.ok) {
                     alert(
                       result.message + 
-                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : '')
+                      (result.bookingId ? `\nYour Booking ID is ：${result.bookingId}` : '')+
+                      "\nPlease keep it for future reference."
                     );
                     document.getElementById("bookingForm").reset();
                   } else {
