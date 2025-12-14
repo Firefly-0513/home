@@ -25,6 +25,9 @@ app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
+
+
+
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
@@ -53,8 +56,12 @@ app.post("/book", async (req, res) => {
   }
 });
 
+
+
+
+
 // 从数据库读取数据（GET 请求）
-app.get("/booking", async (req, res) => {
+app.get("/get-booking", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM booking");
     res.json(result.rows);
