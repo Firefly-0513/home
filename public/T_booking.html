@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="cn-HK">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>booking system</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .inline-container {
+        display: flex;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 15vh;
+        background-color: #fb85b4;
+        padding: 0 0% 0 2%;
+        box-sizing: border-box;
+        z-index: 100;
+      }
+      .inline-container img {
+        margin-right: 3%;
+        height: auto;
+        max-height: 12vh;
+        max-width: 12vw;
+      }
+      .inline-container p {
+        font-size: 2.5vw;
+        color: #ffffff;
+        margin: 90px;
+      }
+
+      .layout-container {
+        display: flex;
+        min-height: calc(100% - 15vh);
+        width: 100%; /* 確保佈局容器填滿寬度 */
+      }
+
+      .left_colour {
+        width: 12%;
+        background-color: #c2353a;
+        position: sticky;
+        top: 15vh;
+        padding: 2%;
+        box-sizing: border-box;
+        flex-shrink: 0; /* 防止 left_colour 壓縮 */
+      }
+      .left_text {
+        list-style-type: none;
+        padding: 0;
+        margin: 2%;
+        line-height: 3;
+        font-size: 1.2vw;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .left_text a {
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .main {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 2vh 2vw;
+        font-size: 2.5vw;
+        box-sizing: border-box;
+        text-align: center;
+        font-weight: bold;
+        flex: 1; /* 確保 main 填滿剩餘空間 */
+      }
+
+      .main .top {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .main .left {
+        width: 100%;
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+        margin-right: 5vw;
+        margin-left: 5vw;
+      }
+
+      .form-input {
+        padding: 0 0 15px 2vw;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.5vw;
+        margin-right: 20px;
+      }
+
+      .form-input label {
+        padding: 0 0 1vh 0;
+        margin-right: 30px;
+        white-space: nowrap;
+        font-weight: bold;
+      }
+
+      .form-input input {
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
+      }
+
+      .form-input select {
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
+      }
+
+      .form-input button {
+        font-size: 1vw;
+        padding: 10px 20px;
+        background-color: rgb(28, 190, 28);
+        color: white;
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- top -->
+    <div class="inline-container">
+      <a href="index.html">
+        <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
+      </a>
+      <p><b>TBook </b></p>
+    </div>
+
+    <!-- left -->
+    <div class="layout-container">
+      <div class="left_colour">
+        <ul class="left_text">
+          <li><a href="T_home.html">Home</a></li>
+          <li><a href="T_booking.html">Booking</a></li>
+          <li><a href="test.html">Test </a></li>
+        </ul>
+      </div>
+
+      <!-- main -->
+      <div class="main">
+        <div class="top">
+          <p>Welcome for booking</p>
+          <div
+            style="
+              width: 100%;
+              height: 1vh;
+              background-color: #fb85b4;
+              margin-top: 10px;
+              border-radius: 20px;
+            "
+          ></div>
+        </div>
+
+        <div class="left">
+          <form id="bookingForm">
+            <div class="form-input">
+              <label>Teacher ID :</label>
+              <input type="text" id="tid" placeholder="e.g. 0001" required />
+            </div>
+
+            <div class="form-input">
+              <label>Classroom :</label>
+              <select id="cid" required>
+                <option value="101">1A （101）</option>
+                <option value="102">1B （102）</option>
+                <option value="103">1C （103）</option>
+                <option value="104">1D （104）</option>
+                <option value="105">1E （105）</option>
+                <option value="201">2A （201）</option>
+                <option value="202">2B （202）</option>
+                <option value="203">2C （203）</option>
+                <option value="204">2D （204）</option>
+                <option value="205">2E （205）</option>
+                <option value="301">3A （301）</option>
+                <option value="302">3B （302）</option>
+                <option value="303">3C （303）</option>
+                <option value="304">3D （304）</option>
+                <option value="305">3E （305）</option>
+                <option value="206">AAR （206）</option>
+                <option value="207">MUSIC ROOM（207）</option>
+                <option value="106">SAC（106）</option>
+                <option value="107">HALL（107）</option>
+                <option value="306">BIO LAB（306）</option>
+                <option value="307">PHY LAB（307）</option>
+              </select>
+            </div>
+
+            <div class="form-input">
+              <label>Booking Date :</label>
+              <input type="date" id="bdate" required />
+            </div>
+
+            <div class="form-input">
+              <label>Starting Time :</label>
+              <input type="time" id="stime" required />
+            </div>
+
+            <div class="form-input">
+              <label>Ending Time :</label>
+              <input type="time" id="etime" required />
+            </div>
+
+            <div class="form-input">
+              <label>Reason :</label>
+              <input type="text" id="reason" required />
+            </div>
+
+            <div class="form-input">
+              <label>Number of People Using :</label>
+              <input type="text" id="people" required />
+            </div>
+
+            <div class="form-input">
+              <label for="special">Special Requirements :</label>
+              <input
+                type="text"
+                id="special"
+                placeholder="If no, please type （NA）  "
+                required
+              />
+            </div>
+
+            <div class="form-input">
+              <button type="submit">Confirm Booking</button>
+            </div>
+          </form>
+
+          <p id="book"></p>
+
+          <script>
+            document
+              .getElementById("bookingForm")
+              .addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const data = {
+                  tid: document.getElementById("tid").value.trim(),
+                  cid: document.getElementById("cid").value.trim(),
+                  bdate: document.getElementById("bdate").value,
+                  stime: document.getElementById("stime").value,
+                  etime: document.getElementById("etime").value,
+                  reason: document.getElementById("reason").value.trim(),
+                  people: parseInt(document.getElementById("people").value),
+                  special: document.getElementById("special").value.trim(),
+                };
+
+                // 驗證輸入
+
+                // date驗證
+                const today = new Date().toISOString().split("T")[0];
+                if (data.bdate < today) {
+                  alert("Error: Booking date cannot be in the past.");
+                  return;
+                }
+
+                // time驗證（不能是今天之前的時間）
+                const now = new Date()
+                  .toISOString()
+                  .split("T")[1]
+                  .split(".")[0];
+                if (data.bdate === today && data.stime < now) {
+                  alert("Error: Booking time cannot be in the past.");
+                  return;
+                }
+
+                // time驗證(etime必須大於stime)
+                if (data.stime >= data.etime) {
+                  alert("Error: Starting time must be before ending time.");
+                  return;
+                }
+
+                try {
+                  const res = await fetch("/book", {
+                    // 這裡是您改的路由，確認正確
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                  });
+
+                  const text = await res.text(); // 先读文本，避免 json() 失败
+                  console.log("console:", text); // 在浏览器 Console 查看完整响应
+
+                  let result;
+                  try {
+                    result = JSON.parse(text); // 尝试解析 JSON
+                  } catch (parseErr) {
+                    document.getElementById("book").style.color = "red";
+                    document.getElementById("book").textContent =
+                      "error: " + text;
+                    return;
+                  }
+
+                  if (res.ok) {
+                    alert(
+                      result.message +
+                        (result.bookingId
+                          ? `\nYour Booking ID is ：${result.bookingId}`
+                          : "") +
+                        "\nPlease keep it for future reference."
+                    );
+                    document.getElementById("bookingForm").reset();
+                  } else {
+                    alert(result.error || result.details || "Booking failed!");
+                  }
+                } catch (err) {
+                  alert("Cant connect to server. Please try again later.");
+                }
+              });
+          </script>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
