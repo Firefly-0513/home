@@ -144,7 +144,7 @@
   <body>
     <!-- top -->
     <div class="inline-container">
-      <a href="index.html">
+      <a href="T_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
       <p><b>TBook </b></p>
@@ -177,10 +177,7 @@
 
         <div class="left">
           <form id="bookingForm">
-            <div class="form-input">
-              <label>Teacher ID :</label>
-              <input type="text" id="tid" placeholder="e.g. 0001" required />
-            </div>
+            <input type="hidden" id="tid" /> <!-- 隱藏欄位，給後端用 -->
 
             <div class="form-input">
               <label>Classroom :</label>
@@ -252,6 +249,17 @@
           <p id="book"></p>
 
           <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            const tid = localStorage.getItem('userTid');
+
+            if (!tid) {
+              alert('請先登入系統！');
+              window.location.href = '/index.html';
+              return;
+            }
+            document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
+          });
+
             document
               .getElementById("bookingForm")
               .addEventListener("submit", async (e) => {
