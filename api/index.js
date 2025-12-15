@@ -25,6 +25,42 @@ app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
+// 用户登录 API
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "請輸入用戶名和密碼" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT tid, username, role FROM teacher WHERE username = $1 AND password = $2",
+      [username, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "用戶名或密碼錯誤" });
+    }
+
+    const user = result.rows[0];
+
+    // 這裡簡單用 res.json 回傳角色，前端會根據角色跳轉
+    // （注意：真實項目建議用 session 或 JWT，這裡為了簡單先這樣）
+    res.json({
+      success: true,
+      role: user.role,        // 'A' 或 'T'
+      tid: user.tid,
+      username: user.username
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "伺服器錯誤" });
+  }
+});
+
+
+
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位

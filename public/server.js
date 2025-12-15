@@ -25,21 +25,143 @@ app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
+// 用户登录 API
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "請輸入用戶名和密碼" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT tid, username, role FROM teacher WHERE username = $1 AND password = $2",
+      [username, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: "用戶名或密碼錯誤" });
+    }
+
+    const user = result.rows[0];
+
+    // 這裡簡單用 res.json 回傳角色，前端會根據角色跳轉
+    // （注意：真實項目建議用 session 或 JWT，這裡為了簡單先這樣）
+    res.json({
+      success: true,
+      role: user.role, // 'A' 或 'T'
+      tid: user.tid,
+      username: user.username,
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "伺服器錯誤" });
+  }
+});
+
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
   // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
   const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
+  // 后端必填检查
+  if (
+    !tid ||
+    !cid ||
+    !bdate ||
+    !stime ||
+    !etime ||
+    !reason ||
+    !people ||
+    !special
+  ) {
+    return res.status(400).json({ error: "Your must fill all fields" });
+  }
+
+  const cidNum = parseInt(cid, 10);
+  const peopleNum = parseInt(people, 10);
+  if (isNaN(cidNum) || isNaN(peopleNum)) {
+    return res.status(400).json({ error: "It must be a number" });
+  }
+
+  // time驗證（結束時間必須大於開始）
+  if (stime >= etime) {
+    return res
+      .status(400)
+      .json({ error: "Starting time must be before ending time." });
+  }
+  // date驗證
+  const today = new Date().toISOString().split("T")[0];
+  if (bdate < today) {
+    return res
+      .status(400)
+      .json({ error: "Booking date cannot be in the past." });
+  }
+  // time驗證（不能是今天之前的時間）
+  const now = new Date().toISOString().split("T")[1].split(".")[0];
+  if (bdate === today && stime < now) {
+    return res
+      .status(400)
+      .json({ error: "Booking time cannot be in the past." });
+  }
+
+  // 課室容量驗證
   try {
-    await pool.query(
-      "INSERT INTO booking (tid, cid,bdate,stime,etime,reason,people,special) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+    const capacityResult = await pool.query(
+      `SELECT capacity FROM classroom WHERE cid = $1`,
+      [cidNum]
+    );
+
+    const capacity = capacityResult.rows[0].capacity;
+
+    if (peopleNum > capacity) {
+      return res.status(400).json({
+        error: `The venue only can contain ${capacity} peoples, you need to change another venue.`,
+      });
+    }
+
+    // 2. 是否被book？
+    const conflict = await pool.query(
+      `
+      SELECT 1 FROM booking 
+      WHERE cid = $1 
+      AND bdate = $2 
+      AND (
+        (stime < $3 AND etime > $3) OR  
+        (stime < $4 AND etime > $4) OR  
+        (stime >= $3 AND etime <= $4)   
+      )
+    `,
+      [cidNum, bdate, etime, stime]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "This venue is already booked for this time slot." });
+    }
+
+    // 輸入資料
+    const result = await pool.query(
+      `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+       RETURNING bid`,
       [tid, cid, bdate, stime, etime, reason, people, special]
     );
-    res.send("预约成功！");
+
+    const newBookingId = result.rows[0].bid;
+
+    res.json({
+      success: true,
+      bookingId: newBookingId,
+      message: "Booking successful!",
+    }); // 确保是 JSON
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);
-    res.status(500).send("预约失败");
+    res
+      .status(500)
+      .json({ error: "Some Data is wrong,Try it again", details: err.message }); // 总是 JSON
   }
 });
 
@@ -50,7 +172,7 @@ app.get("/get-booking", async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send("读取失败");
+    res.status(500).send("read error");
   }
 });
 
