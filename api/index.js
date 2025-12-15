@@ -30,7 +30,7 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: "請輸入用戶名和密碼" });
+    return res.status(400).json({ error: "Please enter username and password" });
   }
 
   try {
@@ -40,7 +40,7 @@ app.post("/login", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: "用戶名或密碼錯誤" });
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const user = result.rows[0];
@@ -55,7 +55,7 @@ app.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: "伺服器錯誤" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 

@@ -132,7 +132,7 @@
       <a href="index.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>LKPFC Classroom Booking System V1.0.41</b></p>
+      <p><b>LKPFC Classroom Booking System V1.0.42</b></p>
     </div>
 
 
@@ -189,11 +189,11 @@
                   }
                 } else {
                   document.getElementById("errorMsg").textContent = 
-                    data.error || "登錄失敗，請重試";
+                    data.error || "Invalid username or password.";
                 }
               } catch (err) {
                 document.getElementById("errorMsg").textContent = 
-                  "無法連接伺服器，請檢查網絡";
+                  "Unable to connect to server, please check your network";
               } 
             });
           </script>          
