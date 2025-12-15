@@ -132,7 +132,7 @@
       <a href="index.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>LKPFC Classroom Booking System V1.0.40</b></p>
+      <p><b>LKPFC Classroom Booking System V1.0.41</b></p>
     </div>
 
 
@@ -183,9 +183,9 @@
                 if (res.ok && data.success) {
                 // 登錄成功，根據角色跳轉
                   if (data.role === "A") {
-                    window.location.href = "/Ahome.html";
+                    window.location.href = "/A_home.html";
                   } else if (data.role === "T") {
-                    window.location.href = "/Thome.html";
+                    window.location.href = "/T_home.html";
                   }
                 } else {
                   document.getElementById("errorMsg").textContent = 
