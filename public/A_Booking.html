@@ -218,7 +218,7 @@
 
             <div class="form-input">
               <label>Ending Time :</label>
-              <input type="time" id="etime" required />
+              <input type="time" id="etime" required  max="18:00" />
             </div>
 
             <div class="form-input">
@@ -300,6 +300,17 @@
                 if (data.stime >= data.etime) {
                   alert("Error: Starting time must be before ending time.");
                   return;
+                }
+
+                if (data.etime > "18:00") {
+                  alert("Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge if you really need to book an appointment after 6 PM.");
+                  return;
+                }
+
+                // 額外好心提示：如果開始時間已經很晚，也提醒
+                if (data.stime >= "17:00") {
+                  alert("Warning: Starting at or after 17:00 may not leave enough time before school closes at 18:00.");
+                  // 不強制擋，但提醒一下
                 }
 
                 try {

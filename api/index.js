@@ -92,6 +92,15 @@ app.post("/book", async (req, res) => {
       .status(400)
       .json({ error: "Starting time must be before ending time." });
   }
+  // time驗證（不能超過18:00）
+  if (etime > "18:00") {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Booking cannot end after 18:00 because the school closes at 6 PM.",
+      });
+  }
   // date驗證
   const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
