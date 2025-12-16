@@ -40,6 +40,7 @@
       .layout-container {
         display: flex;
         min-height: calc(100% - 15vh);
+        width: 100%; /* 確保佈局容器填滿寬度 */
       }
 
       .left_colour {
@@ -49,6 +50,7 @@
         top: 15vh;
         padding: 2%;
         box-sizing: border-box;
+        flex-shrink: 0; /* 防止 left_colour 壓縮 */
       }
       .left_text {
         list-style-type: none;
@@ -69,12 +71,14 @@
       .main {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
+        justify-content: center;
         padding: 2vh 2vw;
         font-size: 2.5vw;
         box-sizing: border-box;
         text-align: center;
         font-weight: bold;
+        flex: 1; /* 確保 main 填滿剩餘空間 */
+        background-color: rgb(248, 242, 247); /* Set the background color to gray */
       }
 
       .main .top {
@@ -83,23 +87,16 @@
         margin-bottom: 20px;
       }
 
-
       .main .left {
-        width: 40vw;
+        width: 100%;
         border: 4px solid #c2353a; /* 黑色包邊 */
         box-sizing: border-box;
         padding: 7vh 0 15px 2vw;
         border-radius: 50px;
         margin-top: 5vh; /* 向下移動 20px */
-      }
-
-      .main .right {
-        width: 40vw;
-        border: 4px solid #c2353a; /* 黑色包邊 */
-        box-sizing: border-box;
-        padding: 7vh 0 15px 2vw;
-        border-radius: 50px;
-        margin-top: 5vh;
+        margin-right: 5vw;
+        margin-left: 5vw;
+        background-color: rgb(255, 255, 255); /* Set the background color to red */
       }
 
       .form-input {
@@ -149,18 +146,18 @@
   <body>
     <!-- top -->
     <div class="inline-container">
-      <a href="index.html">
+      <a href="A_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>LKPFC Classroom Booking System </b></p>
+      <p><b>Abook </b></p>
     </div>
 
     <!-- left -->
     <div class="layout-container">
       <div class="left_colour">
         <ul class="left_text">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="booking.html">Booking</a></li>
+          <li><a href="A_home.html">Home</a></li>
+          <li><a href="A_Booking.html">Booking</a></li>
           <li><a href="test.html">Test </a></li>
         </ul>
       </div>
@@ -182,10 +179,8 @@
 
         <div class="left">
           <form id="bookingForm">
-            <div class="form-input">
-              <label>Teacher ID :</label>
-              <input type="text" id="tid" placeholder="e.g. 0001" required />
-            </div>
+            <input type="hidden" id="tid" />
+            <!-- 隱藏欄位，給後端用 -->
 
             <div class="form-input">
               <label>Classroom :</label>
@@ -226,7 +221,7 @@
 
             <div class="form-input">
               <label>Ending Time :</label>
-              <input type="time" id="etime" required />
+              <input type="time" id="etime" required max="18:00" />
             </div>
 
             <div class="form-input">
@@ -257,68 +252,100 @@
           <p id="book"></p>
 
           <script>
-            document
-              .getElementById("bookingForm")
-              .addEventListener("submit", async (e) => {
-                e.preventDefault();
+              document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
+            });
 
-                const data = {
-                  tid: document.getElementById("tid").value.trim(),
-                  cid: document.getElementById("cid").value.trim(),
-                  bdate: document.getElementById("bdate").value,
-                  stime: document.getElementById("stime").value,
-                  etime: document.getElementById("etime").value,
-                  reason: document.getElementById("reason").value.trim(),
-                  people: parseInt(document.getElementById("people").value),
-                  special: document.getElementById("special").value.trim(),
-                };
 
-                // 驗證輸入
+              document
+                .getElementById("bookingForm")
+                .addEventListener("submit", async (e) => {
+                  e.preventDefault();
 
-                // time驗證
-                if (data.stime >= data.etime) {
-                  alert('Error: Starting time must be before ending time.');
-                  return;
-                }
+                  const data = {
+                    tid: document.getElementById("tid").value.trim(),
+                    cid: document.getElementById("cid").value.trim(),
+                    bdate: document.getElementById("bdate").value,
+                    stime: document.getElementById("stime").value,
+                    etime: document.getElementById("etime").value,
+                    reason: document.getElementById("reason").value.trim(),
+                    people: parseInt(document.getElementById("people").value),
+                    special: document.getElementById("special").value.trim(),
+                  };
 
-                try {
-                  const res = await fetch("/book", {
-                    // 這裡是您改的路由，確認正確
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                  });
+                  // 驗證輸入
 
-                  const text = await res.text(); // 先读文本，避免 json() 失败
-                  console.log("console:", text); // 在浏览器 Console 查看完整响应
-
-                  let result;
-                  try {
-                    result = JSON.parse(text); // 尝试解析 JSON
-                  } catch (parseErr) {
-                    document.getElementById("book").style.color = "red";
-                    document.getElementById("book").textContent =
-                      "error: " + text;
+                  // date驗證
+                  const today = new Date().toISOString().split("T")[0];
+                  if (data.bdate < today) {
+                    alert("Error: Booking date cannot be in the past.");
                     return;
                   }
 
-                  if (res.ok) {
-                    alert(
-                      result.message + 
-                      (result.bookingId ? `\nYour booking ID is ：${result.bookingId}` : '')
-                    );
-                    document.getElementById("bookingForm").reset();
-                  } else {
-                    alert(result.error || result.details || "Booking failed!");
+                  // time驗證（不能是今天之前的時間）
+                  const now = new Date()
+                    .toISOString()
+                    .split("T")[1]
+                    .split(".")[0];
+                  if (data.bdate === today && data.stime < now) {
+                    alert("Error: Booking time cannot be in the past.");
+                    return;
                   }
-                } catch (err) {
-                  alert("Cant connect to server. Please try again later.");
-                }
-              });
+
+                  // time驗證(etime必須大於stime)
+                  if (data.stime >= data.etime) {
+                    alert("Error: Starting time must be before ending time.");
+                    return;
+                  }
+
+                  if (data.etime > "18:00") {
+                    alert("Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge if you really need to book an appointment after 6 PM.");
+                    return;
+                  }
+
+                  // 額外好心提示：如果開始時間已經很晚，也提醒
+                  if (data.stime >= "17:00") {
+                    alert("Warning: Starting at or after 17:00 may not leave enough time before school closes at 18:00.");
+                    // 不強制擋，但提醒一下
+                  }
+
+                  try {
+                    const res = await fetch("/book", {
+                      // 這裡是您改的路由，確認正確
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(data),
+                    });
+
+                    const text = await res.text(); // 先读文本，避免 json() 失败
+                    console.log("console:", text); // 在浏览器 Console 查看完整响应
+
+                    let result;
+                    try {
+                      result = JSON.parse(text); // 尝试解析 JSON
+                    } catch (parseErr) {
+                      document.getElementById("book").style.color = "red";
+                      document.getElementById("book").textContent =
+                        "error: " + text;
+                      return;
+                    }
+
+                    if (res.ok) {
+                      alert(
+                        result.message +
+                          (result.bookingId
+                            ? `\nYour Booking ID is ：${result.bookingId}`
+                            : "") +
+                          "\nPlease keep it for future reference."
+                      );
+                      document.getElementById("bookingForm").reset();
+                    } else {
+                      alert(result.error || result.details || "Booking failed!");
+                    }
+                  } catch (err) {
+                    alert("Cant connect to server. Please try again later.");
+                  }
+                });
           </script>
-        </div>
-        <div class="right">
-          <p>View Booking</p>
         </div>
       </div>
     </div>
