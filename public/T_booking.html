@@ -140,6 +140,23 @@
         color: white;
         border-radius: 12px;
       }
+
+      .logout {
+        margin-left: auto; 
+        margin-right: 2%; 
+        display: flex; 
+        align-items: center;
+      }
+
+      .logout button {
+        background-color: #c2353a; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 12px; 
+        font-size: 1.8vw; 
+        cursor: pointer;
+      }
     </style>
   </head>
 
@@ -150,6 +167,16 @@
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
       <p><b>TBook </b></p>
+            <div class="logout">
+        <button 
+          onclick="localStorage.clear(); window.location.href='/index.html';" 
+
+        onmouseover="this.style.backgroundColor='#a02c30'"
+        onmouseout="this.style.backgroundColor='#c2353a'"
+      >    
+        Logout
+      </button>
+    </div>
     </div>
 
     <!-- left -->
@@ -304,7 +331,7 @@
                 }
 
                 if (data.etime > "18:00") {
-                  alert("Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge if you really need to book an appointment after 6 PM.");
+                  alert("Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge，\nif you really need to book an appointment after 6 PM.");
                   return;
                 }
 

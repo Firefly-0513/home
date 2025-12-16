@@ -74,6 +74,23 @@
         font-weight: bold;
         background-color: rgb(248, 242, 247);
       }
+
+      .logout {
+        margin-left: auto; 
+        margin-right: 2%; 
+        display: flex; 
+        align-items: center;
+      }
+
+      .logout button {
+        background-color: #c2353a; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 12px; 
+        font-size: 1.8vw; 
+        cursor: pointer;
+      }
     </style>
   </head>
 
@@ -84,6 +101,16 @@
         <img src="image/school_logo(nb).png " alt="LKPFC Logo" />
       </a>
       <p><b>Ahome</b></p>
+      <div class="logout">
+        <button 
+          onclick="localStorage.clear(); window.location.href='/index.html';" 
+
+        onmouseover="this.style.backgroundColor='#a02c30'"
+        onmouseout="this.style.backgroundColor='#c2353a'"
+      >    
+        Logout
+      </button>
+    </div>
     </div>
 
     <div class="layout-container">
@@ -101,5 +128,18 @@
         <p>前面的區域，以後再來探索吧.</p>
         <img src="image/v2-b765f377ddb82be79bcbb375322fec58_1440w.jpg" style="width: 80%; height: auto;border-radius: 25px;" />
       </div>
+
+          <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const tid = localStorage.getItem('userTid');
+
+            if (!tid) {
+              alert('請先登入系統！');
+              window.location.href = '/index.html';
+              return;
+            }
+          });
+          </script>
+
     </div>
 </html>
