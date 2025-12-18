@@ -145,6 +145,14 @@
         font-size: 1.8vw;
         cursor: pointer;
       }
+      #bookingList {
+        display: flex;
+        flex-direction: column;   /* 这一行是关键！强制从上到下排列 */
+        align-items: center;      /* 每张 box 水平居中 */
+        gap: 60px;                /* box 之间留 60px 大间距 */
+        padding: 40px 0;
+        width: 100%;
+      }
 
       .booking-box {
         border: 4px solid #c2353a; /* 黑色包邊 */
@@ -156,7 +164,7 @@
         max-width: 100vw;
         min-width: 80vw;           /* 移除最大寬度限制 */
         margin: 0; /* 移除卡片的外邊距 */
-        padding: 20vh 20vw 20vh 20vw;             /* 內邊距，讓內容不貼邊 */
+        padding: 0vh 0vw 0vh 0vw;             /* 內邊距，讓內容不貼邊 */
         align-items: flex-start;
       }
 
