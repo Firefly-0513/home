@@ -160,22 +160,21 @@
 
       .booking-box {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         background: #ffffff;
         border-radius: 20px;
-        padding: 25px 30px;
-        margin: 20px auto;
-        max-width: 92%;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        padding: 30px 40px;
+        margin: 25px auto;
+        max-width: 88%;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
         border-left: 8px solid #fb85b4;
       }
 
       .booking-info {
         display: flex;
-        align-items: center;
-        gap: 50px;
-        flex: 1;
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       .booking-ID {
@@ -186,19 +185,18 @@
       }
       .booking-details {
         display: flex;
-        gap: 60px;
+        gap: 70px;
         font-size: 1.8vw;
-        color: rgb(0, 0, 0);
-
+        color: #000000;
       }
 
-      .booking-actions {
+      .booking-btarea {
         display: flex;
         gap: 20px;
       } 
 
       .edit-btn {
-        padding: 14px 30px;
+        padding: 14px 35px;
         border: none;
         border-radius: 15px;
         cursor: pointer;
@@ -206,10 +204,10 @@
         font-weight: bold;
         color: white;
         min-width: 120px;
-        background: #fb85b4;
+        background: #5cdc5e;
       }
       .delete-btn {
-        padding: 14px 30px;
+        padding: 14px 35px;
         border: none;
         border-radius: 15px;
         cursor: pointer;
@@ -307,7 +305,7 @@
                     <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
                     <p>Time：</p>${booking.stime} - ${booking.etime}<br>
                   </div>
-                  <div class="booking-actions">
+                  <div class="booking-btarea">
                     <button class="edit-btn" onclick="editBooking(${
                       booking.bid
                     }, 
