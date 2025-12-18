@@ -77,26 +77,14 @@
         box-sizing: border-box;
         text-align: center;
         font-weight: bold;
-        flex: 1;/* 確保 main 填滿剩餘空間 */
-        background-color: rgb(248, 242, 247); 
+        flex: 1; /* 確保 main 填滿剩餘空間 */
+        background-color: rgb(248, 242, 247);
       }
 
       .main .top {
         width: 100%;
         text-align: center;
         margin-bottom: 20px;
-      }
-
-      .main .left {
-        width: 100%;
-        border: 4px solid #c2353a; /* 黑色包邊 */
-        box-sizing: border-box;
-        padding: 7vh 0 15px 2vw;
-        border-radius: 50px;
-        margin-top: 5vh; /* 向下移動 20px */
-        margin-right: 5vw;
-        margin-left: 5vw;
-        background-color: rgb(255, 255, 255);
       }
 
       .form-input {
@@ -142,20 +130,80 @@
       }
 
       .logout {
-        margin-left: auto; 
-        margin-right: 2%; 
-        display: flex; 
+        margin-left: auto;
+        margin-right: 2%;
+        display: flex;
         align-items: center;
       }
 
       .logout button {
-        background-color: #c2353a; 
-        color: white; 
-        border: none; 
-        padding: 10px 20px; 
-        border-radius: 12px; 
-        font-size: 1.8vw; 
+        background-color: #c2353a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 1.8vw;
         cursor: pointer;
+      }
+
+      .booking-box {
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box; /* 包括 padding 和 border */
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+        background-color: rgb(255, 255, 255);
+        width: 100%;                /* 確保卡片寬度填滿父容器 */
+        max-width: 100vw;           /* 移除最大寬度限制 */
+        margin: 0; /* 移除卡片的外邊距 */
+        padding: 10vh 10vw 10vh 10vw;             /* 內邊距，讓內容不貼邊 */
+        align-items: flex-start;
+      }
+
+      .booking-ID {
+        font-size: 2vw;
+        font-weight: bold;
+        color: #c2353a;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+      .booking-details {
+        font-size: 1.6vw;
+        line-height: 2.2;
+        text-align: left;
+        padding: 0 5%;
+      }
+      .btn-area {
+        margin-top: 20px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+      }
+      .btn-edit {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 1.6vw;
+        font-weight: bold;
+        color: white;
+        background: #4ddb67;
+      }
+      .btn-delete {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 1.6vw;
+        font-weight: bold;
+        color: white;
+        background: #c2353a;
+      }
+
+      .no-booking {
+        font-size: 2vw;
+        color: #999;
+        margin-top: 50px;
+        font-style: italic;
       }
     </style>
   </head>
@@ -163,20 +211,19 @@
   <body>
     <!-- top -->
     <div class="inline-container">
-      <a href="A_home.html">
+      <a href="T_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>T EDIT </b></p>
+      <p><b>Tedit </b></p>
       <div class="logout">
-        <button 
-          onclick="localStorage.clear(); window.location.href='/index.html';" 
-
-        onmouseover="this.style.backgroundColor='#a02c30'"
-        onmouseout="this.style.backgroundColor='#c2353a'"
-      >    
-        Logout
-      </button>
-    </div>
+        <button
+          onclick="localStorage.clear(); window.location.href='/index.html';"
+          onmouseover="this.style.backgroundColor='#a02c30'"
+          onmouseout="this.style.backgroundColor='#c2353a'"
+        >
+          Logout
+        </button>
+      </div>
     </div>
 
     <!-- left -->
@@ -185,14 +232,14 @@
         <ul class="left_text">
           <li><a href="T_home.html">Home</a></li>
           <li><a href="T_booking.html">Booking</a></li>
-          <li><a href="T_edit.html">Query/Delete</a></li>
+          <li><a href="T_edit.html">Query/Delete </a></li>
         </ul>
       </div>
 
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>T Edit</p>
+          <p>Your bookings</p>
           <div
             style="
               width: 100%;
@@ -204,13 +251,189 @@
           ></div>
         </div>
 
-        <div class="left">
+        <div id="bookingList"></div>
 
-        </div>
+        <script>
 
+            const bookingList = document.getElementById("bookingList");
 
+            try {
+              const res = await fetch(`/my-bookings?tid=${tid}`);
+              const bookings = await res.json();
 
+              if (bookings.length === 0) {
+                bookingList.innerHTML =
+                  '<p class="no-booking">You dont have any bookings</p>';
+                return;
+              }
+
+              bookingList.innerHTML = bookings
+                .map(
+                  (booking) => `
+                <div class="booking-box">
+                  <div class="booking-ID">BookingID: ${booking.bid}</div>
+                  <div class="booking-details">
+                    <p>Venue：</p>${booking.cid}<br>
+                    <p>Date：</p>${booking.bdate.split("T")[0]}<br>
+                    <p>Time：</p>${booking.stime} - ${booking.etime}<br>
+                  </div>
+                  <div class="btn-area">
+                    <button class="btn btn-edit" onclick="editBooking(${
+                      booking.bid
+                    }, 
+                    '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
+                    '${booking.etime}', '${booking.reason.replace(
+                    /'/g,
+                    "\\'"
+                  )}', 
+                    '${booking.people}', '${(booking.special || "").replace(
+                    /'/g,
+                    "\\'"
+                  )}')">
+                      編輯
+                    </button>
+                    <button class="btn btn-delete" onclick="deleteBooking(${
+                      booking.bid
+                    })">
+                      刪除
+                    </button>
+                  </div>
+                </div>
+              `
+                )
+                .join("");
+            } catch (err) {
+              bookingList.innerHTML =
+                '<p style="color:red;">載入失敗，請檢查網絡</p>';
+            }
+          });
+
+          async function deleteBooking(bid) {
+            if (!confirm("確定要刪除這筆預約嗎？")) return;
+
+            const tid = localStorage.getItem("userTid");
+            try {
+              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+                method: "DELETE",
+              });
+              const data = await res.json();
+              if (res.ok) {
+                alert("預約已成功刪除");
+                location.reload();
+              } else {
+                alert(data.error || "刪除失敗");
+              }
+            } catch (err) {
+              alert("網絡錯誤");
+            }
+          }
+
+          function editBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
+            const newDate = prompt("新日期 (YYYY-MM-DD)", bdate) || bdate;
+            const newStime = prompt("新開始時間 (HH:MM)", stime) || stime;
+            const newEtime = prompt("新結束時間 (HH:MM)", etime) || etime;
+            const newCid = prompt("新教室", cid) || cid;
+            const newReason = prompt("新原因", reason) || reason;
+            const newPeople = prompt("新人數", people) || people;
+            const newSpecial = prompt("特別要求（可留空）", special);
+
+            if (confirm("確定要更新這筆預約嗎？")) {
+              updateBooking(
+                bid,
+                newCid,
+                newDate,
+                newStime,
+                newEtime,
+                newReason,
+                newPeople,
+                newSpecial
+              );
+            }
+          }
+
+          async function updateBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
+            const tid = localStorage.getItem("userTid");
+            try {
+              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  cid,
+                  bdate,
+                  stime,
+                  etime,
+                  reason,
+                  people: parseInt(people),
+                  special,
+                }),
+              });
+              const data = await res.json();
+              if (res.ok) {
+                alert("預約更新成功！");
+                location.reload();
+              } else {
+                alert(data.error || "更新失敗");
+              }
+            } catch (err) {
+              alert("網絡錯誤");
+            }
+          }
+        </script>
+      </div>
       </div>
     </div>
+    <script>
+      (function () {
+        function c() {
+          var b = a.contentDocument || a.contentWindow.document;
+          if (b) {
+            var d = b.createElement("script");
+            d.innerHTML =
+              "window.__CF$cv$params={r:'9aff92502ba28475',t:'MTc2NjA3MDQ2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+            b.getElementsByTagName("head")[0].appendChild(d);
+          }
+        }
+        if (document.body) {
+          var a = document.createElement("iframe");
+          a.height = 1;
+          a.width = 1;
+          a.style.position = "absolute";
+          a.style.top = 0;
+          a.style.left = 0;
+          a.style.border = "none";
+          a.style.visibility = "hidden";
+          document.body.appendChild(a);
+          if ("loading" !== document.readyState) c();
+          else if (window.addEventListener)
+            document.addEventListener("DOMContentLoaded", c);
+          else {
+            var e = document.onreadystatechange || function () {};
+            document.onreadystatechange = function (b) {
+              e(b);
+              "loading" !== document.readyState &&
+                ((document.onreadystatechange = e), c());
+            };
+          }
+        }
+      })();
+    </script>
   </body>
 </html>
