@@ -142,19 +142,19 @@
       }
 
       .logout {
-        margin-left: auto; 
-        margin-right: 2%; 
-        display: flex; 
+        margin-left: auto;
+        margin-right: 2%;
+        display: flex;
         align-items: center;
       }
 
       .logout button {
-        background-color: #c2353a; 
-        color: white; 
-        border: none; 
-        padding: 10px 20px; 
-        border-radius: 12px; 
-        font-size: 1.8vw; 
+        background-color: #c2353a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 1.8vw;
         cursor: pointer;
       }
     </style>
@@ -167,16 +167,15 @@
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
       <p><b>TBook </b></p>
-            <div class="logout">
-        <button 
-          onclick="localStorage.clear(); window.location.href='/index.html';" 
-
-        onmouseover="this.style.backgroundColor='#a02c30'"
-        onmouseout="this.style.backgroundColor='#c2353a'"
-      >    
-        Logout
-      </button>
-    </div>
+      <div class="logout">
+        <button
+          onclick="localStorage.clear(); window.location.href='/index.html';"
+          onmouseover="this.style.backgroundColor='#a02c30'"
+          onmouseout="this.style.backgroundColor='#c2353a'"
+        >
+          Logout
+        </button>
+      </div>
     </div>
 
     <!-- left -->
@@ -206,7 +205,8 @@
 
         <div class="left">
           <form id="bookingForm">
-            <input type="hidden" id="tid" /> <!-- 隱藏欄位，給後端用 -->
+            <input type="hidden" id="tid" />
+            <!-- 隱藏欄位，給後端用 -->
 
             <div class="form-input">
               <label>Classroom :</label>
@@ -247,7 +247,7 @@
 
             <div class="form-input">
               <label>Ending Time :</label>
-              <input type="time" id="etime" required  />
+              <input type="time" id="etime" required />
             </div>
 
             <div class="form-input">
@@ -271,23 +271,25 @@
             </div>
 
             <div class="form-input">
-              <button type="submit">Confirm Booking</button>
+              <button type="submit" onclick="confirmBooking()">
+                Confirm Booking
+              </button>
             </div>
           </form>
 
           <p id="book"></p>
 
           <script>
-            document.addEventListener('DOMContentLoaded', () => {
-            const tid = localStorage.getItem('userTid');
+            document.addEventListener("DOMContentLoaded", () => {
+              const tid = localStorage.getItem("userTid");
 
-            if (!tid) {
-              alert('Please Login！');
-              window.location.href = '/index.html';
-              return;
-            }
-            document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
-          });
+              if (!tid) {
+                alert("Please Login！");
+                window.location.href = "/index.html";
+                return;
+              }
+              document.getElementById("tid").value = tid; // 隱藏 input 確保後端能收到
+            });
 
             document
               .getElementById("bookingForm")
@@ -331,13 +333,17 @@
                 }
 
                 if (data.etime > "18:00") {
-                  alert("Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge，\nif you really need to book an appointment after 6 PM.");
+                  alert(
+                    "Error: Booking cannot end after 6 PM as the school closes at 6 PM.\nPlease ask the teacher in charge，\nif you really need to book an appointment after 6 PM."
+                  );
                   return;
                 }
 
                 // 額外好心提示：如果開始時間已經很晚，也提醒
                 if (data.stime >= "17:00") {
-                  alert("Warning: Starting at or after 17:00 may not leave enough time before school closes at 18:00.");
+                  alert(
+                    "Warning: Starting at or after 17:00 may not leave enough time before school closes at 18:00."
+                  );
                   // 不強制擋，但提醒一下
                 }
 

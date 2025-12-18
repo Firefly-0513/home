@@ -158,58 +158,70 @@
         cursor: pointer;
       }
 
-      /* 預約項目卡片樣式 */
       .booking-box {
-        background: #f9f9f9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffffff;
         border-radius: 20px;
-        padding: 20px;
+        padding: 25px 30px;
         margin: 20px auto;
-        max-width: 80%;
-        border: 4px solid #c2353a; /* 黑色包邊 */
+        max-width: 92%;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        border-left: 8px solid #fb85b4;
       }
+
+      .booking-info {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        flex: 1;
+      }
+
       .booking-ID {
         font-size: 2vw;
         font-weight: bold;
         color: #c2353a;
-        margin-bottom: 15px;
+        min-width: 180px;
       }
       .booking-details {
-        font-size: 1.6vw;
-        line-height: 2.2;
-        text-align: left;
-        padding: 0 5%;
-        font-weight: bold;
+        display: flex;
+        gap: 60px;
+        font-size: 1.8vw;
+        color: rgb(0, 0, 0);
+
       }
-      .actions {
-        margin-top: 20px;
+
+      .booking-actions {
         display: flex;
         gap: 20px;
-        justify-content: center;
-      }
-      .btn {
-        padding: 12px 30px;
+      } 
+
+      .edit-btn {
+        padding: 14px 30px;
         border: none;
         border-radius: 15px;
         cursor: pointer;
-        font-size: 1.6vw;
+        font-size: 1.7vw;
         font-weight: bold;
         color: white;
-      }
-      .btn-edit {
+        min-width: 120px;
         background: #fb85b4;
       }
-      .btn-delete {
+      .delete-btn {
+        padding: 14px 30px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 1.7vw;
+        font-weight: bold;
+        color: white;
+        min-width: 120px;
         background: #c2353a;
       }
-      .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
-        transition: all 0.2s;
-      }
-
       .no-booking {
         font-size: 2vw;
-        color: #999;
+        color: #aaaaaa;
         margin-top: 50px;
         font-style: italic;
       }
@@ -259,7 +271,6 @@
           ></div>
         </div>
 
-        <div class="left">您的未來預約</div>
         <div id="bookingList"></div>
 
         <script>
@@ -289,14 +300,15 @@
                 .map(
                   (booking) => `
                 <div class="booking-box">
+                  <div class="booking-info">
                   <div class="booking-ID">BookingID: ${booking.bid}</div>
                   <div class="booking-details">
                     <p>Venue：</p>${booking.cid}<br>
                     <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
                     <p>Time：</p>${booking.stime} - ${booking.etime}<br>
                   </div>
-                  <div class="actions">
-                    <button class="btn btn-edit" onclick="editBooking(${
+                  <div class="booking-actions">
+                    <button class="edit-btn" onclick="editBooking(${
                       booking.bid
                     }, 
                     '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
@@ -310,7 +322,7 @@
                   )}')">
                       編輯
                     </button>
-                    <button class="btn btn-delete" onclick="deleteBooking(${
+                    <button class="delete-btn" onclick="deleteBooking(${
                       booking.bid
                     })">
                       刪除
