@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="cn-HK">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>booking system</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .inline-container {
+        display: flex;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 15vh;
+        background-color: #fb85b4;
+        padding: 0 0% 0 2%;
+        box-sizing: border-box;
+        z-index: 100;
+      }
+      .inline-container img {
+        margin-right: 3%;
+        height: auto;
+        max-height: 12vh;
+        max-width: 12vw;
+      }
+      .inline-container p {
+        font-size: 2.5vw;
+        color: #ffffff;
+        margin: 90px;
+      }
+
+      .layout-container {
+        display: flex;
+        min-height: calc(100% - 15vh);
+        width: 100%; /* 確保佈局容器填滿寬度 */
+      }
+
+      .left_colour {
+        width: 12%;
+        background-color: #c2353a;
+        position: sticky;
+        top: 15vh;
+        padding: 2%;
+        box-sizing: border-box;
+        flex-shrink: 0; /* 防止 left_colour 壓縮 */
+      }
+      .left_text {
+        list-style-type: none;
+        padding: 0;
+        margin: 2%;
+        line-height: 3;
+        font-size: 1.2vw;
+        font-weight: bold;
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .left_text a {
+        text-decoration: none;
+        color: #000000;
+      }
+
+      .main {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 2vh 2vw;
+        font-size: 2.5vw;
+        box-sizing: border-box;
+        text-align: center;
+        font-weight: bold;
+        flex: 1;/* 確保 main 填滿剩餘空間 */
+        background-color: rgb(248, 242, 247); 
+      }
+
+      .main .top {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .main .left {
+        width: 100%;
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+        margin-right: 5vw;
+        margin-left: 5vw;
+        background-color: rgb(255, 255, 255);
+      }
+
+      .form-input {
+        padding: 0 0 15px 2vw;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.5vw;
+        margin-right: 20px;
+      }
+
+      .form-input label {
+        padding: 0 0 1vh 0;
+        margin-right: 30px;
+        white-space: nowrap;
+        font-weight: bold;
+      }
+
+      .form-input input {
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
+      }
+
+      .form-input select {
+        flex: 1;
+        width: 80%;
+        height: 36px;
+        max-width: 400px;
+        min-width: 70px;
+        border-radius: 12px;
+      }
+
+      .form-input button {
+        font-size: 1vw;
+        padding: 10px 20px;
+        background-color: rgb(28, 190, 28);
+        color: white;
+        border-radius: 12px;
+      }
+
+      .logout {
+        margin-left: auto; 
+        margin-right: 2%; 
+        display: flex; 
+        align-items: center;
+      }
+
+      .logout button {
+        background-color: #c2353a; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 12px; 
+        font-size: 1.8vw; 
+        cursor: pointer;
+      }
+
+      /* 預約項目卡片樣式 */
+    .booking-item {
+      background: #f9f9f9; border-radius: 20px; padding: 20px; margin: 20px auto;
+      max-width: 80%; border-left: 6px solid #fb85b4;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .booking-header { font-size: 2vw; font-weight: bold; color: #c2353a; margin-bottom: 15px; }
+    .booking-details { font-size: 1.6vw; line-height: 2.2; text-align: left; padding: 0 5%; }
+    .actions { margin-top: 20px; display: flex; gap: 20px; justify-content: center; }
+    .btn {
+      padding: 12px 30px; border: none; border-radius: 15px; cursor: pointer;
+      font-size: 1.6vw; font-weight: bold; color: white;
+    }
+    .btn-edit { background: #fb85b4; }
+    .btn-delete { background: #c2353a; }
+    .btn:hover { opacity: 0.9; transform: translateY(-2px); transition: all 0.2s; }
+
+    .no-booking {
+      font-size: 2vw; color: #999; margin-top: 50px; font-style: italic;
+    }
+
+    </style>
+  </head>
+
+  <body>
+    <!-- top -->
+    <div class="inline-container">
+      <a href="A_home.html">
+        <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
+      </a>
+      <p><b>Aedit </b></p>
+      <div class="logout">
+        <button 
+          onclick="localStorage.clear(); window.location.href='/index.html';" 
+
+        onmouseover="this.style.backgroundColor='#a02c30'"
+        onmouseout="this.style.backgroundColor='#c2353a'"
+      >    
+        Logout
+      </button>
+    </div>
+    </div>
+
+    <!-- left -->
+    <div class="layout-container">
+      <div class="left_colour">
+        <ul class="left_text">
+          <li><a href="A_home.html">Home</a></li>
+          <li><a href="A_Booking.html">Booking</a></li>
+          <li><a href="A_edit.html">Query/Delete </a></li>
+          <li><a href="A_manage.html">Manage</a></li>
+        </ul>
+      </div>
+
+      <!-- main -->
+      <div class="main">
+        <div class="top">
+          <p>A Edit</p>
+          <div
+            style="
+              width: 100%;
+              height: 1vh;
+              background-color: #fb85b4;
+              margin-top: 10px;
+              border-radius: 20px;
+            "
+          ></div>
+        </div>
+
+        <div class="left">
+            您的未來預約
+        </div>
+        
+        <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const tid = localStorage.getItem('userTid');
+      const username = localStorage.getItem('username');
+
+      if (!tid) {
+        alert('請先登入！');
+        window.location.href = '/index.html';
+        return;
+      }
+
+      // 直接顯示個人化標題（沒有「載入中」提示）
+      document.getElementById('welcomeMsg').textContent = `歡迎，${username} 老師 — 您的未來預約`;
+
+      const bookingList = document.getElementById('bookingList');
+
+      try {
+        const res = await fetch(`/my-bookings?tid=${tid}`);
+        const bookings = await res.json();
+
+        if (bookings.length === 0) {
+          bookingList.innerHTML = '<p class="no-booking">您目前沒有任何未來預約</p>';
+          return;
+        }
+
+        bookingList.innerHTML = bookings.map(booking => `
+          <div class="booking-item">
+            <div class="booking-header">預約 ID: ${booking.bid}</div>
+            <div class="booking-details">
+              <strong>教室：</strong>${booking.cid}<br>
+              <strong>日期：</strong>${booking.bdate}<br>
+              <strong>時間：</strong>${booking.stime} - ${booking.etime}<br>
+              <strong>原因：</strong>${booking.reason}<br>
+              <strong>人數：</strong>${booking.people}<br>
+              <strong>特別要求：</strong>${booking.special || '無'}
+            </div>
+            <div class="actions">
+              <button class="btn btn-edit" onclick="editBooking(${booking.bid}, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${booking.etime}', '${booking.reason.replace(/'/g, "\\'")}', ${booking.people}, '${(booking.special || '').replace(/'/g, "\\'")}')">
+                編輯
+              </button>
+              <button class="btn btn-delete" onclick="deleteBooking(${booking.bid})">
+                刪除
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        bookingList.innerHTML = '<p style="color:red;">載入失敗，請檢查網絡</p>';
+      }
+    });
+
+    async function deleteBooking(bid) {
+      if (!confirm('確定要刪除這筆預約嗎？')) return;
+
+      const tid = localStorage.getItem('userTid');
+      try {
+        const res = await fetch(`/booking/${bid}?tid=${tid}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok) {
+          alert('預約已成功刪除');
+          location.reload();
+        } else {
+          alert(data.error || '刪除失敗');
+        }
+      } catch (err) {
+        alert('網絡錯誤');
+      }
+    }
+
+    function editBooking(bid, cid, bdate, stime, etime, reason, people, special) {
+      const newDate = prompt('新日期 (YYYY-MM-DD)', bdate) || bdate;
+      const newStime = prompt('新開始時間 (HH:MM)', stime) || stime;
+      const newEtime = prompt('新結束時間 (HH:MM)', etime) || etime;
+      const newCid = prompt('新教室', cid) || cid;
+      const newReason = prompt('新原因', reason) || reason;
+      const newPeople = prompt('新人數', people) || people;
+      const newSpecial = prompt('特別要求（可留空）', special);
+
+      if (confirm('確定要更新這筆預約嗎？')) {
+        updateBooking(bid, newCid, newDate, newStime, newEtime, newReason, newPeople, newSpecial);
+      }
+    }
+
+    async function updateBooking(bid, cid, bdate, stime, etime, reason, people, special) {
+      const tid = localStorage.getItem('userTid');
+      try {
+        const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cid, bdate, stime, etime, reason, people: parseInt(people), special })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('預約更新成功！');
+          location.reload();
+        } else {
+          alert(data.error || '更新失敗');
+        }
+      } catch (err) {
+        alert('網絡錯誤');
+      }
+    }
+    </script>
+
+      </div>
+    </div>
+  </body>
+</html>

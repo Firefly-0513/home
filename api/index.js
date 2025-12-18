@@ -177,15 +177,93 @@ app.post("/book", async (req, res) => {
 });
 
 // 从数据库读取数据（GET 请求）
-app.get("/get-booking", async (req, res) => {
+// 獲取指定老師的未來預約（用於 T_edit）
+app.get("/my-bookings", async (req, res) => {
+  const tid = req.query.tid;
+  if (!tid) {
+    return res.status(400).json({ error: "Missing tid" });
+  }
+
   try {
-    const result = await pool.query("SELECT * FROM booking");
+    const result = await pool.query(
+      `SELECT bid, cid, bdate, stime, etime, reason, people, special 
+       FROM booking 
+       WHERE tid = $1 AND bdate >= CURRENT_DATE 
+       ORDER BY bdate ASC, stime ASC`,
+      [tid]
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).send("read error");
+    res.status(500).json({ error: "Failed to fetch bookings" });
   }
 });
+
+// 刪除預約（老師只能刪自己的）
+app.delete("/booking/:bid", async (req, res) => {
+  const bid = req.params.bid;
+  const tid = req.query.tid;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM booking WHERE bid = $1 AND tid = $2 RETURNING bid",
+      [bid, tid]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Booking not found or not yours" });
+    }
+
+    res.json({ success: true, message: "Booking deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+// 更新預約（老師只能改自己的）
+app.put("/booking/:bid", async (req, res) => {
+  const bid = req.params.bid;
+  const tid = req.query.tid;
+  const { cid, bdate, stime, etime, reason, people, special } = req.body;
+
+  try {
+    // 先檢查衝突（排除自己這筆）
+    const conflict = await pool.query(
+      `SELECT 1 FROM booking 
+       WHERE cid = $1 AND bdate = $2 AND bid != $3
+       AND (
+         (stime < $4 AND etime > $4) OR  
+         (stime < $5 AND etime > $5) OR  
+         (stime >= $4 AND etime <= $5)   
+       )`,
+      [cid, bdate, bid, etime, stime]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res.status(400).json({ error: "This time slot is already booked by someone else." });
+    }
+
+    // 更新
+    const result = await pool.query(
+      `UPDATE booking 
+       SET cid = $1, bdate = $2, stime = $3, etime = $4, reason = $5, people = $6, special = $7
+       WHERE bid = $8 AND tid = $9
+       RETURNING bid`,
+      [cid, bdate, stime, etime, reason, people, special, bid, tid]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Booking not found or not yours" });
+    }
+
+    res.json({ success: true, message: "Booking updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
 
 // 监听端口（Vercel 会自动处理端口）
 const port = process.env.PORT || 3000;
