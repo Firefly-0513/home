@@ -148,13 +148,13 @@
 
       .booking-box {
         border: 4px solid #c2353a; /* 黑色包邊 */
-        box-sizing: border-box;
+        box-sizing: border-box; /* 包括 padding 和 border */
         border-radius: 50px;
         margin-top: 5vh; /* 向下移動 20px */
         background-color: rgb(255, 255, 255);
-        width: 95%;                /* 加大寬度，讓它更寬 */
+        width: 100%;                /* 確保卡片寬度填滿父容器 */
         max-width: none;           /* 移除最大寬度限制 */
-        margin: 40px auto;         /* 上下間距，左右自動居中 */
+        margin: 0; /* 移除卡片的外邊距 */
         padding: 40px;             /* 內邊距，讓內容不貼邊 */
         align-items: flex-start;
       }
