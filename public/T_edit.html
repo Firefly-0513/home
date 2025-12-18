@@ -178,6 +178,7 @@
         line-height: 2.2;
         text-align: left;
         padding: 0 5%;
+        font-weight: bold;
       }
       .actions {
         margin-top: 20px;
@@ -290,9 +291,9 @@
                 <div class="booking-box">
                   <div class="booking-ID">BookingID: ${booking.bid}</div>
                   <div class="booking-details">
-                    <strong>Venue：</strong>${booking.cid}<br>
-                    <strong>Date：</strong>${booking.bdate}<br>
-                    <strong>Time：</strong>${booking.stime} - ${booking.etime}<br>
+                    <p>Venue：</p>${booking.cid}<br>
+                    <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
+                    <p>Time：</p>${booking.stime} - ${booking.etime}<br>
                   </div>
                   <div class="actions">
                     <button class="btn btn-edit" onclick="editBooking(${
