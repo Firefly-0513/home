@@ -97,7 +97,7 @@
         margin-right: 5vw;
         margin-left: 5vw;
         background-color: rgb(255, 255, 255);
-      } 
+      }
 
       .form-input {
         padding: 0 0 15px 2vw;
@@ -159,10 +159,10 @@
       }
       #bookingList {
         display: flex;
-        flex-direction: column;   /* 強制從上到下，一張一張堆疊 */
-        align-items: center;      /* 每張卡片水平居中 */
-        gap: 60px;                /* 卡片之間大間距 */
-        padding: 50px 0;          /* 上下留白 */
+        flex-direction: column; /* 強制從上到下，一張一張堆疊 */
+        align-items: center; /* 每張卡片水平居中 */
+        gap: 60px; /* 卡片之間大間距 */
+        padding: 50px 0; /* 上下留白 */
         width: 100%;
       }
 
@@ -233,6 +233,18 @@
         font-style: italic;
       }
 
+      .booking-list {
+        display: flex;
+        flex-direction: column; /* 垂直排列 */
+        align-items: center; /* 居中顯示 */
+        width: 100%; /* 確保列表寬度填滿頁面 */
+      }
+
+      .booking-item {
+        display: block;
+        margin: 20px auto; /* 垂直間距並居中 */
+        max-width: 80%; /* 限制寬度，避免超出頁面邊界 */
+      }
     </style>
   </head>
 
