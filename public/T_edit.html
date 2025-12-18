@@ -260,6 +260,7 @@
         </div>
 
         <div class="left">您的未來預約</div>
+        <div id="bookingList"></div>
 
         <script>
           document.addEventListener("DOMContentLoaded", async () => {
@@ -279,37 +280,54 @@
               const bookings = await res.json();
 
               if (bookings.length === 0) {
-                bookingList.innerHTML ='<p class="no-booking">您目前沒有任何未來預約</p>';
+                bookingList.innerHTML =
+                  '<p class="no-booking">您目前沒有任何未來預約</p>';
                 return;
               }
 
-              bookingList.innerHTML = bookings.map((booking) => `
+              bookingList.innerHTML = bookings
+                .map(
+                  (booking) => `
                 <div class="booking-item">
                   <div class="booking-header">預約 ID: ${booking.bid}</div>
                   <div class="booking-details">
                     <strong>教室：</strong>${booking.cid}<br>
                     <strong>日期：</strong>${booking.bdate}<br>
-                    <strong>時間：</strong>${booking.stime} - ${booking.etime}<br>
+                    <strong>時間：</strong>${booking.stime} - ${
+                    booking.etime
+                  }<br>
                     <strong>原因：</strong>${booking.reason}<br>
                     <strong>人數：</strong>${booking.people}<br>
                     <strong>特別要求：</strong>${booking.special || "無"}
                   </div>
                   <div class="actions">
-                    <button class="btn btn-edit" onclick="editBooking(${booking.bid}, 
+                    <button class="btn btn-edit" onclick="editBooking(${
+                      booking.bid
+                    }, 
                     '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
-                    '${booking.etime}', '${booking.reason.replace(/'/g,"\\'")}', 
-                    '${booking.people}', '${(booking.special || "").replace(/'/g,"\\'")}')">
+                    '${booking.etime}', '${booking.reason.replace(
+                    /'/g,
+                    "\\'"
+                  )}', 
+                    '${booking.people}', '${(booking.special || "").replace(
+                    /'/g,
+                    "\\'"
+                  )}')">
                       編輯
                     </button>
-                    <button class="btn btn-delete" onclick="deleteBooking(${booking.bid})">
+                    <button class="btn btn-delete" onclick="deleteBooking(${
+                      booking.bid
+                    })">
                       刪除
                     </button>
                   </div>
                 </div>
-              `).join("");
-
+              `
+                )
+                .join("");
             } catch (err) {
-              bookingList.innerHTML ='<p style="color:red;">載入失敗，請檢查網絡</p>';
+              bookingList.innerHTML =
+                '<p style="color:red;">載入失敗，請檢查網絡</p>';
             }
           });
 
@@ -318,7 +336,9 @@
 
             const tid = localStorage.getItem("userTid");
             try {
-              const res = await fetch(`/booking/${bid}?tid=${tid}`, {method: "DELETE",});
+              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+                method: "DELETE",
+              });
               const data = await res.json();
               if (res.ok) {
                 alert("預約已成功刪除");
@@ -331,7 +351,16 @@
             }
           }
 
-          function editBooking(bid,cid,bdate,stime,etime,reason,people,special) {
+          function editBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
             const newDate = prompt("新日期 (YYYY-MM-DD)", bdate) || bdate;
             const newStime = prompt("新開始時間 (HH:MM)", stime) || stime;
             const newEtime = prompt("新結束時間 (HH:MM)", etime) || etime;
@@ -341,17 +370,43 @@
             const newSpecial = prompt("特別要求（可留空）", special);
 
             if (confirm("確定要更新這筆預約嗎？")) {
-              updateBooking(bid,newCid,newDate,newStime,newEtime,newReason,newPeople,newSpecial);
+              updateBooking(
+                bid,
+                newCid,
+                newDate,
+                newStime,
+                newEtime,
+                newReason,
+                newPeople,
+                newSpecial
+              );
             }
           }
 
-          async function updateBooking(bid,cid,bdate,stime,etime,reason,people,special) {
+          async function updateBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
             const tid = localStorage.getItem("userTid");
             try {
               const res = await fetch(`/booking/${bid}?tid=${tid}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({cid,bdate,stime,etime,reason,people: parseInt(people),special,}),
+                body: JSON.stringify({
+                  cid,
+                  bdate,
+                  stime,
+                  etime,
+                  reason,
+                  people: parseInt(people),
+                  special,
+                }),
               });
               const data = await res.json();
               if (res.ok) {
