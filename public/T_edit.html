@@ -167,7 +167,7 @@
         padding: 30px 40px;
         margin: 25px auto;
         max-width: 88%;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
         border-left: 8px solid #fb85b4;
       }
 
@@ -193,7 +193,7 @@
       .booking-btarea {
         display: flex;
         gap: 20px;
-      } 
+      }
 
       .edit-btn {
         padding: 14px 35px;
@@ -225,8 +225,10 @@
       }
 
       .booking-item {
-        display: block; /* 确保每个预订框是块级元素 */
-        margin-bottom: 20px; /* 增加垂直间距 */
+        display: flex;
+        flex-direction: column; /* 垂直排列內容 */
+        margin-bottom: 20px; /* 增加垂直間距 */
+        align-items: center; /* 居中內容 */
       }
     </style>
   </head>
