@@ -177,14 +177,6 @@
         align-items: flex-start;
       }
 
-      #bookingList {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
-        padding: 20px 0;
-      }
-
       .booking-ID {
         font-size: 2vw;
         font-weight: bold;
@@ -197,9 +189,6 @@
         font-size: 1.8vw;
         color: #000000;
       }
-      .booking-meta div {
-        min-width: 180px;
-     }
 
       .booking-btarea {
         display: flex;
@@ -233,6 +222,11 @@
         color: #aaaaaa;
         margin-top: 50px;
         font-style: italic;
+      }
+
+      .booking-item {
+        display: block; /* 确保每个预订框是块级元素 */
+        margin-bottom: 20px; /* 增加垂直间距 */
       }
     </style>
   </head>
@@ -308,7 +302,7 @@
               bookingList.innerHTML = bookings
                 .map(
                   (booking) => `
-                <div class="booking-box">
+                <div class="booking-box booking-item">
                   <div class="booking-info">
                   <div class="booking-ID">BookingID: ${booking.bid}</div>
                   <div class="booking-details">
