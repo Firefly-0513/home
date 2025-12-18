@@ -159,16 +159,15 @@
       }
 
       /* 預約項目卡片樣式 */
-      .booking-item {
+      .booking-box {
         background: #f9f9f9;
         border-radius: 20px;
         padding: 20px;
         margin: 20px auto;
         max-width: 80%;
-        border-left: 6px solid #fb85b4;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 4px solid #c2353a; /* 黑色包邊 */
       }
-      .booking-header {
+      .booking-ID {
         font-size: 2vw;
         font-weight: bold;
         color: #c2353a;
@@ -247,7 +246,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>A Edit</p>
+          <p>Your bookings</p>
           <div
             style="
               width: 100%;
@@ -288,17 +287,12 @@
               bookingList.innerHTML = bookings
                 .map(
                   (booking) => `
-                <div class="booking-item">
-                  <div class="booking-header">預約 ID: ${booking.bid}</div>
+                <div class="booking-box">
+                  <div class="booking-ID">BookingID: ${booking.bid}</div>
                   <div class="booking-details">
-                    <strong>教室：</strong>${booking.cid}<br>
-                    <strong>日期：</strong>${booking.bdate}<br>
-                    <strong>時間：</strong>${booking.stime} - ${
-                    booking.etime
-                  }<br>
-                    <strong>原因：</strong>${booking.reason}<br>
-                    <strong>人數：</strong>${booking.people}<br>
-                    <strong>特別要求：</strong>${booking.special || "無"}
+                    <strong>Venue：</strong>${booking.cid}<br>
+                    <strong>Date：</strong>${booking.bdate}<br>
+                    <strong>Time：</strong>${booking.stime} - ${booking.etime}<br>
                   </div>
                   <div class="actions">
                     <button class="btn btn-edit" onclick="editBooking(${
