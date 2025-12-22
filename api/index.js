@@ -221,36 +221,110 @@ app.delete("/booking/:bid", async (req, res) => {
   }
 });
 
-// 更新預約（老師只能改自己的）
+// 更新預約（老師只能改自己的），加入完整驗證
 app.put("/booking/:bid", async (req, res) => {
   const bid = req.params.bid;
   const tid = req.query.tid;
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
 
+  // 1. 必填檢查
+  if (
+    !cid ||
+    !bdate ||
+    !stime ||
+    !etime ||
+    !reason ||
+    !people ||
+    !special
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const cidNum = parseInt(cid, 10);
+  const peopleNum = parseInt(people, 10);
+  if (isNaN(cidNum) || isNaN(peopleNum)) {
+    return res.status(400).json({ error: "Classroom ID and number of people must be numbers" });
+  }
+
+  // 2. 時間驗證：結束時間必須大於開始時間
+  if (stime >= etime) {
+    return res
+      .status(400)
+      .json({ error: "Starting time must be before ending time." });
+  }
+
+  // 3. 時間驗證：不能超過 18:00
+  if (etime > "18:00") {
+    return res.status(400).json({
+      error: "Booking cannot end after 18:00 because the school closes at 6 PM.",
+    });
+  }
+
+  // 4. 日期驗證：不能是過去的日期
+  const today = new Date().toISOString().split("T")[0];
+  if (bdate < today) {
+    return res
+      .status(400)
+      .json({ error: "Booking date cannot be in the past." });
+  }
+
+  // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
+  const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
+  if (bdate === today && stime < now.substring(0, 5)) { // 只比對 HH:MM
+    return res
+      .status(400)
+      .json({ error: "Booking time cannot be in the past." });
+  }
+
   try {
-    // 先檢查衝突（排除自己這筆）
+    // 6. 課室容量驗證
+    const capacityResult = await pool.query(
+      "SELECT capacity FROM classroom WHERE cid = $1",
+      [cidNum]
+    );
+
+    if (capacityResult.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid classroom ID" });
+    }
+
+    const capacity = capacityResult.rows[0].capacity;
+
+    if (peopleNum > capacity) {
+      return res.status(400).json({
+        error: `This venue can only accommodate ${capacity} people. Please choose another venue or reduce the number.`,
+      });
+    }
+
+    // 7. 時間衝突檢查（排除自己這筆記錄）
     const conflict = await pool.query(
-      `SELECT 1 FROM booking 
-       WHERE cid = $1 AND bdate = $2 AND bid != $3
-       AND (
-         (stime < $4 AND etime > $4) OR  
-         (stime < $5 AND etime > $5) OR  
-         (stime >= $4 AND etime <= $5)   
-       )`,
-      [cid, bdate, bid, etime, stime]
+      `
+      SELECT 1 FROM booking 
+      WHERE cid = $1 
+        AND bdate = $2 
+        AND bid != $3  -- 排除正在編輯的這筆
+        AND (
+          (stime < $4 AND etime > $4) OR  -- 新結束時間落在別人時段內
+          (stime < $5 AND etime > $5) OR  -- 新開始時間落在別人時段內
+          (stime >= $4 AND etime <= $5)   -- 新時段完全包含在別人時段內
+        )
+      `,
+      [cidNum, bdate, bid, etime, stime]
     );
 
     if (conflict.rows.length > 0) {
-      return res.status(400).json({ error: "This time slot is already booked by someone else." });
+      return res
+        .status(400)
+        .json({ error: "This time slot is already booked by someone else." });
     }
 
-    // 更新
+    // 8. 執行更新
     const result = await pool.query(
       `UPDATE booking 
-       SET cid = $1, bdate = $2, stime = $3, etime = $4, reason = $5, people = $6, special = $7
+       SET cid = $1, bdate = $2, stime = $3, etime = $4, 
+           reason = $5, people = $6, special = $7
        WHERE bid = $8 AND tid = $9
        RETURNING bid`,
-      [cid, bdate, stime, etime, reason, people, special, bid, tid]
+      [cidNum, bdate, stime, etime, reason, peopleNum, special, bid, tid]
     );
 
     if (result.rowCount === 0) {
@@ -259,8 +333,8 @@ app.put("/booking/:bid", async (req, res) => {
 
     res.json({ success: true, message: "Booking updated successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Update failed" });
+    console.error("Update booking error:", err);
+    res.status(500).json({ error: "Update failed", details: err.message });
   }
 });
 
