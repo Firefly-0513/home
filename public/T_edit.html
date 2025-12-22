@@ -159,13 +159,9 @@
       }
 
       /* 預約項目卡片樣式 */
-      #bookingList > div {  /* 針對 bookingList 裡的所有直接子 div (你的預約 box) */
-        width: 95% !important;     /* 強制加大寬度 */
-        max-width: none !important; /* 移除任何最大寬度限制 */
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-left: 50px !important;  /* 內左邊距，讓內容不貼邊 */
-        padding-right: 50px !important; /* 內右邊距 */
+      #bookingList > * {  /* 匹配所有子元素 */
+        width: 98% !important;
+       margin: 40px auto !important;
       }
       .booking-box {
         background: #f9f9f9;
