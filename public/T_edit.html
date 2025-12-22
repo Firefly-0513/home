@@ -87,6 +87,18 @@
         margin-bottom: 20px;
       }
 
+      .main .left {
+        width: 100%;
+        border: 4px solid #c2353a; /* 黑色包邊 */
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+        margin-right: 5vw;
+        margin-left: 5vw;
+        background-color: rgb(255, 255, 255);
+      }
+
       .form-input {
         padding: 0 0 15px 2vw;
         display: flex;
@@ -145,49 +157,36 @@
         font-size: 1.8vw;
         cursor: pointer;
       }
-      #bookingList {
-        display: flex;
-        flex-direction: column;   /* 这一行是关键！强制从上到下排列 */
-        align-items: center;      /* 每张 box 水平居中 */
-        gap: 60px;                /* box 之间留 60px 大间距 */
-        padding: 40px 0;
-        width: 100%;
-      }
 
+      /* 預約項目卡片樣式 */
       .booking-box {
+        background: #f9f9f9;
+        border-radius: 20px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 80%;
         border: 4px solid #c2353a; /* 黑色包邊 */
-        box-sizing: border-box; /* 包括 padding 和 border */
-        border-radius: 50px;
-        margin-top: 5vh; /* 向下移動 20px */
-        background-color: rgb(255, 255, 255);
-        width: 100%;                /* 確保卡片寬度填滿父容器 */
-        max-width: 100vw;
-        min-width: 80vw;           /* 移除最大寬度限制 */
-        margin: 0; /* 移除卡片的外邊距 */
-        padding: 0vh 0vw 0vh 0vw;             /* 內邊距，讓內容不貼邊 */
-        align-items: flex-start;
       }
-
       .booking-ID {
         font-size: 2vw;
         font-weight: bold;
         color: #c2353a;
         margin-bottom: 15px;
-        font-weight: bold;
       }
       .booking-details {
         font-size: 1.6vw;
         line-height: 2.2;
         text-align: left;
         padding: 0 5%;
+        font-weight: bold;
       }
-      .btn-area {
+      .actions {
         margin-top: 20px;
         display: flex;
         gap: 20px;
         justify-content: center;
       }
-      .btn-edit {
+      .btn {
         padding: 12px 30px;
         border: none;
         border-radius: 15px;
@@ -195,17 +194,17 @@
         font-size: 1.6vw;
         font-weight: bold;
         color: white;
-        background: #4ddb67;
+      }
+      .btn-edit {
+        background: #fb85b4;
       }
       .btn-delete {
-        padding: 12px 30px;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 1.6vw;
-        font-weight: bold;
-        color: white;
         background: #c2353a;
+      }
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        transition: all 0.2s;
       }
 
       .no-booking {
@@ -281,7 +280,7 @@
 
               if (bookings.length === 0) {
                 bookingList.innerHTML =
-                  '<p class="no-booking">You dont have any bookings</p>';
+                  '<p class="no-booking">您目前沒有任何未來預約</p>';
                 return;
               }
 
@@ -292,10 +291,10 @@
                   <div class="booking-ID">BookingID: ${booking.bid}</div>
                   <div class="booking-details">
                     <p>Venue：</p>${booking.cid}<br>
-                    <p>Date：</p>${booking.bdate.split("T")[0]}<br>
+                    <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
                     <p>Time：</p>${booking.stime} - ${booking.etime}<br>
                   </div>
-                  <div class="btn-area">
+                  <div class="actions">
                     <button class="btn btn-edit" onclick="editBooking(${
                       booking.bid
                     }, 
@@ -416,42 +415,6 @@
           }
         </script>
       </div>
-      </div>
     </div>
-    <script>
-      (function () {
-        function c() {
-          var b = a.contentDocument || a.contentWindow.document;
-          if (b) {
-            var d = b.createElement("script");
-            d.innerHTML =
-              "window.__CF$cv$params={r:'9aff92502ba28475',t:'MTc2NjA3MDQ2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
-            b.getElementsByTagName("head")[0].appendChild(d);
-          }
-        }
-        if (document.body) {
-          var a = document.createElement("iframe");
-          a.height = 1;
-          a.width = 1;
-          a.style.position = "absolute";
-          a.style.top = 0;
-          a.style.left = 0;
-          a.style.border = "none";
-          a.style.visibility = "hidden";
-          document.body.appendChild(a);
-          if ("loading" !== document.readyState) c();
-          else if (window.addEventListener)
-            document.addEventListener("DOMContentLoaded", c);
-          else {
-            var e = document.onreadystatechange || function () {};
-            document.onreadystatechange = function (b) {
-              e(b);
-              "loading" !== document.readyState &&
-                ((document.onreadystatechange = e), c());
-            };
-          }
-        }
-      })();
-    </script>
-  </body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b1d55086a6704df',t:'MTc2NjM4MjUyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
