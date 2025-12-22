@@ -224,6 +224,28 @@
         margin-top: 50px;
         font-style: italic;
       }
+
+      .filter-bar {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin: 20px 0;
+        flex-wrap: wrap;
+        padding: 0 5vw;
+      }
+      .filter-bar select, .filter-bar input, .filter-bar button {
+        padding: 10px 15px; 
+        font-size: 1.6vw; 
+        border-radius: 12px; 
+        border: none;
+      }
+      .filter-bar button {
+        background-color: #c2353a; 
+        color: white; 
+      }
+
     </style>
   </head>
 
@@ -270,170 +292,72 @@
           ></div>
         </div>
 
+        <div class="filter-bar">
+          <select id="filterCid">
+            <option value="">All Venues</option>
+            <!-- 这里可以手动填你的教室编号，或后续动态加载 -->
+            <option value="1">Room 101</option>
+            <option value="2">Room 102</option>
+            <option value="3">Room 103</option>
+            <!-- 根据你的 classroom 表添加更多 -->
+          </select>
+
+          <input type="date" id="filterDate" />
+
+          <button onclick="loadBookings()">Search</button>
+        </div>
+
         <div id="bookingList"></div>
-
-        <script>
-          document.addEventListener("DOMContentLoaded", async () => {
-            const tid = localStorage.getItem("userTid");
-            const username = localStorage.getItem("username");
-
-            if (!tid) {
-              alert("請先登入！");
-              window.location.href = "/index.html";
-              return;
-            }
-
-            const bookingList = document.getElementById("bookingList");
-
-            try {
-              const res = await fetch(`/my-bookings?tid=${tid}`);
-              const bookings = await res.json();
-
-              if (bookings.length === 0) {
-                bookingList.innerHTML =
-                  '<p class="no-booking">您目前沒有任何未來預約</p>';
-                return;
-              }
-
-              bookingList.innerHTML = bookings
-                .map(
-                  (booking) => `
-                <div class="booking-box">
-                  <div class="booking-details">
-                    <p class="booking-id">Booking ID: ${booking.bid}</p>
-                    <div class="booking-info-row">
-                      <p class="booking-info">Venue: ${booking.cid}</p>
-                      <p class="booking-info">Date: ${booking.bdate.substring(
-                        0,
-                        10
-                      )}</p>
-                      <p class="booking-info">Time: ${booking.stime.substring(
-                        0,
-                        5
-                      )} - ${booking.etime.substring(0, 5)}</p>
-                    </div>
-                  </div>
-                  <div class="actions">
-                    <button class="btn-edit" onclick="editBooking(${
-                      booking.bid
-                    }, 
-                    '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
-                    '${booking.etime}', '${booking.reason.replace(
-                    /'/g,
-                    "\\'"
-                  )}', 
-                    '${booking.people}', '${(booking.special || "").replace(
-                    /'/g,
-                    "\\'"
-                  )}')">
-                      edit
-                    </button>
-                    <button class="btn-delete" onclick="deleteBooking(${
-                      booking.bid
-                    })">
-                      delete
-                    </button>
-                  </div>
-                </div>
-              `
-                )
-                .join("");
-            } catch (err) {
-              bookingList.innerHTML =
-                '<p style="color:red;">loading error</p>';
-            }
-          });
-
-          async function deleteBooking(bid) {
-            if (!confirm("confirm to delete this booking?")) return;
-
-            const tid = localStorage.getItem("userTid");
-            try {
-              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
-                method: "DELETE",
-              });
-              const data = await res.json();
-              if (res.ok) {
-                alert("delete success");
-                location.reload();
-              } else {
-                alert(data.error || "delete error");
-              }
-            } catch (err) {
-              alert("network error");
-            }
-          }
-
-          function editBooking(
-            bid,
-            cid,
-            bdate,
-            stime,
-            etime,
-            reason,
-            people,
-            special
-          ) {
-            const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
-            const newStime = prompt("start time (HH:MM)", stime) || stime;
-            const newEtime = prompt("end time (HH:MM)", etime) || etime;
-            const newCid = prompt("venue", cid) || cid;
-            const newReason = prompt("reason", reason) || reason;
-            const newPeople = prompt("people", people) || people;
-            const newSpecial = prompt("special requirement", special);
-
-            if (confirm("Do you confirm to update this booking?")) {
-              updateBooking(
-                bid,
-                newCid,
-                newDate,
-                newStime,
-                newEtime,
-                newReason,
-                newPeople,
-                newSpecial
-              );
-            }
-          }
-
-          async function updateBooking(
-            bid,
-            cid,
-            bdate,
-            stime,
-            etime,
-            reason,
-            people,
-            special
-          ) {
-            const tid = localStorage.getItem("userTid");
-            try {
-              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  cid,
-                  bdate,
-                  stime,
-                  etime,
-                  reason,
-                  people: parseInt(people),
-                  special,
-                }),
-              });
-              const data = await res.json();
-              if (res.ok) {
-                alert("Update success");
-                location.reload();
-              } else {
-                alert(data.error || "Update error");
-              }
-            } catch (err) {
-              alert("network error");
-            }
-          }
-        </script>
       </div>
     </div>
+
+    <script>
+      async function loadBookings() {
+        const cid = document.getElementById("filterCid").value;
+        const bdate = document.getElementById("filterDate").value;
+
+        let url = "/all-bookings";
+        if (cid || bdate) {
+          url += "?";
+          if (cid) url += `cid=${cid}&`;
+          if (bdate) url += `bdate=${bdate}`;
+          url = url.replace(/&$/, ""); // 去掉末尾多余的 &
+        }
+
+        const bookingList = document.getElementById("bookingList");
+
+        try {
+          const res = await fetch(url);
+          const bookings = await res.json();
+
+          if (bookings.length === 0) {
+            bookingList.innerHTML = '<p class="no-booking">No bookings found</p>';
+            return;
+          }
+
+          bookingList.innerHTML = bookings
+            .map(booking => `
+              <div class="booking-box">
+                <div class="booking-details">
+                  <p class="booking-id">Booking ID: ${booking.bid}</p>
+                  <div class="booking-info-row">
+                    <p class="booking-info">Venue: ${booking.cid}</p>
+                    <p class="booking-info">Date: ${booking.bdate}</p>
+                    <p class="booking-info">Time: ${booking.stime.substring(0,5)} - ${booking.etime.substring(0,5)}</p>
+                    <p class="booking-info">Teacher: ${booking.username}</p>
+                  </div>
+                </div>
+              </div>
+            `).join("");
+        } catch (err) {
+          bookingList.innerHTML = '<p style="color:red;">Loading failed, please try again</p>';
+        }
+      }
+
+      // 页面加载时自动显示所有未来预约
+      document.addEventListener("DOMContentLoaded", () => {
+        loadBookings();
+      });
+    </script>
   </body>
 </html>

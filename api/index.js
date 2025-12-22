@@ -348,6 +348,38 @@ app.put("/booking/:bid", async (req, res) => {
   }
 });
 
+// 新增：获取全校所有预约（支持筛选课室和日期）
+app.get("/all-bookings", async (req, res) => {
+  const { cid, bdate } = req.query;  // cid 可选，bdate 可选（YYYY-MM-DD）
+
+  try {
+    let query = `
+      SELECT b.bid, b.cid, b.bdate, b.stime, b.etime, 
+             b.reason, b.people, b.special, t.username
+      FROM booking b
+      JOIN teacher t ON b.tid = t.tid
+      WHERE b.bdate >= CURRENT_DATE
+    `;
+    const params = [];
+
+    if (cid) {
+      query += ` AND b.cid = $${params.length + 1}`;
+      params.push(cid);
+    }
+    if (bdate) {
+      query += ` AND b.bdate = $${params.length + 1}`;
+      params.push(bdate);
+    }
+
+    query += ` ORDER BY b.bdate ASC, b.stime ASC`;
+
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch all bookings error:", err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
+  }
+});
 
 // 监听端口（Vercel 会自动处理端口）
 const port = process.env.PORT || 3000;
