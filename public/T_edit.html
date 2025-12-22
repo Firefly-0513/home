@@ -160,13 +160,15 @@
 
       /* 預約項目卡片樣式 */
       .booking-box {
-        background: #f9f9f9;
-        border-radius: 20px;
-        padding: 20px;
-        margin: 20px auto;
+        width: 100%;
         border: 4px solid #c2353a; /* 黑色包邊 */
-        width: 85% !important; /* 临时强制生效，排查优先级问题 */
-        max-width: none !important;
+        box-sizing: border-box;
+        padding: 7vh 0 15px 2vw;
+        border-radius: 50px;
+        margin-top: 5vh; /* 向下移動 20px */
+        margin-right: 5vw;
+        margin-left: 5vw;
+        background-color: rgb(255, 255, 255);
       }
       .booking-ID {
         font-size: 2vw;
@@ -260,7 +262,7 @@
           ></div>
         </div>
 
-      <div id="bookingList"></div>
+        <div id="bookingList"></div>
 
         <script>
           document.addEventListener("DOMContentLoaded", async () => {
@@ -289,8 +291,7 @@
                 .map(
                   (booking) => `
                 <div class="booking-box">
-                  <div class="booking-ID">BookingID: ${booking.bid}</div>
-                  <div class="booking-details">
+                  <p>BookingID: ${booking.bid}</p>
                     <p>Venue：</p>${booking.cid}<br>
                     <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
                     <p>Time：</p>${booking.stime} - ${booking.etime}<br>
