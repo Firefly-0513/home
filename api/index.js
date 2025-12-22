@@ -93,6 +93,11 @@ app.post("/book", async (req, res) => {
       .json({ error: "Starting time must be before ending time." });
   }
   // time驗證（不能超過18:00）
+  if (stime < "06:30") {
+    return res.status(400).json({
+      error: "Booking cannot before 06:30 because the school close.",
+    });
+  }
   if (etime > "18:00") {
     return res
       .status(400)
@@ -254,6 +259,11 @@ app.put("/booking/:bid", async (req, res) => {
   }
 
   // 3. 時間驗證：不能超過 18:00
+  if (stime < "06:30") {
+    return res.status(400).json({
+      error: "Booking cannot before 06:30 because the school close.",
+    });
+  }
   if (etime > "18:00") {
     return res.status(400).json({
       error: "Booking cannot end after 18:00 because the school closes at 6 PM.",
