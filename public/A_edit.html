@@ -183,7 +183,7 @@
         font-weight: bold;
         color: #c2353a;
         margin-bottom: 15px;
-        margin: 0 0 10px 0;
+        margin: 0 0 0 0;
       }
       .booking-info-row {
         display: flex;
@@ -261,7 +261,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Your bookings1</p>
+          <p>Your bookings2</p>
           <div
             style="
               width: 100%;
@@ -314,9 +314,11 @@
                         0,
                         5
                       )} - ${booking.etime.substring(0, 5)}</p>
+                    </div>
+                    <div class="booking-info-row">
                       <p class="booking-info">people: ${booking.people}</p>
-                      <p class="booking-info">people: ${booking.reason}</p>
-                      <p class="booking-info">people: ${booking.special}</p>
+                      <p class="booking-info">reason: ${booking.reason}</p>
+                      <p class="booking-info">special: ${booking.special}</p>
                     </div>
                   </div>
                   <div class="actions">
