@@ -354,7 +354,7 @@ app.get("/all-bookings", async (req, res) => {
   try {
     let query = `
       SELECT b.bid, b.cid, b.bdate, b.stime, b.etime, 
-             b.reason, b.people, b.special, t.name
+             b.reason, b.people, b.special, t.username
       FROM booking b
       JOIN teacher t ON b.tid = t.tid
       WHERE b.bdate >= CURRENT_DATE
