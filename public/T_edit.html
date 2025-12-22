@@ -220,7 +220,7 @@
 
       .no-booking {
         font-size: 2vw;
-        color: #999;
+        color: #ffffff;
         margin-top: 50px;
         font-style: italic;
       }
@@ -326,12 +326,12 @@
                     /'/g,
                     "\\'"
                   )}')">
-                      編輯
+                      edit
                     </button>
                     <button class="btn-delete" onclick="deleteBooking(${
                       booking.bid
                     })">
-                      刪除
+                      delete
                     </button>
                   </div>
                 </div>
@@ -340,12 +340,12 @@
                 .join("");
             } catch (err) {
               bookingList.innerHTML =
-                '<p style="color:red;">載入失敗，請檢查網絡</p>';
+                '<p style="color:red;">loading error</p>';
             }
           });
 
           async function deleteBooking(bid) {
-            if (!confirm("確定要刪除這筆預約嗎？")) return;
+            if (!confirm("confirm to delete this booking?")) return;
 
             const tid = localStorage.getItem("userTid");
             try {
@@ -354,13 +354,13 @@
               });
               const data = await res.json();
               if (res.ok) {
-                alert("預約已成功刪除");
+                alert("delete success");
                 location.reload();
               } else {
-                alert(data.error || "刪除失敗");
+                alert(data.error || "delete error");
               }
             } catch (err) {
-              alert("網絡錯誤");
+              alert("network error");
             }
           }
 
@@ -374,15 +374,15 @@
             people,
             special
           ) {
-            const newDate = prompt("新日期 (YYYY-MM-DD)", bdate) || bdate;
-            const newStime = prompt("新開始時間 (HH:MM)", stime) || stime;
-            const newEtime = prompt("新結束時間 (HH:MM)", etime) || etime;
-            const newCid = prompt("新教室", cid) || cid;
-            const newReason = prompt("新原因", reason) || reason;
-            const newPeople = prompt("新人數", people) || people;
-            const newSpecial = prompt("特別要求（可留空）", special);
+            const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
+            const newStime = prompt("start time (HH:MM)", stime) || stime;
+            const newEtime = prompt("end time (HH:MM)", etime) || etime;
+            const newCid = prompt("venue", cid) || cid;
+            const newReason = prompt("reason", reason) || reason;
+            const newPeople = prompt("people", people) || people;
+            const newSpecial = prompt("special requirement", special);
 
-            if (confirm("確定要更新這筆預約嗎？")) {
+            if (confirm("Do you confirm to update this booking?")) {
               updateBooking(
                 bid,
                 newCid,
@@ -423,13 +423,13 @@
               });
               const data = await res.json();
               if (res.ok) {
-                alert("預約更新成功！");
+                alert("Update success");
                 location.reload();
               } else {
-                alert(data.error || "更新失敗");
+                alert(data.error || "Update error");
               }
             } catch (err) {
-              alert("網絡錯誤");
+              alert("network error");
             }
           }
         </script>
