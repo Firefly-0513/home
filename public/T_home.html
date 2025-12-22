@@ -281,7 +281,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>All bookings8</p>
+          <p>All bookings9</p>
           <div
             style="
               width: 100%;
@@ -358,7 +358,7 @@
                 <div class="booking-details">
                   <p class="booking-id">Venue: ${booking.cid}</p>
                   <div class="booking-info-row">
-                    <p class="booking-info">Date: ${booking.bdate}</p>
+                    <p class="booking-info">Date: ${booking.bdate.substring(0,10)}</p>
                     <p class="booking-info">Time: ${booking.stime.substring(0,5)} - ${booking.etime.substring(0,5)}</p>
                     <p class="booking-info">Teacher: ${booking.tname}</p>
                   </div>

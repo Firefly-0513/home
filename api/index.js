@@ -191,8 +191,7 @@ app.get("/my-bookings", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT bid, cid, bdate, TO_CHAR(b.stime, 'HH24:MI') AS stime,   
-        TO_CHAR(b.etime, 'HH24:MI') AS etime, reason, people, special 
+      `SELECT bid, cid, bdate, stime, etime, reason, people, special 
        FROM booking 
        WHERE tid = $1 AND bdate >= CURRENT_DATE 
        ORDER BY bdate ASC, stime ASC`,
