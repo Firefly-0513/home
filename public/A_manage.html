@@ -143,10 +143,13 @@
         display: flex;
         gap: 40px;
         flex-wrap: wrap;
+        margin-top: 10px; /* 减少顶部间距 */
+        line-height: 1.4; /* 行高压缩 */
       }
       .booking-info {
         font-size: 1.6vw;
-        line-height: 2.2;
+        line-height: 1.4; /* 关键：缩小行高 */
+        margin: 0; /* 移除默认 margin */
         font-weight: bold;
       }
       .actions {
@@ -262,7 +265,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage1</p>
+          <p>Admin Manage2</p>
         </div>
         <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
 
@@ -388,13 +391,13 @@
       }
 
       function adminEditBooking(bid, cid, bdate, stime, etime, reason, people, special) {
-        const newDate = prompt("New date (YYYY-MM-DD)", bdate) || bdate;
-        const newStime = prompt("New start time (HH:MM)", stime) || stime;
-        const newEtime = prompt("New end time (HH:MM)", etime) || etime;
-        const newCid = prompt("New venue", cid) || cid;
-        const newReason = prompt("New reason", reason) || reason;
-        const newPeople = prompt("New number of people", people) || people;
-        const newSpecial = prompt("New special requirements", special) || special;
+        const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
+        const newStime = prompt("start time (HH:MM)", stime) || stime;
+        const newEtime = prompt("end time (HH:MM)", etime) || etime;
+        const newCid = prompt("venue", cid) || cid;
+        const newReason = prompt("reason", reason) || reason;
+        const newPeople = prompt("people", people) || people;
+        const newSpecial = prompt("special requirements", special) || special;
 
         if (confirm("Confirm update?")) {
           adminUpdateBooking(bid, newCid, newDate, newStime, newEtime, newReason, newPeople, newSpecial);
