@@ -292,7 +292,7 @@
 
               if (bookings.length === 0) {
                 bookingList.innerHTML =
-                  '<p class="no-booking">您目前沒有任何未來預約</p>';
+                  '<p class="no-booking">You dont have any booking in future</p>';
                 return;
               }
 
@@ -327,12 +327,12 @@
                     /'/g,
                     "\\'"
                   )}')">
-                      edit
+                      Edit
                     </button>
                     <button class="btn-delete" onclick="deleteBooking(${
                       booking.bid
                     })">
-                      delete
+                      Delete
                     </button>
                   </div>
                 </div>
