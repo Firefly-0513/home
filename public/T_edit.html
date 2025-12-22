@@ -163,31 +163,36 @@
         width: 100%;
         border: 4px solid #c2353a; /* 黑色包邊 */
         box-sizing: border-box;
-        padding: 7vh 0 15px 2vw;
+        padding: 2vh 2vw;
         border-radius: 50px;
         margin-top: 5vh; /* 向下移動 20px */
         margin-right: 5vw;
         margin-left: 5vw;
         background-color: rgb(255, 255, 255);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
       }
-      .booking-ID {
-        font-size: 2vw;
+      .booking-details {
+        flex: 1;
+        text-align: left;
+      }
+      .booking-id {
+        font-size: 3vw;
         font-weight: bold;
         color: #c2353a;
         margin-bottom: 15px;
       }
-      .booking-details {
+      .booking-info {
         font-size: 1.6vw;
         line-height: 2.2;
-        text-align: left;
-        padding: 0 2%;
         font-weight: bold;
       }
       .actions {
-        margin-top: 20px;
         display: flex;
+        flex-direction: column;
         gap: 20px;
-        justify-content: center;
+        margin-left: 20px;
       }
       .btn {
         padding: 12px 30px;
@@ -291,29 +296,20 @@
                 .map(
                   (booking) => `
                 <div class="booking-box">
-                  <p>BookingID: ${booking.bid}</p>
-                    <p>Venue：</p>${booking.cid}<br>
-                    <p>Date：</p>${booking.bdate.substring(0, 10)}<br>
-                    <p>Time：</p>${booking.stime} - ${booking.etime}<br>
+                  <div class="booking-details">
+                    <p class="booking-id">Booking ID: ${booking.bid}</p>
+                    <p class="booking-info">Venue: ${booking.cid}</p>
+                    <p class="booking-info">Date: ${booking.bdate.substring(0, 10)}</p>
+                    <p class="booking-info">Time: ${booking.stime} - ${booking.etime}</p>
                   </div>
                   <div class="actions">
-                    <button class="btn btn-edit" onclick="editBooking(${
-                      booking.bid
-                    }, 
+                    <button class="btn btn-edit" onclick="editBooking(${booking.bid}, 
                     '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
-                    '${booking.etime}', '${booking.reason.replace(
-                    /'/g,
-                    "\\'"
-                  )}', 
-                    '${booking.people}', '${(booking.special || "").replace(
-                    /'/g,
-                    "\\'"
-                  )}')">
+                    '${booking.etime}', '${booking.reason.replace(/'/g, "\\'")}', 
+                    '${booking.people}', '${(booking.special || "").replace(/'/g, "\\'")}')">
                       編輯
                     </button>
-                    <button class="btn btn-delete" onclick="deleteBooking(${
-                      booking.bid
-                    })">
+                    <button class="btn btn-delete" onclick="deleteBooking(${booking.bid})">
                       刪除
                     </button>
                   </div>
