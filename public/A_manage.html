@@ -208,14 +208,18 @@
       }
 
       .report-title {
-        background-color: rgb(255, 255, 255);
+        width: 100%;
+        min-width: auto; /* 移除原本过大的 min-width */
+        border: 4px solid #c2353a;
+        box-sizing: border-box;
+        padding: 2vh 2vw;
         border-radius: 50px;
-        border: 4px solid #c2353a; /* 黑色包邊 */
-        font-size: 8vw;
-        font-weight: bold;
-        color: #c2353a;
-        text-align: center;
-        margin-top: 11vh;
+        margin-top: 3vh;
+        margin-bottom: 3vh;
+        background-color: rgb(255, 255, 255);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
       .no-booking {
@@ -268,7 +272,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage2</p>
+          <p>Admin Manage3</p>
         </div>
         <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
 
