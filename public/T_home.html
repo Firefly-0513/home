@@ -280,7 +280,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>All bookings4</p>
+          <p>All bookings5</p>
           <div
             style="
               width: 100%;
@@ -295,27 +295,27 @@
         <div class="filter-bar">
           <select id="filterCid">
             <option value="">All Venues</option>
-            <option value="1">1A （101）</option>
-                <option value="2">1B （102）</option>
-                <option value="3">1C （103）</option>
-                <option value="4">1D （104）</option>
-                <option value="5">1E （105）</option>
-                <option value="6">2A （201）</option>
-                <option value="7">2B （202）</option>
-                <option value="8">2C （203）</option>
-                <option value="9">2D （204）</option>
-                <option value="10">2E （205）</option>
-                <option value="11">3A （301）</option>
-                <option value="12">3B （302）</option>
-                <option value="13">3C （303）</option>
-                <option value="14">3D （304）</option>
-                <option value="15">3E （305）</option>
-                <option value="16">AAR （206）</option>
-                <option value="17">MUSIC ROOM（207）</option>
-                <option value="18">SAC（106）</option>
-                <option value="19">HALL（107）</option>
-                <option value="20">BIO LAB（306）</option>
-                <option value="21">PHY LAB（307）</option>
+            <option value="101">1A （101）</option>
+            <option value="102">1B （102）</option>
+            <option value="103">1C （103）</option>
+            <option value="104">1D （104）</option>
+            <option value="105">1E （105）</option>
+            <option value="201">2A （201）</option>
+            <option value="202">2B （202）</option>
+            <option value="203">2C （203）</option>
+            <option value="204">2D （204）</option>
+            <option value="205">2E （205）</option>
+            <option value="301">3A （301）</option>
+            <option value="302">3B （302）</option>
+            <option value="303">3C （303）</option>
+            <option value="304">3D （304）</option>
+            <option value="305">3E （305）</option>
+            <option value="206">AAR （206）</option>
+            <option value="207">MUSIC ROOM（207）</option>
+            <option value="106">SAC（106）</option>
+            <option value="107">HALL（107）</option>
+            <option value="306">BIO LAB（306）</option>
+            <option value="307">PHY LAB（307）</option>
           </select>
 
           <input type="date" id="filterDate" />
@@ -347,7 +347,7 @@
           const bookings = await res.json();
 
           if (bookings.length === 0) {
-            bookingList.innerHTML = '<p class="no-booking">No bookings found</p>';
+            bookingList.innerHTML = '<p class="no-booking">No booking</p>';
             return;
           }
 
