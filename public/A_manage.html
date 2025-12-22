@@ -269,7 +269,7 @@
         <div class="manage-wrapper">
           <!-- 左半：所有预约管理 -->
           <div class="manage-half">
-            <div class="section-title">All Bookings (Admin)</div>
+            <div class="section-title">All Bookings1 (Admin)</div>
 
             <div class="filter-bar">
               <select id="filterCid">
@@ -405,7 +405,8 @@
             body: JSON.stringify({
               cid, bdate, stime, etime, reason,
               people: parseInt(people),
-              special
+              special,
+              admin: true
             }),
           });
           if (res.ok) {
