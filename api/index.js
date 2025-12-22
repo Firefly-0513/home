@@ -157,52 +157,13 @@ app.post("/book", async (req, res) => {
         .json({ error: "This venue is already booked for this time slot." });
     }
 
-    // 8. 判斷是 新建 還是 更新
-    if (bid) {
-      // === 更新現有預約 ===
-      const isAdmin = req.body.admin === true;  // 管理員操作會傳 admin: true
-
-      let updateQuery;
-      let updateParams;
-
-      if (isAdmin) {
-        // 管理員：不檢查 tid
-        updateQuery = `
-          UPDATE booking 
-          SET cid = $1, bdate = $2, stime = $3, etime = $4, 
-              reason = $5, people = $6, special = $7
-          WHERE bid = $8
-          RETURNING bid
-        `;
-        updateParams = [cidNum, bdate, stime, etime, reason, peopleNum, special, bid];
-      } else {
-        // 普通老師：檢查 tid
-        updateQuery = `
-          UPDATE booking 
-          SET cid = $1, bdate = $2, stime = $3, etime = $4, 
-              reason = $5, people = $6, special = $7
-          WHERE bid = $8 AND tid = $9
-          RETURNING bid
-        `;
-        updateParams = [cidNum, bdate, stime, etime, reason, peopleNum, special, bid, tid];
-      }
-
-      const result = await pool.query(updateQuery, updateParams);
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Booking not found or not yours" });
-      }
-
-      res.json({ success: true, message: "Booking updated successfully" });
-    } else {
-      // === 新建預約（原本的 INSERT 邏輯）===
-      // （你原本的 INSERT 代码在这里，我假设你有这部分，如果没有请补上）
-      const insertResult = await pool.query(
-        `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING bid`,
-        [tid, cidNum, bdate, stime, etime, reason, peopleNum, special]
-      );
+    // 輸入資料
+    const result = await pool.query(
+      `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+       RETURNING bid`,
+      [tid, cid, bdate, stime, etime, reason, people, special]
+    );
 
     const newBookingId = result.rows[0].bid;
 
