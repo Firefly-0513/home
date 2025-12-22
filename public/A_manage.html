@@ -369,13 +369,17 @@
 
       async function adminDeleteBooking(bid) {
         if (!confirm("Confirm to delete this booking?")) return;
+
         try {
-          const res = await fetch(`/booking/${bid}`, { method: "DELETE" });
+          const res = await fetch(`/admin/booking/${bid}`, {
+            method: "DELETE"
+          });
+
+          const data = await res.json();
           if (res.ok) {
             alert("Delete success");
             loadAllBookings();
           } else {
-            const data = await res.json();
             alert(data.error || "Delete failed");
           }
         } catch (err) {
@@ -399,21 +403,25 @@
 
       async function adminUpdateBooking(bid, cid, bdate, stime, etime, reason, people, special) {
         try {
-          const res = await fetch(`/booking/${bid}`, {
+          const res = await fetch(`/admin/booking/${bid}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              cid, bdate, stime, etime, reason,
+              cid,
+              bdate,
+              stime,
+              etime,
+              reason,
               people: parseInt(people),
-              special,
-              admin: true
+              special
             }),
           });
+
+          const data = await res.json();
           if (res.ok) {
             alert("Update success");
             loadAllBookings();
           } else {
-            const data = await res.json();
             alert(data.error || "Update failed");
           }
         } catch (err) {

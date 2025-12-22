@@ -380,6 +380,172 @@ app.get("/all-bookings", async (req, res) => {
   }
 });
 
+// ==================== 管理员专属路由 ====================
+
+// PUT /admin/booking/:bid - 管理员更新任何预约（不检查 tid）
+app.put("/admin/booking/:bid", async (req, res) => {
+  const { cid, bdate, stime, etime, reason, people, special } = req.body;
+  const bid = parseInt(req.params.bid, 10);
+
+  if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const cidNum = parseInt(cid, 10);
+  const peopleNum = parseInt(people, 10);
+  if (isNaN(cidNum) || isNaN(peopleNum)) {
+    return res
+      .status(400)
+      .json({ error: "Classroom ID and number of people must be numbers" });
+  }
+
+  // 2. 時間驗證：結束時間必須大於開始時間
+  if (stime >= etime) {
+    return res
+      .status(400)
+      .json({ error: "Starting time must be before ending time." });
+  }
+
+  // 3. 時間驗證：不能超過 18:00
+  if (stime < "06:30") {
+    return res.status(400).json({
+      error: "Booking cannot before 06:30 because the school close.",
+    });
+  }
+  if (etime > "18:00") {
+    return res.status(400).json({
+      error:
+        "Booking cannot end after 18:00 because the school closes at 6 PM.",
+    });
+  }
+
+  // 4. 日期驗證：不能是過去的日期
+  const today = new Date().toISOString().split("T")[0];
+  if (bdate < today) {
+    return res
+      .status(400)
+      .json({ error: "Booking date cannot be in the past." });
+  }
+
+  // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
+  const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
+  if (bdate === today && stime < now.substring(0, 5)) {
+    // 只比對 HH:MM
+    return res
+      .status(400)
+      .json({ error: "Booking time cannot be in the past." });
+  }
+
+  try {
+    // 6. 課室容量驗證
+    const capacityResult = await pool.query(
+      "SELECT capacity FROM classroom WHERE cid = $1",
+      [cidNum]
+    );
+
+    if (capacityResult.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid classroom ID" });
+    }
+
+    const capacity = capacityResult.rows[0].capacity;
+
+    if (peopleNum > capacity) {
+      return res.status(400).json({
+        error: `This venue can only accommodate ${capacity} people. Please choose another venue or reduce the number.`,
+      });
+    }
+
+    // 7. 時間衝突檢查（排除自己這筆記錄）
+    const conflict = await pool.query(
+      `
+      SELECT 1 FROM booking 
+      WHERE cid = $1 
+        AND bdate = $2 
+        AND bid != $3  -- 排除正在編輯的這筆
+        AND (
+          (stime < $4 AND etime > $4) OR  -- 新結束時間落在別人時段內
+          (stime < $5 AND etime > $5) OR  -- 新開始時間落在別人時段內
+          (stime >= $4 AND etime <= $5)   -- 新時段完全包含在別人時段內
+        )
+      `,
+      [cidNum, bdate, bid, etime, stime]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "This time slot is already booked by someone else." });
+    }
+
+    // 管理员直接更新，不检查 tid
+    const result = await pool.query(
+      `UPDATE booking 
+       SET cid = $1, bdate = $2, stime = $3, etime = $4, 
+           reason = $5, people = $6, special = $7
+       WHERE bid = $8
+       RETURNING bid`,
+      [cidNum, bdate, stime, etime, reason, peopleNum, special, bid]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Booking updated successfully by admin",
+    });
+  } catch (err) {
+    console.error("Admin update error:", err);
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
+// DELETE /admin/booking/:bid - 管理员删除任何预约
+app.delete("/admin/booking/:bid", async (req, res) => {
+  const bid = parseInt(req.params.bid, 10);
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM booking WHERE bid = $1 RETURNING bid`,
+      [bid]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    res.json({ success: true, message: "Booking deleted successfully by admin" });
+  } catch (err) {
+    console.error("Admin delete error:", err);
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+// 可选：GET /admin/booking/:bid - 获取单笔详情（未来扩展用）
+app.get("/admin/booking/:bid", async (req, res) => {
+  const bid = parseInt(req.params.bid, 10);
+
+  try {
+    const result = await pool.query(
+      `SELECT b.*, t.tname 
+       FROM booking b 
+       JOIN teacher t ON b.tid = t.tid 
+       WHERE b.bid = $1`,
+      [bid]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Admin get booking error:", err);
+    res.status(500).json({ error: "Failed to fetch booking" });
+  }
+});
+
 // 监听端口（Vercel 会自动处理端口）
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
