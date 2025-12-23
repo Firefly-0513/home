@@ -351,13 +351,13 @@ app.put("/booking/:bid", async (req, res) => {
   }
 });
 
+// 公共接口：所有老师都能查看（不暴露 tid 筛选）
 app.get("/all-bookings", async (req, res) => {
-  const { cid, bdate } = req.query; // cid 可选，bdate 可选（YYYY-MM-DD）
+  const { cid, bdate } = req.query;  // 只支持 cid 和单日 bdate
 
   try {
     let query = `
-      SELECT b.bid, b.cid, b.bdate, b.stime, b.etime, 
-             b.reason, b.people, b.special, b.create_at, t.tname
+      SELECT b.cid, b.bdate, b.stime, b.etime, t.tname
       FROM booking b
       JOIN teacher t ON b.tid = t.tid
       WHERE b.bdate >= CURRENT_DATE
@@ -368,31 +368,17 @@ app.get("/all-bookings", async (req, res) => {
       params.push(cid);
       query += ` AND b.cid = $${params.length}`;
     }
-    if (tid) {
-      params.push(tid);
-      query += ` AND b.tid = $${params.length}`;
+    if (bdate) {
+      params.push(bdate);
+      query += ` AND b.bdate = $${params.length}`;
     }
-    if (startDate) {
-      params.push(startDate);
-      query += ` AND b.bdate >= $${params.length}`;
-    }
-    if (endDate) {
-      params.push(endDate);
-      query += ` AND b.bdate <= $${params.length}`;
-    }
-
-    // 如果完全没选日期，默认只显示今天及以后
-    if (!startDate && !endDate) {
-      query += ` AND b.bdate >= CURRENT_DATE`;
-    }
-
 
     query += ` ORDER BY b.bdate ASC, b.stime ASC`;
 
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    console.error("Fetch all bookings error:", err);
+    console.error("Public all-bookings error:", err);
     res.status(500).json({ error: "Failed to fetch bookings" });
   }
 });
@@ -540,26 +526,50 @@ app.delete("/admin/booking/:bid", async (req, res) => {
 });
 
 // 可选：GET /admin/booking/:bid - 获取单笔详情（未来扩展用）
-app.get("/admin/booking/:bid", async (req, res) => {
-  const bid = parseInt(req.params.bid, 10);
+// ==================== 新增：管理员专用 - 获取所有预约（支持按老师和日期范围筛选） ====================
+app.get("/admin/all-bookings", async (req, res) => {
+  const { cid, tid, startDate, endDate } = req.query;
 
   try {
-    const result = await pool.query(
-      `SELECT b.*, t.tname 
-       FROM booking b 
-       JOIN teacher t ON b.tid = t.tid 
-       WHERE b.bid = $1`,
-      [bid]
-    );
+    let query = `
+      SELECT b.bid, b.cid, b.bdate, b.stime, b.etime, 
+             b.reason, b.people, b.special, b.create_at, t.tname
+      FROM booking b
+      JOIN teacher t ON b.tid = t.tid
+      WHERE 1=1
+    `;
+    const params = [];
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Booking not found" });
+    if (cid) {
+      params.push(cid);
+      query += ` AND b.cid = $${params.length}`;
+    }
+    if (tid) {
+      params.push(tid);
+      query += ` AND b.tid = $${params.length}`;
+    }
+    if (startDate) {
+      params.push(startDate);
+      query += ` AND b.bdate >= $${params.length}`;
+    }
+    if (endDate) {
+      params.push(endDate);
+      query += ` AND b.bdate <= $${params.length}`;
     }
 
-    res.json(result.rows[0]);
+
+    if (!startDate && !endDate) {
+      query += ` AND b.bdate >= CURRENT_DATE`;
+    }
+
+
+    query += ` ORDER BY b.bdate ASC, b.stime ASC`;
+
+    const result = await pool.query(query, params);
+    res.json(result.rows);
   } catch (err) {
-    console.error("Admin get booking error:", err);
-    res.status(500).json({ error: "Failed to fetch booking" });
+    console.error("Admin all-bookings error:", err);
+    res.status(500).json({ error: "Failed to fetch admin bookings" });
   }
 });
 
