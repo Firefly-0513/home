@@ -14,6 +14,9 @@ const pool = new Pool({
 });
 
 pool.options.webSocketConstructor = ws;
+pool.on("connect", (client) => {
+  client.query("SET TIME ZONE 'Asia/Hong_Kong';");
+});
 
 // 欢迎页面路由
 app.get("/", (req, res) => {
@@ -191,7 +194,7 @@ app.get("/my-bookings", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT bid, cid, bdate, stime, etime, reason, people, special 
+      `SELECT bid, cid, bdate, stime, etime, reason, people, special,create_at 
        FROM booking 
        WHERE tid = $1 AND bdate >= CURRENT_DATE 
        ORDER BY bdate ASC, stime ASC`,
@@ -354,7 +357,7 @@ app.get("/all-bookings", async (req, res) => {
   try {
     let query = `
       SELECT b.bid, b.cid, b.bdate, b.stime, b.etime, 
-             b.reason, b.people, b.special, t.tname
+             b.reason, b.people, b.special, b.create_at, t.tname
       FROM booking b
       JOIN teacher t ON b.tid = t.tid
       WHERE b.bdate >= CURRENT_DATE
