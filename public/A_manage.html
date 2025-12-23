@@ -99,10 +99,17 @@
       }
 
       /* 每个半边 */
-      .manage-half {
-        flex: 1;
+      .manage-half-left {          /* 左边 3/4 */
+        flex: 3;
         min-width: 300px;
-        max-width: 48%;
+        display: flex;
+        flex-direction: column;
+      }
+      .manage-half-right {         /* 右边 1/4 */
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
       }
 
       /* booking-box 宽度调整，避免在半边里太宽溢出 */
@@ -224,7 +231,7 @@
 
       .no-booking {
         font-size: 2vw;
-        color: #999;
+        color: #c2353a;
         text-align: center;
         margin-top: 50px;
       }
@@ -276,13 +283,13 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage9</p>
+          <p>Admin Manage10</p>
         </div>
         <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
 
         <div class="manage-wrapper">
           <!-- 左半：所有预约管理 -->
-          <div class="manage-half">
+          <div class="manage-half-left">
             <div class="section-title">All Bookings3 (Admin)</div>
 
             <div class="filter-bar">
@@ -311,6 +318,21 @@
                 <option value="307">PHY LAB（307）</option>
               </select>
 
+              <select id="filterTeacher">
+                <option value="">All Teachers</option>
+                <option value="0001">POON SIN MAN</option>
+                <option value="0002">LUO RUI TANG</option>
+                <option value="0003">LI SHI LONG</option>
+                <option value="0004">CHAN YU LING</option>
+                <option value="0005">LIU YING</option>
+                <option value="0006">BA CHONG SHEN ZI</option>
+                <option value="0007">NG CHUK WAI</option>
+                <option value="0008">LY HOK LEUNG</option>
+                <option value="0009">CHOW NGO YIN</option>
+                <option value="0010">LO TZY KEY</option>
+                <option value="0011">WONG TZUN KOK</option>
+              </select>
+
               <input type="date" id="filterDate" />
 
               <button onclick="loadAllBookings()">Search</button>
@@ -331,15 +353,18 @@
     <script>
       async function loadAllBookings() {
         const cid = document.getElementById("filterCid").value;
-        const bdate = document.getElementById("filterDate").value;
+        const tid = document.getElementById("filterTeacher").value;
+        const startDate = document.getElementById("filterStartDate").value;
+        const endDate = document.getElementById("filterEndDate").value;
 
         let url = "/all-bookings";
-        if (cid || bdate) {
-          url += "?";
-          if (cid) url += `cid=${cid}&`;
-          if (bdate) url += `bdate=${bdate}`;
-          url = url.replace(/&$/, "");
-        }
+        const params = new URLSearchParams();
+        if (cid) params.append("cid", cid);
+        if (tid) params.append("tid", tid);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+
+        if (params.toString()) url += "?" + params.toString();
 
         const list = document.getElementById("allBookingList");
 

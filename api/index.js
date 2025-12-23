@@ -365,13 +365,27 @@ app.get("/all-bookings", async (req, res) => {
     const params = [];
 
     if (cid) {
-      query += ` AND b.cid = $${params.length + 1}`;
       params.push(cid);
+      query += ` AND b.cid = $${params.length}`;
     }
-    if (bdate) {
-      query += ` AND b.bdate = $${params.length + 1}`;
-      params.push(bdate);
+    if (tid) {
+      params.push(tid);
+      query += ` AND b.tid = $${params.length}`;
     }
+    if (startDate) {
+      params.push(startDate);
+      query += ` AND b.bdate >= $${params.length}`;
+    }
+    if (endDate) {
+      params.push(endDate);
+      query += ` AND b.bdate <= $${params.length}`;
+    }
+
+    // 如果完全没选日期，默认只显示今天及以后
+    if (!startDate && !endDate) {
+      query += ` AND b.bdate >= CURRENT_DATE`;
+    }
+
 
     query += ` ORDER BY b.bdate ASC, b.stime ASC`;
 
