@@ -283,7 +283,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage11</p>
+          <p>Admin Manage12</p>
         </div>
         <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
 
@@ -333,8 +333,15 @@
                 <option value="0011">WONG TZUN KOK</option>
               </select>
 
+              <div style="display:flex; flex-direction:column; align-items:start;">
+              <label style="font-size:1.4vw; font-weight:bold; margin-bottom:5px;">Start Date</label>
               <input type="date" id="filterStartDate" />
+              </div>
+
+              <div style="display:flex; flex-direction:column; align-items:start;">
+              <label style="font-size:1.4vw; font-weight:bold; margin-bottom:5px;">End Date</label>
               <input type="date" id="filterEndDate" />
+              </div>
 
               <button onclick="loadAllBookings()">Search</button>
             </div>
@@ -387,6 +394,8 @@
                 <div class="booking-info-row">
                   <p class="booking-info">Date: ${booking.bdate.substring(0,10)}</p>
                   <p class="booking-info">Time: ${booking.stime.substring(0,5)} - ${booking.etime.substring(0,5)}</p>
+                </div>
+                <div class="booking-info-row2">
                   <p class="booking-info">Teacher: ${booking.tname}</p>
                 </div>
                 <div class="booking-info-row2">
