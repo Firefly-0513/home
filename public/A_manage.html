@@ -99,15 +99,13 @@
       }
 
       /* 每个半边 */
-      .manage-half-left {
-        /* 左边 3/4 */
+      .manage-half-left {          /* 左边 3/4 */
         flex: 3;
         min-width: 300px;
         display: flex;
         flex-direction: column;
       }
-      .manage-half-right {
-        /* 右边 1/4 */
+      .manage-half-right {         /* 右边 1/4 */
         flex: 1;
         min-width: 250px;
         display: flex;
@@ -203,7 +201,6 @@
         font-size: 1.6vw;
         border-radius: 12px;
         border: none;
-        height: 40px;
       }
       .filter-bar button {
         background-color: rgb(28, 190, 28);
@@ -288,14 +285,7 @@
         <div class="top">
           <p>Admin Manage12</p>
         </div>
-        <div
-          style="
-            width: 100%;
-            height: 1vh;
-            background-color: #fb85b4;
-            border-radius: 20px;
-          "
-        ></div>
+        <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
 
         <div class="manage-wrapper">
           <!-- 左半：所有预约管理 -->
@@ -343,40 +333,14 @@
                 <option value="0011">WONG TZUN KOK</option>
               </select>
 
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: start;
-                "
-              >
-                <label
-                  style="
-                    font-size: 1.4vw;
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                  "
-                  >Start Date</label
-                >
-                <input type="date" id="filterStartDate" />
+              <div style="display:flex; flex-direction:column; align-items:start;">
+              <label style="font-size:1.4vw; font-weight:bold; margin-bottom:5px;">Start Date</label>
+              <input type="date" id="filterStartDate" />
               </div>
 
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: start;
-                "
-              >
-                <label
-                  style="
-                    font-size: 1.4vw;
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                  "
-                  >End Date</label
-                >
-                <input type="date" id="filterEndDate" />
+              <div style="display:flex; flex-direction:column; align-items:start;">
+              <label style="font-size:1.4vw; font-weight:bold; margin-bottom:5px;">End Date</label>
+              <input type="date" id="filterEndDate" />
               </div>
 
               <button onclick="loadAllBookings()">Search</button>
@@ -426,18 +390,10 @@
               (booking) => `
             <div class="booking-box">
               <div class="booking-details">
-                <p class="booking-id">BID: ${booking.bid} | Venue: ${
-                booking.cid
-              }</p>
+                <p class="booking-id">BID: ${booking.bid} | Venue: ${booking.cid}</p>
                 <div class="booking-info-row">
-                  <p class="booking-info">Date: ${booking.bdate.substring(
-                    0,
-                    10
-                  )}</p>
-                  <p class="booking-info">Time: ${booking.stime.substring(
-                    0,
-                    5
-                  )} - ${booking.etime.substring(0, 5)}</p>
+                  <p class="booking-info">Date: ${booking.bdate.substring(0,10)}</p>
+                  <p class="booking-info">Time: ${booking.stime.substring(0,5)} - ${booking.etime.substring(0,5)}</p>
                 </div>
                 <div class="booking-info-row2">
                   <p class="booking-info">Teacher: ${booking.tname}</p>
@@ -446,24 +402,14 @@
                   <p class="booking-info">people: ${booking.people}</p>
                   <p class="booking-info">reason: ${booking.reason}</p>
                   <p class="booking-info">special: ${booking.special}</p>
-                  <p class="booking-info">Created at: ${new Date(
-                    booking.create_at
-                  ).toLocaleString("en-HK")}</p>
+                  <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK',)}</p>
                 </div>
               </div>
               <div class="actions">
-                <button class="btn-edit" onclick="adminEditBooking(${
-                  booking.bid
-                }, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${
-                booking.etime
-              }', '${(booking.reason || "").replace(/'/g, "\\'")}', '${
-                booking.people
-              }', '${(booking.special || "").replace(/'/g, "\\'")}')">
+                <button class="btn-edit" onclick="adminEditBooking(${booking.bid}, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${booking.etime}', '${(booking.reason || '').replace(/'/g, "\\'")}', '${booking.people}', '${(booking.special || '').replace(/'/g, "\\'")}')">
                   Edit
                 </button>
-                <button class="btn-delete" onclick="adminDeleteBooking(${
-                  booking.bid
-                })">
+                <button class="btn-delete" onclick="adminDeleteBooking(${booking.bid})">
                   Delete
                 </button>
               </div>
@@ -481,7 +427,7 @@
 
         try {
           const res = await fetch(`/admin/booking/${bid}`, {
-            method: "DELETE",
+            method: "DELETE"
           });
 
           const data = await res.json();
@@ -496,16 +442,7 @@
         }
       }
 
-      function adminEditBooking(
-        bid,
-        cid,
-        bdate,
-        stime,
-        etime,
-        reason,
-        people,
-        special
-      ) {
+      function adminEditBooking(bid, cid, bdate, stime, etime, reason, people, special) {
         const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
         const newStime = prompt("start time (HH:MM)", stime) || stime;
         const newEtime = prompt("end time (HH:MM)", etime) || etime;
@@ -515,29 +452,11 @@
         const newSpecial = prompt("special requirements", special) || special;
 
         if (confirm("Confirm update?")) {
-          adminUpdateBooking(
-            bid,
-            newCid,
-            newDate,
-            newStime,
-            newEtime,
-            newReason,
-            newPeople,
-            newSpecial
-          );
+          adminUpdateBooking(bid, newCid, newDate, newStime, newEtime, newReason, newPeople, newSpecial);
         }
       }
 
-      async function adminUpdateBooking(
-        bid,
-        cid,
-        bdate,
-        stime,
-        etime,
-        reason,
-        people,
-        special
-      ) {
+      async function adminUpdateBooking(bid, cid, bdate, stime, etime, reason, people, special) {
         try {
           const res = await fetch(`/admin/booking/${bid}`, {
             method: "PUT",
@@ -549,7 +468,7 @@
               etime,
               reason,
               people: parseInt(people),
-              special,
+              special
             }),
           });
 
