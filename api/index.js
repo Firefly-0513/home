@@ -162,19 +162,16 @@ app.post("/book", async (req, res) => {
     }
 
     // 輸入資料
-    const insertResult = await pool.query(
-      `
+    const insertResult = await pool.query(`
       INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special, create_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
       RETURNING bid, create_at
-    `,
-      [tid, cidNum, bdate, stime, etime, reason, peopleNum, special || null]
-    );
+    `,[tid, cidNum, bdate, stime, etime, reason, peopleNum, special || null]);
 
 
     const newBookingId = result.rows[0].bid;
     const bookingId = insertResult.rows[0].bid;
-    const createdAt = result.rows[0].create_at;
+    const createdAt = insertResult.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
 
     if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
