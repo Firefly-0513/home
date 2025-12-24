@@ -210,9 +210,12 @@ app.post("/book", async (req, res) => {
       };
 
       // 发送邮件（异步，不阻塞响应）
-      transporter.sendMail(mailOptions).catch((err) => {
-        console.error("Email failed:", err);
-        // 不影响预约成功
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("郵件發送失敗:", error);
+        } else {
+          console.log("郵件發送成功: " + info.response);
+        }
       });
     }
 
