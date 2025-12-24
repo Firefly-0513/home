@@ -374,7 +374,7 @@
               const bookings = await res.json();
 
               if (bookings.length === 0) {
-                bookingList.innerHTML = '<p class="no-booking">No matching bookings found</p>';
+                bookingList.innerHTML = '<p class="no-booking">No matching bookings found or you dont have any booking in future</p>';
                 return;
               }
 
