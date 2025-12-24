@@ -184,20 +184,41 @@ app.post("/book", async (req, res) => {
 
 // 从数据库读取数据（GET 请求）
 // 獲取指定老師的未來預約（用於 T_edit）
+// 獲取指定老師的預約（支援 bid、cid、bdate 篩選）
 app.get("/my-bookings", async (req, res) => {
   const tid = req.query.tid;
+  const bid = req.query.bid;
+  const cid = req.query.cid;
+  const bdate = req.query.bdate;
+
   if (!tid) {
     return res.status(400).json({ error: "Missing tid" });
   }
 
   try {
-    const result = await pool.query(
-      `SELECT bid, cid, bdate, stime, etime, reason, people, special,create_at 
-       FROM booking 
-       WHERE tid = $1 AND bdate >= CURRENT_DATE 
-       ORDER BY bdate ASC, stime ASC`,
-      [tid]
-    );
+    let query = `
+      SELECT bid, cid, bdate, stime, etime, reason, people, special, create_at 
+      FROM booking 
+      WHERE tid = $1 AND bdate >= CURRENT_DATE
+    `;
+    const params = [tid];
+
+    if (bid) {
+      params.push(bid);
+      query += ` AND bid = $${params.length}`;
+    }
+    if (cid) {
+      params.push(cid);
+      query += ` AND cid = $${params.length}`;
+    }
+    if (bdate) {
+      params.push(bdate);
+      query += ` AND bdate = $${params.length}`;
+    }
+
+    query += ` ORDER BY bdate ASC, stime ASC`;
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

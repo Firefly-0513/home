@@ -289,7 +289,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Your bookings0</p>
+          <p>Your bookings9</p>
           <div
             style="
               width: 100%;
@@ -332,7 +332,7 @@
 
           <input type="date" id="searchDate" />
 
-          <button onclick="searchByBid()">Search</button>
+          <button onclick="search()">Search</button>
         </div>
 
         <div id="bookingList"></div>
@@ -415,12 +415,24 @@
             }
           });
 
-          function searchBookings() {
-            const cid = document.getElementById("searchCid").value;
-            const bdate = document.getElementById("searchDate").value;
-            loadBookings(cid, bdate, "");
+          function search() {
+            loadMyBookings();
           }
 
+          // 也可以支援 Enter 鍵直接搜索（提升體驗）
+          document.getElementById("searchBid").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              loadMyBookings();
+            }
+          });
+
+          document.getElementById("searchDate").addEventListener("change", () => {
+            loadMyBookings();
+          });
+
+          document.getElementById("searchCid").addEventListener("change", () => {
+            loadMyBookings();
+          });
 
           async function deleteBooking(bid) {
             if (!confirm("confirm to delete this booking?")) return;
