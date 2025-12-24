@@ -268,7 +268,7 @@
         </div>
 
         <!-- 公告顯示區域（放在粉色線下方、表單上方） -->
-        <p class="announcement-header">System Announcements3:</p>
+        <p class="announcement-header">System Announcements4:</p>
         <div id="announcementList">
       
         </div>
@@ -468,7 +468,7 @@
                       ${a.message.replace(/\n/g, '<br>')}
                     </div>
                     <div class="announcement-time">
-                      ${new Date(a.create_at).toLocaleString('en-HK',)}</p>
+                      ${new Date(a.create_at).toLocaleString('en-HK',{timeZone: 'Asia/Hong_Kong'})}</p>
                     </div>
                   </div>
                 `).join("");
