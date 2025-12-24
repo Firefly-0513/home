@@ -486,7 +486,7 @@
           const bookings = await res.json();
 
           if (bookings.length === 0) {
-            list.innerHTML = '<p class="no-booking">No booking</p>';
+            list.innerHTML = '<p class="no-booking">No match booking</p>';
             return;
           }
 
@@ -541,7 +541,7 @@
             )
             .join("");
         } catch (err) {
-          list.innerHTML = '<p style="color:red;">Loading failed</p>';
+          list.innerHTML = '<p style="color:red;">data error,please check your data</p>';
         }
       }
 

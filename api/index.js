@@ -209,7 +209,7 @@ app.get("/my-bookings", async (req, res) => {
         return res.status(400).json({ error: "Invalid Booking ID" });
       }
       params.push(bidNum);
-      query += ` AND b.bid = $${params.length}`;
+      query += ` AND bid = $${params.length}`;
     }
     if (cid) {
       params.push(cid);
