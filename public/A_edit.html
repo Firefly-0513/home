@@ -289,7 +289,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Your bookings9</p>
+          <p>Your bookings0</p>
           <div
             style="
               width: 100%;
@@ -348,90 +348,91 @@
               return;
             }
 
+            await loadMyBookings(); // 首次載入
+          });
+
+          async function loadMyBookings() {
+            const tid = localStorage.getItem("userTid");
+            const bidInput = document.getElementById("searchBid").value.trim();
+            const cid = document.getElementById("searchCid").value;
+            const bdate = document.getElementById("searchDate").value;
+
+            let url = `/my-bookings?tid=${tid}`;
+            let hasParam = false;
+
+            if (bidInput) {
+              url += `${hasParam ? '&' : '?'}bid=${bidInput}`;
+              hasParam = true;
+            }
+            if (cid) {
+             url += `${hasParam ? '&' : '?'}cid=${cid}`;
+             hasParam = true;
+            }
+            if (bdate) {
+              url += `${hasParam ? '&' : '?'}bdate=${bdate}`;
+              hasParam = true;
+            }
+
             const bookingList = document.getElementById("bookingList");
 
             try {
-              const res = await fetch(`/my-bookings?tid=${tid}`);
+             const res = await fetch(url);
+             if (!res.ok) throw new Error("Network error");
+
               const bookings = await res.json();
 
               if (bookings.length === 0) {
-                bookingList.innerHTML =
-                  '<p class="no-booking">You dont have any booking in future</p>';
+                bookingList.innerHTML = '<p class="no-booking">No matching bookings found</p>';
                 return;
               }
 
               bookingList.innerHTML = bookings
-                .map(
-                  (booking) => `
-                <div class="booking-box">
-                  <div class="booking-details">
-                    <p class="booking-id">Booking ID: ${booking.bid}</p>
-                    <div class="booking-info-row">
-                      <p class="booking-info">Venue: ${booking.cid}</p>
-                      <p class="booking-info">Date: ${booking.bdate.substring(
-                        0,
-                        10
-                      )}</p>
-                      <p class="booking-info">Time: ${booking.stime.substring(
-                        0,
-                        5
-                      )} - ${booking.etime.substring(0, 5)}</p>
+                .map(booking => `
+                  <div class="booking-box">
+                    <div class="booking-details">
+                      <p class="booking-id">Booking ID: ${booking.bid}</p>
+                      <div class="booking-info-row">
+                        <p class="booking-info">Venue: ${booking.cid}</p>
+                        <p class="booking-info">Date: ${booking.bdate.substring(0, 10)}</p>
+                        <p class="booking-info">Time: ${booking.stime.substring(0, 5)} - ${booking.etime.substring(0, 5)}</p>
+                      </div>
+                      <div class="booking-info-row">
+                        <p class="booking-info">People: ${booking.people}</p>
+                        <p class="booking-info">Reason: ${booking.reason}</p>
+                        <p class="booking-info">Special: ${booking.special || "None"}</p>
+                        <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK')}</p>
+                      </div>
                     </div>
-                    <div class="booking-info-row">
-                      <p class="booking-info">people: ${booking.people}</p>
-                      <p class="booking-info">reason: ${booking.reason}</p>
-                      <p class="booking-info">special: ${booking.special}</p>
-                      <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK',)}</p>
+                    <div class="actions">
+                      <button class="btn-edit" onclick="editBooking(${booking.bid}, 
+                        '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
+                        '${booking.etime}', '${booking.reason.replace(/'/g, "\\'")}', 
+                        '${booking.people}', '${(booking.special || "").replace(/'/g, "\\'")}')">
+                        Edit
+                      </button>
+                      <button class="btn-delete" onclick="deleteBooking(${booking.bid})">
+                        Delete
+                      </button>
                     </div>
                   </div>
-                  <div class="actions">
-                    <button class="btn-edit" onclick="editBooking(${
-                      booking.bid
-                    }, 
-                    '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
-                    '${booking.etime}', '${booking.reason.replace(
-                    /'/g,
-                    "\\'"
-                  )}', 
-                    '${booking.people}', '${(booking.special || "").replace(
-                    /'/g,
-                    "\\'"
-                  )}')">
-                      Edit
-                    </button>
-                    <button class="btn-delete" onclick="deleteBooking(${
-                      booking.bid
-                    })">
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              `
-                )
-                .join("");
-            } catch (err) {
-              bookingList.innerHTML =
-                '<p style="color:red;">loading error</p>';
-            }
-          });
+                `).join("");
 
+            } catch (err) {
+              console.error(err);
+              bookingList.innerHTML = '<p style="color:red;">Loading failed, please try again</p>';
+            }
+          }
+
+          // Search 按鈕點擊時觸發搜索
           function search() {
             loadMyBookings();
           }
 
-          // 也可以支援 Enter 鍵直接搜索（提升體驗）
+          // 輸入 BID 後按 Enter 鍵直接搜索
           document.getElementById("searchBid").addEventListener("keypress", (e) => {
             if (e.key === "Enter") {
               loadMyBookings();
             }
-          });
-
-          document.getElementById("searchDate").addEventListener("change", () => {
-            loadMyBookings();
-          });
-
-          document.getElementById("searchCid").addEventListener("change", () => {
-            loadMyBookings();
           });
 
           async function deleteBooking(bid) {
