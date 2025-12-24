@@ -218,7 +218,7 @@ app.post("/book", async (req, res) => {
 
     res.json({
       success: true,
-      bookingId: BookingId,
+      bookingId: newBookingId,
       message: "Booking successful!",
     }); // 确保是 JSON
   } catch (err) {
