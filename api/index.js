@@ -168,8 +168,7 @@ app.post("/book", async (req, res) => {
       RETURNING bid, create_at
     `,[tid, cidNum, bdate, stime, etime, reason, peopleNum, special || null]);
 
-
-    const newBookingId = result.rows[0].bid;
+    const newBookingId = insertResult.rows[0].bid;
     const bookingId = insertResult.rows[0].bid;
     const createdAt = insertResult.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
@@ -219,7 +218,7 @@ app.post("/book", async (req, res) => {
 
     res.json({
       success: true,
-      bookingId: newBookingId,
+      bookingId: BookingId,
       message: "Booking successful!",
     }); // 确保是 JSON
   } catch (err) {
