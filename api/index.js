@@ -568,6 +568,80 @@ app.get("/admin/all-bookings", async (req, res) => {
   }
 });
 
+// ======================= 提示管理 API =======================
+// 讀取所有提示 (公開，供 booking 頁面使用)
+app.get("/announcements", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, message, create_at FROM announcements ORDER BY create_at DESC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch announcements error:", err);
+    res.status(500).json({ error: "Failed to fetch announcements" });
+  }
+});
+
+// admin 添加提示
+app.post("/admin/announcement", async (req, res) => {
+  const { message } = req.body;
+  if (!message || message.trim() === "") {
+    return res.status(400).json({ error: "Message is required" });
+  }
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO announcements (message) VALUES ($1) RETURNING id",
+      [message.trim()]
+    );
+    res.json({ success: true, id: result.rows[0].id });
+  } catch (err) {
+    console.error("Add announcement error:", err);
+    res.status(500).json({ error: "Add failed" });
+  }
+});
+
+// admin 修改提示
+app.put("/admin/announcement/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { message } = req.body;
+  if (isNaN(id) || !message || message.trim() === "") {
+    return res.status(400).json({ error: "Invalid ID or message" });
+  }
+
+  try {
+    const result = await pool.query(
+      "UPDATE announcements SET message = $1 WHERE id = $2 RETURNING id",
+      [message.trim(), id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Announcement not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Update announcement error:", err);
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
+// admin 刪除提示
+app.delete("/admin/announcement/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  try {
+    const result = await pool.query("DELETE FROM announcements WHERE id = $1 RETURNING id", [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Announcement not found" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete announcement error:", err);
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+
 // 监听端口（Vercel 会自动处理端口）
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
