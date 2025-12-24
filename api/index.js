@@ -165,12 +165,12 @@ app.post("/book", async (req, res) => {
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-       RETURNING bid`,
+       RETURNING bid,create_at`
       [tid, cid, bdate, stime, etime, reason, people, special]
     );
 
     const newBookingId = result.rows[0].bid;
-
+    const createdAt = result.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
 
     if (email && email.trim() !== "") {
@@ -199,7 +199,7 @@ Booking Details:
 - Reason: ${reason}
 - Number of People: ${people}
 - Special Requirements: ${special || "None"}
-- Created at :${create_at}
+- Created at :${new Date(createAt).toLocaleString("en-HK")}
 
 Thank you for using our booking system.
 If you need to cancel or modify, please visit https://home-nu-orpin.vercel.app/ or ask relevant teachers.
