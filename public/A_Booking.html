@@ -186,36 +186,34 @@
       /* 復用與 A_home.html 完全相同的 booking-box 樣式顯示公告 */
       .announcement-box {
         width: 100%;
-        min-width: auto;
         border: 4px solid #c2353a;
         box-sizing: border-box;
         padding: 2vh 2vw;
         border-radius: 50px;
-        background-color: rgb(255, 255, 255);
+        background-color: #ffffff;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       .announcement-box .announcement-message {
-        flex: 1;
-        text-align: left;
         font-size: 1.8vw;
         line-height: 1.6;
-        margin: 0;
+        margin: 0 0 10px 0;
         font-weight: bold;
+        word-wrap: break-word;
       }
 
       .announcement-box .announcement-time {
         font-size: 1.4vw;
         color: #888;
-        white-space: nowrap;
-        margin-left: 20px;
+        align-self: flex-end; /* 時間靠右 */
+        margin-top: 5px;
       }
 
       .no-announcement {
         font-size: 1.6vw;
-        color: #888;
+        color: #000000;
         font-style: italic;
         text-align: left;
         margin-left: 20px;
