@@ -299,7 +299,7 @@
 
       .announcement-btn{
         height: 7vh;
-        width: 2vw;
+        width: 4vw;
         padding: 0 40px;
         background-color: #1cbe1c;
         color: white;
@@ -423,11 +423,11 @@
 
           <!-- 右半：报告 -->
           <div class="manage-half-right">
-            <div class=".section-title-2">3announcement </div>
+            <div class=".section-title-2">4Announcement </div>
             <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
               <label for="newAnnouncement" class="newannouncment">Add New Announcement:</label>
-              <textarea id="newAnnouncement" style="width:100%; height:7vh; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
-              <button onclick="addAnnouncement()" style="announcement-btn">Add</button>
+              <textarea id="newAnnouncement" style="width:100%; height:3vh; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
+              <button onclick="addAnnouncement()" class="announcement-btn">Add</button>
             </div>
             <div id="announcementList" style="overflow-y: auto; flex:1;"></div>  <!-- 列表可滾動 -->
           </div>
@@ -619,7 +619,7 @@
             <div class="booking-box">
               <div class="booking-details">
                 <p class="booking-info" style="font-size:1.6vw; line-height:1.5;">${a.message}</p>
-                <p class="booking-info" style="font-size:1.2vw; color:gray;">Created: ${new Date(a.create_at).toLocaleString('en-HK')}</p>
+                <p class="booking-info" style="font-size:1.2vw; color:gray;">Created: ${a.create_at}
             </div>
             <div class="actions">
               <button class="btn-edit" onclick="editAnnouncement(${a.id}, '${a.message.replace(/'/g, "\\'")}')">Edit</button>
