@@ -88,14 +88,6 @@
       }
 
       /* 复用原本的粉红色线 */
-      .main .top + div {
-        width: 100%;
-        height: 1vh;
-        background-color: #fb85b4;
-        margin-top: 10px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-      }
 
       /* 左右并排容器 */
       .manage-wrapper {
@@ -107,10 +99,19 @@
       }
 
       /* 每个半边 */
-      .manage-half {
-        flex: 1;
+      .manage-half-left {
+        /* 左边 3/4 */
+        flex: 3;
         min-width: 300px;
-        max-width: 48%;
+        display: flex;
+        flex-direction: column;
+      }
+      .manage-half-right {
+        /* 右边 1/4 */
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
       }
 
       /* booking-box 宽度调整，避免在半边里太宽溢出 */
@@ -144,6 +145,14 @@
         gap: 40px;
         flex-wrap: wrap;
         margin-top: 10px; /* 减少顶部间距 */
+        margin-bottom: 0px;
+        line-height: 1.4; /* 行高压缩 */
+      }
+      .booking-info-row2 {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 30px; /* 减少顶部间距 */
         line-height: 1.4; /* 行高压缩 */
       }
       .booking-info {
@@ -180,24 +189,69 @@
       }
 
       .filter-bar {
-        width: 100%;
         display: flex;
-        justify-content: center;
+        align-items: flex-end; /* 底部对齐 */
         gap: 20px;
-        margin: 20px 0;
         flex-wrap: wrap;
+        justify-content: center;
+        margin: 30px 0;
+        padding: 0 20px;
       }
-      .filter-bar select,
-      .filter-bar input,
-      .filter-bar button {
-        padding: 10px 15px;
-        font-size: 1.6vw;
+
+      .manage-half-right .filter-bar {
+        flex-direction: column; 
+        align-items: stretch;
+        margin-bottom: 0.8vh; /* 减小底部间距，默认是30px */
+      }
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 180px;
+      }
+
+      .filter-group label {
+        font-size: 1.5vw;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+        text-align: left;
+      }
+
+      .filter-group select,
+      .filter-group input {
+        height: 7vh;
+        width: 12vw;
+        padding: 0 12px;
+        font-size: 1.5vw;
         border-radius: 12px;
-        border: none;
+        border: 1px solid #ccc;
+        background-color: white;
+        box-sizing: border-box;
       }
+
       .filter-bar button {
-        background-color: rgb(28, 190, 28);
+        height: 7vh;
+        width: 30vw;
+        padding: 0 40px;
+        background-color: #1cbe1c;
         color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.7vw;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .buttonarea button {
+        height: 7vh;
+        width: 12vw;
+        padding: 0 40px;
+        background-color: #1cbe1c;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.7vw;
+        font-weight: bold;
         cursor: pointer;
       }
 
@@ -207,24 +261,16 @@
         margin: 20px 0;
       }
 
-      .report-title {
-        width: 100%;
-        min-width: auto; /* 移除原本过大的 min-width */
-        border: 4px solid #c2353a;
-        box-sizing: border-box;
-        padding: 2vh 2vw;
-        border-radius: 50px;
-        margin-top: 3vh;
-        margin-bottom: 3vh;
-        background-color: rgb(255, 255, 255);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+      .section-title-2 {
+        margin-top:2.8vh;
+        font-size: 2.8vw;
+        font-weight: bold;
+        margin: 20px 0;
       }
 
       .no-booking {
         font-size: 2vw;
-        color: #999;
+        color: #c2353a;
         text-align: center;
         margin-top: 50px;
       }
@@ -243,6 +289,43 @@
         border-radius: 12px;
         font-size: 1.8vw;
       }
+
+      .manage-half-right .booking-box {
+        margin-top: 2vh;
+        margin-bottom: 2vh;
+        padding: 1.5vh 1.5vw;
+        border-radius: 30px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .manage-half-right .actions {
+       flex-direction: row;
+        gap: 10px;
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .newannouncment {
+        font-size: 1.5vw;
+        font-weight: bold;
+        margin-bottom: 8px;
+        margin-left: 0;
+        color: #000000;
+        text-align: left;
+      }
+
+      .newannouncment-input{
+        height: 7vh;
+        width: 18vw;
+        padding: 0 12px;
+        font-size: 1.5vw;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        background-color: white;
+        box-sizing: border-box;
+      }
     </style>
   </head>
 
@@ -252,12 +335,10 @@
       <a href="A_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>Manage</b></p>
+      <p><b>LKPFC Classroom Booking System</b></p>
       <div class="logout">
         <button
           onclick="localStorage.clear(); window.location.href='/index.html';"
-          onmouseover="this.style.backgroundColor='#a02c30'"
-          onmouseout="this.style.backgroundColor='#c2353a'"
         >
           Logout
         </button>
@@ -270,7 +351,7 @@
         <ul class="left_text">
           <li><a href="A_home.html">Home</a></li>
           <li><a href="A_Booking.html">Booking</a></li>
-          <li><a href="A_edit.html">Query/Delete</a></li>
+          <li><a href="A_edit.html">Edit/Delete</a></li>
           <li><a href="A_manage.html">Manage</a></li>
         </ul>
       </div>
@@ -278,42 +359,85 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage3</p>
+          <p>Admin Manage</p>
         </div>
-        <div style="width: 100%; height: 1vh; background-color: #fb85b4; border-radius: 20px;"></div>
+        <div
+          style="
+            width: 100%;
+            height: 1vh;
+            background-color: #fb85b4;
+            border-radius: 20px;
+          "
+        ></div>
 
         <div class="manage-wrapper">
           <!-- 左半：所有预约管理 -->
-          <div class="manage-half">
-            <div class="section-title">All Bookings2 (Admin)</div>
+          <div class="manage-half-left">
+            <div class="section-title">All Bookings</div>
 
             <div class="filter-bar">
-              <select id="filterCid">
-                <option value="">All Venues</option>
-                <option value="101">1A （101）</option>
-                <option value="102">1B （102）</option>
-                <option value="103">1C （103）</option>
-                <option value="104">1D （104）</option>
-                <option value="105">1E （105）</option>
-                <option value="201">2A （201）</option>
-                <option value="202">2B （202）</option>
-                <option value="203">2C （203）</option>
-                <option value="204">2D （204）</option>
-                <option value="205">2E （205）</option>
-                <option value="301">3A （301）</option>
-                <option value="302">3B （302）</option>
-                <option value="303">3C （303）</option>
-                <option value="304">3D （304）</option>
-                <option value="305">3E （305）</option>
-                <option value="206">AAR （206）</option>
-                <option value="207">MUSIC ROOM（207）</option>
-                <option value="106">SAC（106）</option>
-                <option value="107">HALL（107）</option>
-                <option value="306">BIO LAB（306）</option>
-                <option value="307">PHY LAB（307）</option>
-              </select>
+              <div class="filter-group">
+                <label>Booking ID</label>
+                <input type="text" id="filterBid"  />
+              </div>
+            </div>
 
-              <input type="date" id="filterDate" />
+            <div class="filter-bar">
+              <div class="filter-group">
+                <label for="filterCid">Venue</label>
+                <select id="filterCid">
+                  <option value="">All Venues</option>
+                  <option value="101">1A （101）</option>
+                  <option value="102">1B （102）</option>
+                  <option value="103">1C （103）</option>
+                  <option value="104">1D （104）</option>
+                  <option value="105">1E （105）</option>
+                  <option value="201">2A （201）</option>
+                  <option value="202">2B （202）</option>
+                  <option value="203">2C （203）</option>
+                  <option value="204">2D （204）</option>
+                  <option value="205">2E （205）</option>
+                  <option value="301">3A （301）</option>
+                  <option value="302">3B （302）</option>
+                  <option value="303">3C （303）</option>
+                  <option value="304">3D （304）</option>
+                  <option value="305">3E （305）</option>
+                  <option value="206">AAR （206）</option>
+                  <option value="207">MUSIC ROOM（207）</option>
+                  <option value="106">SAC（106）</option>
+                  <option value="107">HALL（107）</option>
+                  <option value="306">BIO LAB（306）</option>
+                  <option value="307">PHY LAB（307）</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="filterTeacher">Teacher</label>
+                <select id="filterTeacher">
+                  <option value="">All Teachers</option>
+                  <option value="0001">POON SIN MAN</option>
+                  <option value="0002">LUO RUI TANG</option>
+                  <option value="0003">LI SHI LONG</option>
+                  <option value="0004">CHAN YU LING</option>
+                  <option value="0005">LIU YING</option>
+                  <option value="0006">BA CHONG SHEN ZI</option>
+                  <option value="0007">NG CHUK WAI</option>
+                  <option value="0008">LY HOK LEUNG</option>
+                  <option value="0009">CHOW NGO YIN</option>
+                  <option value="0010">LO TZY KEY</option>
+                  <option value="0011">WONG TZUN KOK</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="filterStartDate">Start Date</label>
+                <input type="date" id="filterStartDate" />
+              </div>
+
+              <div class="filter-group">
+                <label for="filterEndDate">End Date</label>
+                <input type="date" id="filterEndDate" />
+              </div>
 
               <button onclick="loadAllBookings()">Search</button>
             </div>
@@ -322,9 +446,16 @@
           </div>
 
           <!-- 右半：报告 -->
-          <div class="manage-half">
-            <div class="section-title">Report</div>
-            <div class="report-title">Report area</div>
+          <div class="manage-half-right">
+            <div class="section-title-2">Announcement </div>
+            <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
+              <label for="newAnnouncement" class="newannouncment">Add New Announcement:</label>
+              <input id="newAnnouncement" class="newannouncment-input"/>
+            </div>
+            <div class="buttonarea">
+              <button onclick="addAnnouncement()" >Add</button>
+            </div>
+            <div id="announcementList" style="overflow-y: auto; flex:1;"></div>  <!-- 列表可滾動 -->
           </div>
         </div>
       </div>
@@ -333,15 +464,20 @@
     <script>
       async function loadAllBookings() {
         const cid = document.getElementById("filterCid").value;
-        const bdate = document.getElementById("filterDate").value;
+        const tid = document.getElementById("filterTeacher").value;
+        const startDate = document.getElementById("filterStartDate").value;
+        const endDate = document.getElementById("filterEndDate").value;
+        const bid = document.getElementById("filterBid").value.trim();
 
-        let url = "/all-bookings";
-        if (cid || bdate) {
-          url += "?";
-          if (cid) url += `cid=${cid}&`;
-          if (bdate) url += `bdate=${bdate}`;
-          url = url.replace(/&$/, "");
-        }
+        let url = "/admin/all-bookings";
+        const params = new URLSearchParams();
+        if (cid) params.append("cid", cid);
+        if (bid) params.append("bid", bid);
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+        if (tid) params.append("tid", tid);
+
+        if (params.toString()) url += "?" + params.toString();
 
         const list = document.getElementById("allBookingList");
 
@@ -350,7 +486,7 @@
           const bookings = await res.json();
 
           if (bookings.length === 0) {
-            list.innerHTML = '<p class="no-booking">No booking</p>';
+            list.innerHTML = '<p class="no-booking">No match booking</p>';
             return;
           }
 
@@ -359,18 +495,44 @@
               (booking) => `
             <div class="booking-box">
               <div class="booking-details">
-                <p class="booking-id">BID: ${booking.bid} | Venue: ${booking.cid}</p>
+                <p class="booking-id">BID: ${booking.bid} | Venue: ${
+                booking.cid
+              }</p>
                 <div class="booking-info-row">
-                  <p class="booking-info">Date: ${booking.bdate.substring(0,10)}</p>
-                  <p class="booking-info">Time: ${booking.stime.substring(0,5)} - ${booking.etime.substring(0,5)}</p>
+                  <p class="booking-info">Date: ${booking.bdate.substring(
+                    0,
+                    10
+                  )}</p>
+                  <p class="booking-info">Time: ${booking.stime.substring(
+                    0,
+                    5
+                  )} - ${booking.etime.substring(0, 5)}</p>
+                </div>
+                <div class="booking-info-row2">
                   <p class="booking-info">Teacher: ${booking.tname}</p>
+                </div>
+                <div class="booking-info-row2">
+                  <p class="booking-info">people: ${booking.people}</p>
+                  <p class="booking-info">reason: ${booking.reason}</p>
+                  <p class="booking-info">special: ${booking.special}</p>
+                  <p class="booking-info">Created at: ${new Date(
+                    booking.create_at
+                  ).toLocaleString("en-HK")}</p>
                 </div>
               </div>
               <div class="actions">
-                <button class="btn-edit" onclick="adminEditBooking(${booking.bid}, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${booking.etime}', '${(booking.reason || '').replace(/'/g, "\\'")}', '${booking.people}', '${(booking.special || '').replace(/'/g, "\\'")}')">
+                <button class="btn-edit" onclick="adminEditBooking(${
+                  booking.bid
+                }, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${
+                booking.etime
+              }', '${(booking.reason || "").replace(/'/g, "\\'")}', '${
+                booking.people
+              }', '${(booking.special || "").replace(/'/g, "\\'")}')">
                   Edit
                 </button>
-                <button class="btn-delete" onclick="adminDeleteBooking(${booking.bid})">
+                <button class="btn-delete" onclick="adminDeleteBooking(${
+                  booking.bid
+                })">
                   Delete
                 </button>
               </div>
@@ -379,7 +541,7 @@
             )
             .join("");
         } catch (err) {
-          list.innerHTML = '<p style="color:red;">Loading failed</p>';
+          list.innerHTML = '<p style="color:red;">data error,please check your data</p>';
         }
       }
 
@@ -388,7 +550,7 @@
 
         try {
           const res = await fetch(`/admin/booking/${bid}`, {
-            method: "DELETE"
+            method: "DELETE",
           });
 
           const data = await res.json();
@@ -403,7 +565,16 @@
         }
       }
 
-      function adminEditBooking(bid, cid, bdate, stime, etime, reason, people, special) {
+      function adminEditBooking(
+        bid,
+        cid,
+        bdate,
+        stime,
+        etime,
+        reason,
+        people,
+        special
+      ) {
         const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
         const newStime = prompt("start time (HH:MM)", stime) || stime;
         const newEtime = prompt("end time (HH:MM)", etime) || etime;
@@ -413,11 +584,29 @@
         const newSpecial = prompt("special requirements", special) || special;
 
         if (confirm("Confirm update?")) {
-          adminUpdateBooking(bid, newCid, newDate, newStime, newEtime, newReason, newPeople, newSpecial);
+          adminUpdateBooking(
+            bid,
+            newCid,
+            newDate,
+            newStime,
+            newEtime,
+            newReason,
+            newPeople,
+            newSpecial
+          );
         }
       }
 
-      async function adminUpdateBooking(bid, cid, bdate, stime, etime, reason, people, special) {
+      async function adminUpdateBooking(
+        bid,
+        cid,
+        bdate,
+        stime,
+        etime,
+        reason,
+        people,
+        special
+      ) {
         try {
           const res = await fetch(`/admin/booking/${bid}`, {
             method: "PUT",
@@ -429,7 +618,7 @@
               etime,
               reason,
               people: parseInt(people),
-              special
+              special,
             }),
           });
 
@@ -448,6 +637,86 @@
       document.addEventListener("DOMContentLoaded", () => {
         loadAllBookings();
       });
+
+      async function loadAnnouncements() {
+        const list = document.getElementById("announcementList");
+        try {
+          const res = await fetch("/announcements");
+          const announcements = await res.json();
+          list.innerHTML = announcements.map(a => `
+            <div class="booking-box">
+              <div class="booking-details">
+                <p class="booking-info" style="font-size:1.6vw; line-height:1.5;">${a.message}</p>
+                <p class="booking-info" style="font-size:1.2vw; color:gray;">Created: ${a.create_at}
+            </div>
+            <div class="actions">
+              <button class="btn-edit" onclick="editAnnouncement(${a.id}, '${a.message.replace(/'/g, "\\'")}')">Edit</button>
+              <button class="btn-delete" onclick="deleteAnnouncement(${a.id})">Delete</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (err) {
+        list.innerHTML = '<p style="color:red;">Failed to load announcements</p>';
+      }
+    }
+
+    async function addAnnouncement() {
+      const message = document.getElementById("newAnnouncement").value.trim();
+      if (!message) return alert("Message required");
+
+      try {
+        const res = await fetch("/admin/announcement", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("newAnnouncement").value = "";
+          loadAnnouncements();
+        } else {
+          alert(data.error || "Add failed");
+        }
+      } catch (err) {
+        alert("Network error");
+      }
+    }
+
+    function editAnnouncement(id, currentMessage) {
+      const newMessage = prompt("Edit Announcement:", currentMessage);
+      if (newMessage === null || newMessage.trim() === currentMessage) return;
+
+      fetch(`/admin/announcement/${id}`, {
+      method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: newMessage.trim() })
+      }).then(res => res.json()).then(data => {
+        if (data.success) loadAnnouncements();
+        else alert(data.error || "Edit failed");
+      }).catch(() => alert("Network error"));
+    }
+
+    async function deleteAnnouncement(id) {
+      if (!confirm("Confirm delete?")) return;
+
+      try {
+        const res = await fetch(`/admin/announcement/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (res.ok) {
+          loadAnnouncements();
+        } else {
+          alert(data.error || "Delete failed");
+        }
+      } catch (err) {
+        alert("Network error");
+      }
+    }
+
+    // 頁面載入時呼叫
+    document.addEventListener("DOMContentLoaded", () => {
+      loadAllBookings();
+      loadAnnouncements();  // 新增
+    });
     </script>
   </body>
 </html>

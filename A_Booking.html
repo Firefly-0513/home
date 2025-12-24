@@ -139,6 +139,7 @@
         background-color: rgb(28, 190, 28);
         color: white;
         border-radius: 12px;
+        cursor: pointer
       }
 
       .logout {
@@ -155,6 +156,71 @@
         padding: 10px 20px; 
         border-radius: 12px; 
         font-size: 1.8vw; 
+        cursor: pointer
+      }
+
+      .announcement{
+        margin: 20px 0; 
+        padding: 10px; 
+        background: #f8f2f7; 
+        border: 1px solid #fb85b4; 
+        border-radius: 10px;
+      }
+      /* 公告標題（System Announcements:） */
+      .announcement-header {
+        font-size: 2.2vw;
+        font-weight: bold;
+        color: #c2353a;
+        margin: 30px 0 15px 20px;
+        text-align: left;
+      }
+
+      /* 公告列表容器 */
+      #announcementList {
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+        margin: 0 20px 30px 20px;
+        margin-right: 5vw;
+        margin-left: 5vw;
+        width: 100%; /* 添加这行，确保占满整行宽度 */
+        box-sizing: border-box; /* 确保 padding 和 margin 不会超出宽度 */
+      }
+
+      /* 復用與 A_home.html 完全相同的 booking-box 樣式顯示公告 */
+      .announcement-box {
+        width: 100%;
+        border: 4px solid #c2353a;
+        box-sizing: border-box;
+        padding: 2vh 2vw;
+        border-radius: 50px;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .announcement-box .announcement-message {
+        font-size: 1.8vw;
+        line-height: 1.6;
+        margin: 0 0 10px 0;
+        font-weight: bold;
+        word-wrap: break-word;
+      }
+
+      .announcement-box .announcement-time {
+        font-size: 1.4vw;
+        color: #929090;
+        align-self: flex-end; /* 時間靠右 */
+        margin-top: 5px;
+      }
+
+      .no-announcement {
+        font-size: 1.6vw;
+        color: #000000;
+        font-style: italic;
+        text-align: left;
+        margin-left: 20px;
       }
     </style>
   </head>
@@ -165,13 +231,10 @@
       <a href="A_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
       </a>
-      <p><b>Abook </b></p>
+      <p><b>LKPFC Classroom Booking System </b></p>
       <div class="logout">
         <button 
           onclick="localStorage.clear(); window.location.href='/index.html';" 
-
-        onmouseover="this.style.backgroundColor='#a02c30'"
-        onmouseout="this.style.backgroundColor='#c2353a'"
       >    
         Logout
       </button>
@@ -184,7 +247,7 @@
         <ul class="left_text">
           <li><a href="A_home.html">Home</a></li>
           <li><a href="A_Booking.html">Booking</a></li>
-          <li><a href="A_edit.html">Query/Delete </a></li>
+          <li><a href="A_edit.html">Edit/Delete </a></li>
           <li><a href="A_manage.html">Manage</a></li>
         </ul>
       </div>
@@ -202,6 +265,12 @@
               border-radius: 20px;
             "
           ></div>
+        </div>
+
+        <!-- 公告顯示區域（放在粉色線下方、表單上方） -->
+        <p class="announcement-header">System Announcements：</p>
+        <div id="announcementList">
+      
         </div>
 
         <div class="left">
@@ -381,6 +450,38 @@
                   alert("Cant connect to server. Please try again later.");
                 }
               });
+            // 載入並顯示公告
+            async function loadAnnouncementsForBooking() {
+              const list = document.getElementById("announcementList");
+              try {
+                const res = await fetch("/announcements");
+                const announcements = await res.json();
+
+                if (announcements.length === 0) {
+                  list.innerHTML = '<p class="no-announcement">No announcements at the moment.</p>';
+                  return;
+                }
+
+                list.innerHTML = announcements.map(a => `
+                  <div class="announcement-box">
+                    <div class="announcement-message">
+                      ${a.message.replace(/\n/g, '<br>')}
+                    </div>
+                    <div class="announcement-time">
+                      ${a.create_at}
+                    </div>
+                  </div>
+                `).join("");
+              } catch (err) {
+                list.innerHTML = '<p style="color: red;">Failed to load announcements.</p>';
+              }
+            }
+
+          // 頁面載入時自動執行
+            document.addEventListener("DOMContentLoaded", () => {
+              loadAnnouncementsForBooking();
+              // 你的其他原有代碼保持不變
+            });
           </script>
         </div>
       </div>
