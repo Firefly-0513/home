@@ -175,7 +175,7 @@ app.post("/book", async (req, res) => {
 
     if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: process.env.EMAIL_SERVICE,
         auth: {
           user: process.env.GMAIL_USER,
           pass: process.env.GMAIL_APP_PASSWORD,
