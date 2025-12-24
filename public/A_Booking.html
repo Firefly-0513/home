@@ -260,7 +260,7 @@
             </div>
 
             <div class="form-input">
-              <label for="special">Special Requirements(Optional):</label>
+              <label for="special">Special Requirements :</label>
               <input
                 type="text"
                 id="special"
@@ -268,11 +268,6 @@
                 required
               />
             </div>
-
-            <div class="form-input">
-              <label for="email">Email 12(Optional)</label>
-              <input type="email" id="email" placeholder="(please enter if you want to receive confirmation)" />
-              </div>
 
             <div class="form-input">
               <button type="submit" >
@@ -310,7 +305,6 @@
                   reason: document.getElementById("reason").value.trim(),
                   people: parseInt(document.getElementById("people").value),
                   special: document.getElementById("special").value.trim(),
-                  email: document.getElementById("email")?.value.trim() || ""
                 };
 
                 // 驗證輸入

@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const { Pool } = require("@neondatabase/serverless"); // 改用 Neon serverless driver
-const nodemailer = require("nodemailer");
 const ws = require("ws");
 const path = require("path");
 
@@ -34,7 +33,9 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ error: "Please enter username and password" });
+    return res
+      .status(400)
+      .json({ error: "Please enter username and password" });
   }
 
   try {
@@ -53,17 +54,15 @@ app.post("/login", async (req, res) => {
     // （注意：真實項目建議用 session 或 JWT，這裡為了簡單先這樣）
     res.json({
       success: true,
-      role: user.role,        // 'A' 或 'T'
+      role: user.role, // 'A' 或 'T'
       tid: user.tid,
-      username: user.username
+      username: user.username,
     });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
-
-
 
 // 输入数据到数据库（POST 请求）
 app.post("/book", async (req, res) => {
@@ -103,12 +102,10 @@ app.post("/book", async (req, res) => {
     });
   }
   if (etime > "18:00") {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Booking cannot end after 18:00 because the school closes at 6 PM.",
-      });
+    return res.status(400).json({
+      error:
+        "Booking cannot end after 18:00 because the school closes at 6 PM.",
+    });
   }
   // date驗證
   const today = new Date().toISOString().split("T")[0];
@@ -162,62 +159,14 @@ app.post("/book", async (req, res) => {
     }
 
     // 輸入資料
-    const insertResult = await pool.query(`
-      INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special, create_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
-      RETURNING bid, create_at
-    `,[tid, cidNum, bdate, stime, etime, reason, peopleNum, special || null]);
+    const result = await pool.query(
+      `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+       RETURNING bid`,
+      [tid, cid, bdate, stime, etime, reason, people, special]
+    );
 
-    const newBookingId = insertResult.rows[0].bid;
-    const bookingId = insertResult.rows[0].bid;
-    const createdAt = insertResult.rows[0].create_at;
-    const email = req.body.email?.trim(); // 新增：获取 email（可选）
-
-    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      const transporter = nodemailer.createTransport({
-        service: process.env.EMAIL_SERVICE,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      });
-
-      // 邮件内容
-      const mailOptions = {
-        from: `"School Booking System" <${process.env.GMAIL_USER}>`,
-        to: email,
-        subject: `Booking Confirmed - BID: ${bookingId}`,
-        html: `
-          <h2>Booking Confirmation</h2>
-          <p>Your booking has been successfully confirmed!</p>
-          <ul>
-            <li><strong>Booking ID:</strong> ${bookingId}</li>
-            <li><strong>Venue:</strong> ${cid}</li>
-            <li><strong>Date:</strong> ${bdate}</li>
-            <li><strong>Time:</strong> ${stime.substring(
-              0,
-              5
-            )} - ${etime.substring(0, 5)}</li>
-            <li><strong>Reason:</strong> ${reason}</li>
-            <li><strong>People:</strong> ${people}</li>
-            <li><strong>Special:</strong> ${special || "None"}</li>
-            <li><strong>Booked at:</strong> ${new Date(
-              createdAt
-            ).toLocaleString("en-HK")}</li>
-          </ul>
-          <p>Thank you!</p>
-        `,
-      };
-
-      // 发送邮件（异步，不阻塞响应）
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error("郵件發送失敗:", error);
-        } else {
-          console.log("郵件發送成功: " + info.response);
-        }
-      });
-    }
+    const newBookingId = result.rows[0].bid;
 
     res.json({
       success: true,
@@ -285,22 +234,16 @@ app.put("/booking/:bid", async (req, res) => {
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
 
   // 1. 必填檢查
-  if (
-    !cid ||
-    !bdate ||
-    !stime ||
-    !etime ||
-    !reason ||
-    !people ||
-    !special
-  ) {
+  if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   const cidNum = parseInt(cid, 10);
   const peopleNum = parseInt(people, 10);
   if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res.status(400).json({ error: "Classroom ID and number of people must be numbers" });
+    return res
+      .status(400)
+      .json({ error: "Classroom ID and number of people must be numbers" });
   }
 
   // 2. 時間驗證：結束時間必須大於開始時間
@@ -318,7 +261,8 @@ app.put("/booking/:bid", async (req, res) => {
   }
   if (etime > "18:00") {
     return res.status(400).json({
-      error: "Booking cannot end after 18:00 because the school closes at 6 PM.",
+      error:
+        "Booking cannot end after 18:00 because the school closes at 6 PM.",
     });
   }
 
@@ -332,7 +276,8 @@ app.put("/booking/:bid", async (req, res) => {
 
   // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
   const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
-  if (bdate === today && stime < now.substring(0, 5)) { // 只比對 HH:MM
+  if (bdate === today && stime < now.substring(0, 5)) {
+    // 只比對 HH:MM
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
@@ -402,7 +347,7 @@ app.put("/booking/:bid", async (req, res) => {
 
 // 公共接口：所有老师都能查看（不暴露 tid 筛选）
 app.get("/all-bookings", async (req, res) => {
-  const { cid, bdate } = req.query;  // 只支持 cid 和单日 bdate
+  const { cid, bdate } = req.query; // 只支持 cid 和单日 bdate
 
   try {
     let query = `
@@ -567,7 +512,10 @@ app.delete("/admin/booking/:bid", async (req, res) => {
       return res.status(404).json({ error: "Booking not found" });
     }
 
-    res.json({ success: true, message: "Booking deleted successfully by admin" });
+    res.json({
+      success: true,
+      message: "Booking deleted successfully by admin",
+    });
   } catch (err) {
     console.error("Admin delete error:", err);
     res.status(500).json({ error: "Delete failed" });
@@ -606,11 +554,9 @@ app.get("/admin/all-bookings", async (req, res) => {
       query += ` AND b.bdate <= $${params.length}`;
     }
 
-
     if (!startDate && !endDate) {
       query += ` AND b.bdate >= CURRENT_DATE`;
     }
-
 
     query += ` ORDER BY b.bdate ASC, b.stime ASC`;
 
