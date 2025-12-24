@@ -572,7 +572,9 @@ app.get("/admin/all-bookings", async (req, res) => {
 // 讀取所有提示 (公開，供 booking 頁面使用)
 app.get("/announcements", async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, message, create_at FROM announcements ORDER BY create_at DESC");
+    const result = await pool.query(
+      "SELECT id, message, TO_CHAR(create_at AT TIME ZONE 'Asia/Hong_Kong', 'DD/MM/YYYY, HH12:MI:SS AM') AS create_at FROM announcements ORDER BY create_at DESC"
+    );
     res.json(result.rows);
   } catch (err) {
     console.error("Fetch announcements error:", err);
