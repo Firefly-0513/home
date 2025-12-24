@@ -211,9 +211,11 @@
           ></div>
         </div>
 
-        <div id= id="announcementArea" class="announcement">
-        <!-- 提示會顯示在這裡 -->
-        </div>
+        <!-- 公告顯示區域（放在粉色線下方、表單上方） -->
+        <div id="announcementArea" style="margin: 20px 0; padding: 15px; background: #fff0f5; border-left: 5px solid #fb85b4; border-radius: 10px;">
+          <p style="font-weight: bold; color: #c2353a;">1System Announcements:</p>
+          <div id="announcementList"></div>
+        </di>
 
         <div class="left">
           <form id="bookingForm">
@@ -301,33 +303,6 @@
             }
             document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
           });
-
-          async function loadAnnouncements() {
-            const area = document.getElementById("announcementArea");
-            try {
-              const res = await fetch("/announcements");
-              const announcements = await res.json();
-              if (announcements.length === 0) {
-                area.innerHTML = '<p>No announcements.</p>';
-              return;
-            }
-            area.innerHTML = announcements.map(a => `
-            <div style="margin-bottom:10px;">
-              <p style="font-weight:bold;">Announcement:</p>
-              <p>${a.message}</p>
-              <p style="font-size:0.8em; color:gray;">Posted: ${new Date(a.create_at).toLocaleString('en-HK')}</p>
-            </div>
-          `).join("");
-        } catch (err) {
-          area.innerHTML = '<p style="color:red;">Failed to load announcements</p>';
-        }
-      }
-
-      // 頁面載入時呼叫
-      document.addEventListener("DOMContentLoaded", () => {
-      loadAnnouncements();
-      // 其他原有代碼
-      });
 
 
             document
@@ -419,6 +394,36 @@
                   alert("Cant connect to server. Please try again later.");
                 }
               });
+            // 載入並顯示公告
+            async function loadAnnouncementsForBooking() {
+              const list = document.getElementById("announcementList");
+              try {
+                const res = await fetch("/announcements");
+                const announcements = await res.json();
+
+                if (announcements.length === 0) {
+                  list.innerHTML = '<p style="color: #888; font-style: italic;">No announcements at the moment.</p>';
+                  return;
+                }
+
+                list.innerHTML = announcements.map(a => `
+                  <div style="margin: 15px 0; padding: 10px; background: white; border-radius: 8px; border: 1px solid #fb85b4;">
+                  <p style="margin: 0; line-height: 1.5;">${a.message.replace(/\n/g, '<br>')}</p>
+                  <p style="font-size: 0.9em; color: #888; margin-top: 8px;">
+                    Posted: ${new Date(a.create_at).toLocaleString('en-HK')}
+                  </p>
+                </div>
+              `).join("");
+            } catch (err) {
+              list.innerHTML = '<p style="color: red;">Failed to load announcements.</p>';
+            }
+          }
+
+          // 頁面載入時自動執行
+          document.addEventListener("DOMContentLoaded", () => {
+            loadAnnouncementsForBooking();
+            // 你的其他原有代碼保持不變
+          });
           </script>
         </div>
       </div>
