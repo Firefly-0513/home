@@ -289,7 +289,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Your bookings0</p>
+          <p>Your bookings9</p>
           <div
             style="
               width: 100%;
@@ -357,21 +357,13 @@
             const cid = document.getElementById("searchCid").value;
             const bdate = document.getElementById("searchDate").value;
 
-            let url = `/my-bookings?tid=${tid}`;
-            let hasParam = false;
+            const params = new URLSearchParams();
+            params.append("tid", tid);
+            if (bidInput) params.append("bid", bidInput);
+            if (cid) params.append("cid", cid);
+            if (bdate) params.append("bdate", bdate);
 
-            if (bidInput) {
-              url += `${hasParam ? '&' : '?'}bid=${bidInput}`;
-              hasParam = true;
-            }
-            if (cid) {
-             url += `${hasParam ? '&' : '?'}cid=${cid}`;
-             hasParam = true;
-            }
-            if (bdate) {
-              url += `${hasParam ? '&' : '?'}bdate=${bdate}`;
-              hasParam = true;
-            }
+            const url = `/my-bookings?${params.toString()}`;
 
             const bookingList = document.getElementById("bookingList");
 
