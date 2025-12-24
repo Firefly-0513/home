@@ -299,7 +299,8 @@
 
       .announcement-btn{
         height: 7vh;
-        width: 4vw;
+        width: 100%; /* 改为100%适应父容器宽度，而不是固定的4vw */
+        padding: 0 10px; /* 适当添加内边距，避免文字太贴边 */
         background-color: #1cbe1c;
         color: white;
         border: none;
@@ -307,6 +308,7 @@
         font-size: 1.7vw;
         font-weight: bold;
         cursor: pointer;
+        box-sizing: border-box; /* 确保padding不会增加总宽度 */
       }
     </style>
   </head>
@@ -422,7 +424,7 @@
 
           <!-- 右半：报告 -->
           <div class="manage-half-right">
-            <div class=".section-title-2">5Announcement </div>
+            <div class=".section-title-2">6Announcement </div>
             <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
               <label for="newAnnouncement" class="newannouncment">Add New Announcement:</label>
               <textarea id="newAnnouncement" style="width:100%; height:3vh; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
