@@ -204,8 +204,12 @@ app.get("/my-bookings", async (req, res) => {
     const params = [tid];
 
     if (bid) {
-      params.push(bid);
-      query += ` AND bid = $${params.length}`;
+      const bidNum = parseInt(bid, 10);
+      if (isNaN(bidNum)) {
+        return res.status(400).json({ error: "Invalid Booking ID" });
+      }
+      params.push(bidNum);
+      query += ` AND b.bid = $${params.length}`;
     }
     if (cid) {
       params.push(cid);
@@ -546,7 +550,7 @@ app.delete("/admin/booking/:bid", async (req, res) => {
 // 可选：GET /admin/booking/:bid - 获取单笔详情（未来扩展用）
 // ==================== 新增：管理员专用 - 获取所有预约（支持按老师和日期范围筛选） ====================
 app.get("/admin/all-bookings", async (req, res) => {
-  const { cid, tid, startDate, endDate } = req.query;
+  const { cid, tid, bid, startDate, endDate } = req.query;
 
   try {
     let query = `
@@ -561,6 +565,14 @@ app.get("/admin/all-bookings", async (req, res) => {
     if (cid) {
       params.push(cid);
       query += ` AND b.cid = $${params.length}`;
+    }
+    if (bid) {
+      const bidNum = parseInt(bid, 10);
+      if (isNaN(bidNum)) {
+        return res.status(400).json({ error: "Invalid Booking ID" });
+      }
+      params.push(bidNum);
+      query += ` AND b.bid = $${params.length}`;
     }
     if (tid) {
       params.push(tid);
