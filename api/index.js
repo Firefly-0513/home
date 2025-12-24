@@ -573,7 +573,7 @@ app.get("/admin/all-bookings", async (req, res) => {
 app.get("/announcements", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, message, TO_CHAR(create_at AT TIME ZONE 'Asia/Hong_Kong', 'DD/MM/YYYY, HH12:MI:SS AM') AS create_at FROM announcements ORDER BY create_at DESC"
+      "SELECT id, message, TO_CHAR(create_at AT TIME ZONE 'Asia/Hong_Kong', 'DD/MM/YYYY, HH12:MI AM') AS create_at FROM announcements ORDER BY create_at DESC"
     );
     res.json(result.rows);
   } catch (err) {
