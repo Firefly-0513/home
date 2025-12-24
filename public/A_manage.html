@@ -218,7 +218,7 @@
       }
 
       .filter-group select,
-      .filter-group input[type="date"] {
+      .filter-group input {
         height: 7vh;
         width: 12vw;
         padding: 0 12px;
@@ -359,7 +359,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Admin Manage</p>
+          <p>Admin Manage1</p>
         </div>
         <div
           style="
@@ -374,6 +374,11 @@
           <!-- 左半：所有预约管理 -->
           <div class="manage-half-left">
             <div class="section-title">All Bookings</div>
+
+            <div class="filter-group">
+              <label>Booking ID</label>
+              <input type="text" id="filterBid"  />
+             </div>
 
             <div class="filter-bar">
               <div class="filter-group">
@@ -460,6 +465,7 @@
         const tid = document.getElementById("filterTeacher").value;
         const startDate = document.getElementById("filterStartDate").value;
         const endDate = document.getElementById("filterEndDate").value;
+        const bid = document.getElementById("filterBid").value.trim();
 
         let url = "/admin/all-bookings";
         const params = new URLSearchParams();
