@@ -182,8 +182,7 @@ app.post("/book", async (req, res) => {
     const createdAt = result.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
 
-    if (email && email.trim() !== "") {
-      // 创建邮件 transporter
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
