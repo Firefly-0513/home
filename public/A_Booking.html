@@ -158,6 +158,14 @@
         font-size: 1.8vw; 
         cursor: pointer
       }
+
+      .announcement{
+        margin: 20px 0; 
+        padding: 10px; 
+        background: #f8f2f7; 
+        border: 1px solid #fb85b4; 
+        border-radius: 10px;
+      }
     </style>
   </head>
 
@@ -201,6 +209,10 @@
               border-radius: 20px;
             "
           ></div>
+        </div>
+
+        <div id= id="announcementArea" class="announcement">
+        <!-- 提示會顯示在這裡 -->
         </div>
 
         <div class="left">
@@ -289,6 +301,33 @@
             }
             document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
           });
+
+          async function loadAnnouncements() {
+            const area = document.getElementById("announcementArea");
+            try {
+              const res = await fetch("/announcements");
+              const announcements = await res.json();
+              if (announcements.length === 0) {
+                area.innerHTML = '<p>No announcements.</p>';
+              return;
+            }
+            area.innerHTML = announcements.map(a => `
+            <div style="margin-bottom:10px;">
+              <p style="font-weight:bold;">Announcement:</p>
+              <p>${a.message}</p>
+              <p style="font-size:0.8em; color:gray;">Posted: ${new Date(a.create_at).toLocaleString('en-HK')}</p>
+            </div>
+          `).join("");
+        } catch (err) {
+          area.innerHTML = '<p style="color:red;">Failed to load announcements</p>';
+        }
+      }
+
+      // 頁面載入時呼叫
+      document.addEventListener("DOMContentLoaded", () => {
+      loadAnnouncements();
+      // 其他原有代碼
+      });
 
 
             document
