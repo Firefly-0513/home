@@ -297,6 +297,15 @@
         text-align: left;
       }
 
+      #announcementList {
+        display: flex;
+        flex-direction: column;
+        gap: 2vh;
+        margin: 0 2vw; /* 将5vw改为2vw，减少左右边距，增加内容区宽度 */
+        width: calc(100% - 4vw); /* 配合边距计算宽度，避免超出 */
+        box-sizing: border-box;
+      }
+
       .announcement-btn{
         height: 7vh;
         width: 100%; /* 改为100%适应父容器宽度，而不是固定的4vw */
@@ -424,7 +433,7 @@
 
           <!-- 右半：报告 -->
           <div class="manage-half-right">
-            <div class=".section-title-2">6Announcement </div>
+            <div class=".section-title-2">7Announcement </div>
             <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
               <label for="newAnnouncement" class="newannouncment">Add New Announcement:</label>
               <textarea id="newAnnouncement" style="width:100%; height:3vh; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
