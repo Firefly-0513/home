@@ -177,7 +177,7 @@ app.post("/book", async (req, res) => {
       peopleNum,
       special || null,
     ]);
-    
+
     const newBookingId = result.rows[0].bid;
     const createdAt = result.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
@@ -204,23 +204,25 @@ app.post("/book", async (req, res) => {
             <li><strong>Booking ID:</strong> ${bookingId}</li>
             <li><strong>Venue:</strong> ${cid}</li>
             <li><strong>Date:</strong> ${bdate}</li>
-            <li><strong>Time:</strong> ${stime.substring(0, 5)} - ${etime.substring(0,5)}</li>
+            <li><strong>Time:</strong> ${stime.substring(
+              0,
+              5
+            )} - ${etime.substring(0, 5)}</li>
             <li><strong>Reason:</strong> ${reason}</li>
             <li><strong>People:</strong> ${people}</li>
             <li><strong>Special:</strong> ${special || "None"}</li>
-            <li><strong>Booked at:</strong> ${new Date(createdAt).toLocaleString("en-HK")}</li>
+            <li><strong>Booked at:</strong> ${new Date(
+              createdAt
+            ).toLocaleString("en-HK")}</li>
           </ul>
           <p>Thank you!</p>
         `,
       };
 
       // 发送邮件（异步，不阻塞响应）
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error("Email send failed:", error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
+      transporter.sendMail(mailOptions).catch((err) => {
+        console.error("Email failed:", err);
+        // 不影响预约成功
       });
     }
 
