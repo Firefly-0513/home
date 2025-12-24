@@ -179,6 +179,7 @@ app.post("/book", async (req, res) => {
     ]);
 
     const newBookingId = result.rows[0].bid;
+    const bookingId = insertResult.rows[0].bid;
     const createdAt = result.rows[0].create_at;
     const email = req.body.email?.trim(); // 新增：获取 email（可选）
 
