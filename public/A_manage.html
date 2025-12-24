@@ -236,6 +236,19 @@
         cursor: pointer;
       }
 
+      .announcement-button {
+        height: 7vh;
+        width: 10vw;
+        padding: 0 40px;
+        background-color: #1cbe1c;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.7vw;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
       .section-title {
         font-size: 2.8vw;
         font-weight: bold;
@@ -299,19 +312,6 @@
       }
 
 
-      .announcement-btn{
-        height: 7vh;
-        width: 100%; /* 改为100%适应父容器宽度，而不是固定的4vw */
-        padding: 0 10px; /* 适当添加内边距，避免文字太贴边 */
-        background-color: #457b45;
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.7vw;
-        font-weight: bold;
-        cursor: pointer;
-        box-sizing: border-box; /* 确保padding不会增加总宽度 */
-      }
     </style>
   </head>
 
@@ -426,10 +426,12 @@
 
           <!-- 右半：报告 -->
           <div class="manage-half-right">
-            <div class=".section-title-2">8Announcement </div>
+            <div class=".section-title-2">9Announcement </div>
             <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
               <label for="newAnnouncement" class="newannouncment">Add New Announcement:</label>
               <textarea id="newAnnouncement" style="width:100%; height:3vh; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
+            </div>
+            <div class=".announcement-button">
               <button onclick="addAnnouncement()" class="announcement-btn">Add</button>
             </div>
             <div id="announcementList" style="overflow-y: auto; flex:1;"></div>  <!-- 列表可滾動 -->
