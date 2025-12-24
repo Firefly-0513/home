@@ -181,6 +181,8 @@
         flex-direction: column;
         gap: 2vh;
         margin: 0 20px 30px 20px;
+        width: 100%; /* 添加这行，确保占满整行宽度 */
+        box-sizing: border-box; /* 确保 padding 和 margin 不会超出宽度 */
       }
 
       /* 復用與 A_home.html 完全相同的 booking-box 樣式顯示公告 */
@@ -264,7 +266,7 @@
         </div>
 
         <!-- 公告顯示區域（放在粉色線下方、表單上方） -->
-        <p class="announcement-header">System Announcements:</p>
+        <p class="announcement-header">System Announcements1:</p>
         <div id="announcementList">
       
         </div>
