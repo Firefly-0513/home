@@ -242,6 +242,12 @@
         margin: 20px 0;
       }
 
+      .section-title-2 {
+        font-size: 1.8vw;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+
       .report-title {
         width: 100%;
         min-width: auto; /* 移除原本过大的 min-width */
@@ -306,7 +312,7 @@
 
       .announcement-btn{
         height: 7vh;
-        width: 10vw;
+        width: 4vw;
         padding: 0 40px;
         background-color: #1cbe1c;
         color: white;
@@ -430,9 +436,9 @@
 
           <!-- 右半：报告 -->
           <div class="manage-half-right">
-            <div class="section-title">Announcements </div>
+            <div class=".section-title-2">Announcements </div>
             <div class="filter-bar" style="flex-direction: column; align-items: stretch;">
-              <label for="newAnnouncement" style=".newannouncment">Add New Announcement:</label>
+              <label for="newAnnouncement" class=".newannouncment">Add New Announcement:</label>
               <textarea id="newAnnouncement" style="width:100%; height:80px; margin:10px 0; border-radius:10px; padding:10px;"></textarea>
               <button onclick="addAnnouncement()" style="announcement-btn">Add</button>
             </div>
