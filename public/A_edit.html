@@ -302,6 +302,9 @@
         </div>
 
         <div class="filter-bar">
+
+          <input type="number" id="searchBid" placeholder="Enter BID"  />
+
           <select id="searchCid">
             <option value="">All Venues</option>
             <option value="101">1A （101）</option>
@@ -328,11 +331,7 @@
           </select>
 
           <input type="date" id="searchDate" />
-
-          <button onclick="searchBooking()">Search</button>
-
-          <!-- 新增 BID 搜索（復用相同風格） -->
-          <input type="number" id="searchBid" placeholder="Enter BID" min="1" style="width: 150px;" />
+->
           <button onclick="searchByBid()">Search by BID</button>
         </div>
 
