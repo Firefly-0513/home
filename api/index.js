@@ -185,47 +185,24 @@ app.post("/book", async (req, res) => {
 
       // 邮件内容
       const mailOptions = {
-        from: `<${process.env.GMAIL_USER}>`,
+        from: `"School Booking System" <${process.env.GMAIL_USER}>`,
         to: email,
-        subject: `Booking Confirmation - BID: ${result.rows[0].bid}`,
-        text: `
-Your booking has been successfully confirmed!
-
-Booking Details:
-- Booking ID: ${result.rows[0].bid}
-- Venue: ${cid}
-- Date: ${bdate}
-- Time: ${stime.substring(0, 5)} - ${etime.substring(0, 5)}
-- Reason: ${reason}
-- Number of People: ${people}
-- Special Requirements: ${special || "None"}
-- Created at :${new Date(createAt).toLocaleString("en-HK")}
-
-Thank you for using our booking system.
-If you need to cancel or modify, please visit https://home-nu-orpin.vercel.app/ or ask relevant teachers.
-
-School Booking System
-    `.trim(),
+        subject: `Booking Confirmed - BID: ${bookingId}`,
         html: `
-      <h2>Booking Confirmed!</h2>
-      <p>Your booking has been successfully made.</p>
-      <ul>
-        <li><strong>Booking ID:</strong> ${result.rows[0].bid}</li>
-        <li><strong>Venue:</strong> ${cid}</li>
-        <li><strong>Date:</strong> ${bdate}</li>
-        <li><strong>Time:</strong> ${stime.substring(0, 5)} - ${etime.substring(
-          0,
-          5
-        )}</li>
-        <li><strong>Reason:</strong> ${reason}</li>
-        <li><strong>People:</strong> ${people}</li>
-        <li><strong>Special:</strong> ${special || "None"}</li>
-        <li><strong>Created at:</strong> ${create_at}
-      </ul>
-      <p>Thank you!</p>
-      <hr>
-      <small>LKPFC classroom Booking System</small>
-    `.trim(),
+          <h2>Booking Confirmation</h2>
+          <p>Your booking has been successfully confirmed!</p>
+          <ul>
+            <li><strong>Booking ID:</strong> ${bookingId}</li>
+            <li><strong>Venue:</strong> ${cid}</li>
+            <li><strong>Date:</strong> ${bdate}</li>
+            <li><strong>Time:</strong> ${stime.substring(0, 5)} - ${etime.substring(0,5)}</li>
+            <li><strong>Reason:</strong> ${reason}</li>
+            <li><strong>People:</strong> ${people}</li>
+            <li><strong>Special:</strong> ${special || "None"}</li>
+            <li><strong>Booked at:</strong> ${new Date(createdAt).toLocaleString("en-HK")}</li>
+          </ul>
+          <p>Thank you!</p>
+        `,
       };
 
       // 发送邮件（异步，不阻塞响应）
