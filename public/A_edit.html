@@ -289,7 +289,7 @@
       <!-- main -->
       <div class="main">
         <div class="top">
-          <p>Your bookings9</p>
+          <p>Your bookings0</p>
           <div
             style="
               width: 100%;
@@ -331,7 +331,8 @@
           </select>
 
           <input type="date" id="searchDate" />
-          <button onclick="searchByBid()">Search by BID</button>
+
+          <button onclick="searchByBid()">Search</button>
         </div>
 
         <div id="bookingList"></div>
@@ -349,163 +350,166 @@
 
             const bookingList = document.getElementById("bookingList");
 
-            async function loadBookings(cid = "", bdate = "", bid = "") {
-              let url = `/my-bookings?tid=${tid}`;
-              if (cid) url += `&cid=${cid}`;
-              if (bdate) url += `&bdate=${bdate}`;
-              if (bid) url += `&bid=${bid}`;
+            try {
+              const res = await fetch(`/my-bookings?tid=${tid}`);
+              const bookings = await res.json();
 
-              try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error("Fetch failed");
-                const bookings = await res.json();
+              if (bookings.length === 0) {
+                bookingList.innerHTML =
+                  '<p class="no-booking">You dont have any booking in future</p>';
+                return;
+              }
 
-                if (bookings.length === 0) {
-                  bookingList.innerHTML = '<p class="no-booking">No matching bookings found</p>';
-                  return;
-                }
-
-                bookingList.innerHTML = bookings
-                  .map((booking) => `
-                    <div class="booking-box">
-                      <div class="booking-details">
-                        <p class="booking-id">Booking ID: ${booking.bid}</p>
-                        <div class="booking-info-row">
-                          <p class="booking-info">Venue: ${booking.cid}</p>
-                          <p class="booking-info">Date: ${booking.bdate.substring(0, 10)}</p>
-                          <p class="booking-info">Time: ${booking.stime.substring(0, 5)} - ${booking.etime.substring(0, 5)}</p>
-                        </div>
-                        <div class="booking-info-row">
-                          <p class="booking-info">People: ${booking.people}</p>
-                          <p class="booking-info">Reason: ${booking.reason}</p>
-                          <p class="booking-info">Special: ${booking.special || "None"}</p>
-                          <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK')}</p>
-                        </div>
-                      </div>
-                      <div class="actions">
-                        <button class="btn-edit" onclick="editBooking(${booking.bid}, '${booking.cid}', '${booking.bdate}', '${booking.stime}', '${booking.etime}', '${booking.reason.replace(/'/g, "\\'")}', '${booking.people}', '${(booking.special || "").replace(/'/g, "\\'")}')">
-                          Edit
-                        </button>
-                        <button class="btn-delete" onclick="deleteBooking(${booking.bid})">
-                          Delete
-                        </button>
-                      </div>
+              bookingList.innerHTML = bookings
+                .map(
+                  (booking) => `
+                <div class="booking-box">
+                  <div class="booking-details">
+                    <p class="booking-id">Booking ID: ${booking.bid}</p>
+                    <div class="booking-info-row">
+                      <p class="booking-info">Venue: ${booking.cid}</p>
+                      <p class="booking-info">Date: ${booking.bdate.substring(
+                        0,
+                        10
+                      )}</p>
+                      <p class="booking-info">Time: ${booking.stime.substring(
+                        0,
+                        5
+                      )} - ${booking.etime.substring(0, 5)}</p>
                     </div>
-                  `)
-                  .join("");
-              } catch (err) {
-                bookingList.innerHTML = '<p style="color:red;">Loading error, please try again</p>';
-              }
+                    <div class="booking-info-row">
+                      <p class="booking-info">people: ${booking.people}</p>
+                      <p class="booking-info">reason: ${booking.reason}</p>
+                      <p class="booking-info">special: ${booking.special}</p>
+                      <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK',)}</p>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="btn-edit" onclick="editBooking(${
+                      booking.bid
+                    }, 
+                    '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
+                    '${booking.etime}', '${booking.reason.replace(
+                    /'/g,
+                    "\\'"
+                  )}', 
+                    '${booking.people}', '${(booking.special || "").replace(
+                    /'/g,
+                    "\\'"
+                  )}')">
+                      Edit
+                    </button>
+                    <button class="btn-delete" onclick="deleteBooking(${
+                      booking.bid
+                    })">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              `
+                )
+                .join("");
+            } catch (err) {
+              bookingList.innerHTML =
+                '<p style="color:red;">loading error</p>';
             }
+          });
 
-            // 按 Venue + Date 搜索
-            function searchByVenueAndDate() {
-              const cid = document.getElementById("searchCid").value;
-              const bdate = document.getElementById("searchDate").value;
-              loadBookings(cid, bdate, "");
-            }
+          function searchBookings() {
+            const cid = document.getElementById("searchCid").value;
+            const bdate = document.getElementById("searchDate").value;
+            loadBookings(cid, bdate, "");
+          }
 
-            // 按 BID 搜索
-            function searchByBid() {
-              const bidInput = document.getElementById("searchBid");
-              const bid = bidInput.value.trim();
-              if (bid && !isNaN(bid)) {
-                loadBookings("", "", bid);
-              } else if (bid === "") {
-                alert("Please enter a valid BID number");
+
+          async function deleteBooking(bid) {
+            if (!confirm("confirm to delete this booking?")) return;
+
+            const tid = localStorage.getItem("userTid");
+            try {
+              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+                method: "DELETE",
+              });
+              const data = await res.json();
+              if (res.ok) {
+                alert("delete success");
+                location.reload();
               } else {
-                alert("BID must be a number");
+                alert(data.error || "delete error");
               }
+            } catch (err) {
+              alert("network error");
             }
+          }
 
-            async function deleteBooking(bid) {
-              if (!confirm("confirm to delete this booking?")) return;
+          function editBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
+            const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
+            const newStime = prompt("start time (HH:MM)", stime) || stime;
+            const newEtime = prompt("end time (HH:MM)", etime) || etime;
+            const newCid = prompt("venue", cid) || cid;
+            const newReason = prompt("reason", reason) || reason;
+            const newPeople = prompt("people", people) || people;
+            const newSpecial = prompt("special requirement", special);
 
-              const tid = localStorage.getItem("userTid");
-              try {
-                const res = await fetch(`/booking/${bid}?tid=${tid}`, {
-                  method: "DELETE",
-                });
-                const data = await res.json();
-                if (res.ok) {
-                  alert("delete success");
-                  location.reload();
-                } else {
-                  alert(data.error || "delete error");
-                }
-              } catch (err) {
-                alert("network error");
+            if (confirm("Do you confirm to update this booking?")) {
+              updateBooking(
+                bid,
+                newCid,
+                newDate,
+                newStime,
+                newEtime,
+                newReason,
+                newPeople,
+                newSpecial
+              );
+            }
+          }
+
+          async function updateBooking(
+            bid,
+            cid,
+            bdate,
+            stime,
+            etime,
+            reason,
+            people,
+            special
+          ) {
+            const tid = localStorage.getItem("userTid");
+            try {
+              const res = await fetch(`/booking/${bid}?tid=${tid}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  cid,
+                  bdate,
+                  stime,
+                  etime,
+                  reason,
+                  people: parseInt(people),
+                  special,
+                }),
+              });
+              const data = await res.json();
+              if (res.ok) {
+                alert("Update success");
+                location.reload();
+              } else {
+                alert(data.error || "Update error");
               }
+            } catch (err) {
+              alert("network error");
             }
-
-            function editBooking(
-              bid,
-              cid,
-              bdate,
-              stime,
-              etime,
-              reason,
-              people,
-              special
-            ) {
-              const newDate = prompt("date (YYYY-MM-DD)", bdate) || bdate;
-              const newStime = prompt("start time (HH:MM)", stime) || stime;
-              const newEtime = prompt("end time (HH:MM)", etime) || etime;
-              const newCid = prompt("venue", cid) || cid;
-              const newReason = prompt("reason", reason) || reason;
-              const newPeople = prompt("people", people) || people;
-              const newSpecial = prompt("special requirement", special);
-
-              if (confirm("Do you confirm to update this booking?")) {
-                updateBooking(
-                  bid,
-                  newCid,
-                  newDate,
-                  newStime,
-                  newEtime,
-                  newReason,
-                  newPeople,
-                  newSpecial
-                );
-              }
-            }
-
-            async function updateBooking(
-              bid,
-              cid,
-              bdate,
-              stime,
-              etime,
-              reason,
-              people,
-              special
-            ) {
-              const tid = localStorage.getItem("userTid");
-              try {
-                const res = await fetch(`/booking/${bid}?tid=${tid}`, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    cid,
-                    bdate,
-                    stime,
-                    etime,
-                    reason,
-                    people: parseInt(people),
-                    special,
-                  }),
-                });
-                const data = await res.json();
-                if (res.ok) {
-                  alert("Update success");
-                  location.reload();
-                } else {
-                  alert(data.error || "Update error");
-                }
-              } catch (err) {
-                alert("network error");
-              }
-            }
+          }
         </script>
       </div>
     </div>
