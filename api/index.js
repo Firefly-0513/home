@@ -587,9 +587,6 @@ app.get("/admin/all-bookings", async (req, res) => {
       query += ` AND b.bdate <= $${params.length}`;
     }
 
-    if (!startDate && !endDate) {
-      query += ` AND b.bdate >= CURRENT_DATE`;
-    }
 
     query += ` ORDER BY b.bdate ASC, b.stime ASC`;
 

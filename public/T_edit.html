@@ -139,7 +139,7 @@
         background-color: rgb(28, 190, 28);
         color: white;
         border-radius: 12px;
-        cursor: pointer
+        cursor: pointer;
       }
 
       .logout {
@@ -156,7 +156,7 @@
         padding: 10px 20px;
         border-radius: 12px;
         font-size: 1.8vw;
-        cursor: pointer
+        cursor: pointer;
       }
 
       /* 預約項目卡片樣式 */
@@ -215,7 +215,7 @@
         font-weight: bold;
         color: white;
         background-color: rgb(28, 190, 28);
-        cursor: pointer
+        cursor: pointer;
       }
       .btn-delete {
         padding: 12px 30px;
@@ -225,7 +225,7 @@
         font-weight: bold;
         color: white;
         background: #c2353a;
-        cursor: pointer
+        cursor: pointer;
       }
 
       .no-booking {
@@ -245,16 +245,18 @@
         flex-wrap: wrap;
         padding: 0 5vw;
       }
-      .filter-bar select, .filter-bar input, .filter-bar button {
-        padding: 10px 15px; 
-        font-size: 1.6vw; 
-        border-radius: 12px; 
+      .filter-bar select,
+      .filter-bar input,
+      .filter-bar button {
+        padding: 10px 15px;
+        font-size: 1.6vw;
+        border-radius: 12px;
         border: none;
       }
       .filter-bar button {
-        background-color: rgb(28, 190, 28); 
-        color: white; 
-        cursor: pointer
+        background-color: rgb(28, 190, 28);
+        color: white;
+        cursor: pointer;
       }
     </style>
   </head>
@@ -301,8 +303,7 @@
         </div>
 
         <div class="filter-bar">
-
-          <input type="text" id="searchBid" placeholder="Enter BID"  />
+          <input type="text" id="searchBid" placeholder="Enter BID" />
 
           <select id="searchCid">
             <option value="">All Venues</option>
@@ -367,50 +368,76 @@
             const bookingList = document.getElementById("bookingList");
 
             try {
-             const res = await fetch(url);
-             if (!res.ok) throw new Error("Network error");
+              const res = await fetch(url);
+              if (!res.ok) throw new Error("Network error");
 
               const bookings = await res.json();
 
               if (bookings.length === 0) {
-                bookingList.innerHTML = '<p class="no-booking">No matching bookings found or you dont have any booking in future</p>';
+                bookingList.innerHTML =
+                  '<p class="no-booking">No matching bookings found or you dont have any booking in future</p>';
                 return;
               }
 
               bookingList.innerHTML = bookings
-                .map(booking => `
+                .map(
+                  (booking) => `
                   <div class="booking-box">
                     <div class="booking-details">
                       <p class="booking-id">Booking ID: ${booking.bid}</p>
                       <div class="booking-info-row">
                         <p class="booking-info">Venue: ${booking.cid}</p>
-                        <p class="booking-info">Date: ${booking.bdate.substring(0, 10)}</p>
-                        <p class="booking-info">Time: ${booking.stime.substring(0, 5)} - ${booking.etime.substring(0, 5)}</p>
+                        <p class="booking-info">Date: ${booking.bdate.substring(
+                          0,
+                          10
+                        )}</p>
+                        <p class="booking-info">Time: ${booking.stime.substring(
+                          0,
+                          5
+                        )} - ${booking.etime.substring(0, 5)}</p>
                       </div>
                       <div class="booking-info-row">
                         <p class="booking-info">People: ${booking.people}</p>
                         <p class="booking-info">Reason: ${booking.reason}</p>
-                        <p class="booking-info">Special: ${booking.special || "None"}</p>
-                        <p class="booking-info">Created at: ${new Date(booking.create_at).toLocaleString('en-HK')}</p>
+                        <p class="booking-info">Special: ${
+                          booking.special || "None"
+                        }</p>
+                        <p class="booking-info">Created at: ${new Date(
+                          booking.create_at
+                        ).toLocaleString("en-HK")}</p>
                       </div>
                     </div>
                     <div class="actions">
-                      <button class="btn-edit" onclick="editBooking(${booking.bid}, 
-                        '${booking.cid}', '${booking.bdate}', '${booking.stime}', 
-                        '${booking.etime}', '${booking.reason.replace(/'/g, "\\'")}', 
-                        '${booking.people}', '${(booking.special || "").replace(/'/g, "\\'")}')">
+                      <button class="btn-edit" onclick="editBooking(${
+                        booking.bid
+                      }, 
+                        '${booking.cid}', '${booking.bdate}', '${
+                    booking.stime
+                  }', 
+                        '${booking.etime}', '${booking.reason.replace(
+                    /'/g,
+                    "\\'"
+                  )}', 
+                        '${booking.people}', '${(booking.special || "").replace(
+                    /'/g,
+                    "\\'"
+                  )}')">
                         Edit
                       </button>
-                      <button class="btn-delete" onclick="deleteBooking(${booking.bid})">
+                      <button class="btn-delete" onclick="deleteBooking(${
+                        booking.bid
+                      })">
                         Delete
                       </button>
                     </div>
                   </div>
-                `).join("");
-
+                `
+                )
+                .join("");
             } catch (err) {
               console.error(err);
-              bookingList.innerHTML = '<p style="color:red;">some input data wrong,please check it again</p>';
+              bookingList.innerHTML =
+                '<p style="color:red;">some input data wrong,please check it again</p>';
             }
           }
 
@@ -420,11 +447,13 @@
           }
 
           // 輸入 BID 後按 Enter 鍵直接搜索
-          document.getElementById("searchBid").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-              loadMyBookings();
-            }
-          });
+          document
+            .getElementById("searchBid")
+            .addEventListener("keypress", (e) => {
+              if (e.key === "Enter") {
+                loadMyBookings();
+              }
+            });
 
           async function deleteBooking(bid) {
             if (!confirm("confirm to delete this booking?")) return;
