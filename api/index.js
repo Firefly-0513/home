@@ -1,13 +1,12 @@
 require("dotenv").config();
 const express = require("express");
-const { Pool } = require("@neondatabase/serverless"); 
+const { Pool } = require("@neondatabase/serverless");
 const ws = require("ws");
 const path = require("path");
 
 const app = express();
-app.use(express.json()); // 解析 JSON 请求
-app.use(express.static(path.join(__dirname, "public"))); 
-
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -18,16 +17,13 @@ pool.on("connect", (client) => {
   client.query("SET TIME ZONE 'Asia/Hong_Kong';");
 });
 
-
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-
 app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
-
 
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -50,11 +46,9 @@ app.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    
-    
     res.json({
       success: true,
-      role: user.role, // 'A' 或 'T'
+      role: user.role,
       tid: user.tid,
       username: user.username,
     });
@@ -64,77 +58,75 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
 app.post("/book", async (req, res) => {
-  
-  const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
+  try {
+    const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
-  
-  if (
-    !tid ||
-    !cid ||
-    !bdate ||
-    !stime ||
-    !etime ||
-    !reason ||
-    !people ||
-    !special
-  ) {
-    return res.status(400).json({ error: "Your must fill all fields" });
-  }
+    if (
+      !tid ||
+      !cid ||
+      !bdate ||
+      !stime ||
+      !etime ||
+      !reason ||
+      !people ||
+      !special
+    ) {
+      return res.status(400).json({ error: "Your must fill all fields" });
+    }
 
-  const cidNum = parseInt(cid, 10);
-  const peopleNum = parseInt(people, 10);
-  if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res.status(400).json({ error: "It must be a number" });
-  }
+    const cidNum = parseInt(cid, 10);
+    const peopleNum = parseInt(people, 10);
+    if (isNaN(cidNum) || isNaN(peopleNum)) {
+      return res.status(400).json({ error: "It must be a number" });
+    }
 
-  
-  if (stime >= etime) {
-    return res
-      .status(400)
-      .json({ error: "Starting time must be before ending time." });
-  }
- 
-  if (stime < "06:30") {
-    return res.status(400).json({
-      error: "Booking cannot before 06:30 because the school close.",
-    });
-  }
-  if (etime > "18:00") {
-    return res.status(400).json({
-      error:
-        "Booking cannot end after 18:00 because the school closes at 6 PM.",
-    });
-  }
-  
-  const timeResult = await pool.query(`
+    if (stime >= etime) {
+      return res
+        .status(400)
+        .json({ error: "Starting time must be before ending time." });
+    }
+    if (stime < "06:30") {
+      return res.status(400).json({
+        error: "Booking cannot before 06:30 because the school close.",
+      });
+    }
+    if (etime > "18:00") {
+      return res.status(400).json({
+        error:
+          "Booking cannot end after 18:00 because the school closes at 6 PM.",
+      });
+    }
+
+    const timeResult = await pool.query(`
       SELECT 
         CURRENT_DATE AS today,
         TO_CHAR(CURRENT_TIME, 'HH24:MI:SS') AS now
     `);
-  const today = timeResult.rows[0].today.toISOString().split("T")[0]; // YYYY-MM-DD
-  const now = timeResult.rows[0].now; // HH:MM:SS
+    const today = timeResult.rows[0].today.toISOString().split("T")[0];
+    const now = timeResult.rows[0].now;
 
-  if (bdate < today) {
-    return res
-      .status(400)
-      .json({ error: "Booking date cannot be in the past." });
-  }
+    if (bdate < today) {
+      return res
+        .status(400)
+        .json({ error: "Booking date cannot be in the past." });
+    }
 
-  const currentTimeStr = now.substring(0, 5); // HH:MM
-  if (bdate === today && stime <= currentTimeStr) {
-    return res
-      .status(400)
-      .json({ error: "Booking time cannot be in the past." });
-  }
+    const currentTimeStr = now.substring(0, 5);
+    if (bdate === today && stime <= currentTimeStr) {
+      return res
+        .status(400)
+        .json({ error: "Booking time cannot be in the past." });
+    }
 
-  
-  try {
     const capacityResult = await pool.query(
       `SELECT capacity FROM classroom WHERE cid = $1`,
       [cidNum]
     );
+
+    if (capacityResult.rows.length === 0) {
+      return res.status(404).json({ error: "Venue not found" });
+    }
 
     const capacity = capacityResult.rows[0].capacity;
 
@@ -144,7 +136,6 @@ app.post("/book", async (req, res) => {
       });
     }
 
-    
     const conflict = await pool.query(
       `
       SELECT 1 FROM booking 
@@ -165,12 +156,11 @@ app.post("/book", async (req, res) => {
         .json({ error: "This venue is already booked for this time slot." });
     }
 
-   
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
        RETURNING bid`,
-      [tid, cid, bdate, stime, etime, reason, people, special]
+      [tid, cidNum, bdate, stime, etime, reason, peopleNum, special]
     );
 
     const newBookingId = result.rows[0].bid;
@@ -179,18 +169,14 @@ app.post("/book", async (req, res) => {
       success: true,
       bookingId: newBookingId,
       message: "Booking successful!",
-    }); 
+    });
   } catch (err) {
-    console.error(err);
-    console.error("Database insert error:", err);
+    console.error("Booking error:", err);
     res
       .status(500)
-      .json({ error: "Some Data is wrong,Try it again", details: err.message }); // 总是 JSON
+      .json({ error: "Some Data is wrong,Try it again", details: err.message });
   }
 });
-
-
-
 
 app.get("/my-bookings", async (req, res) => {
   const tid = req.query.tid;
@@ -199,7 +185,7 @@ app.get("/my-bookings", async (req, res) => {
   const bdate = req.query.bdate;
 
   if (!tid) {
-    return res.status(400).json({ error: "Missing tid" });
+    return res.status(400).json({ error: "Teacher ID (tid) is required" });
   }
 
   try {
@@ -232,330 +218,62 @@ app.get("/my-bookings", async (req, res) => {
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("My bookings error:", err);
     res.status(500).json({ error: "Failed to fetch bookings" });
   }
 });
 
-
 app.delete("/booking/:bid", async (req, res) => {
-  const bid = req.params.bid;
+  const bid = parseInt(req.params.bid, 10);
   const tid = req.query.tid;
+
+  if (isNaN(bid) || !tid) {
+    return res.status(400).json({ error: "Invalid Booking ID or Teacher ID" });
+  }
 
   try {
     const result = await pool.query(
       "DELETE FROM booking WHERE bid = $1 AND tid = $2 RETURNING bid",
       [bid, tid]
     );
-
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Booking not found or not yours" });
+      return res
+        .status(404)
+        .json({ error: "Booking not found or unauthorized" });
     }
-
-    res.json({ success: true, message: "Booking deleted successfully" });
+    res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("Delete booking error:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 });
 
-
 app.put("/booking/:bid", async (req, res) => {
-  const bid = req.params.bid;
+  const bid = parseInt(req.params.bid, 10);
   const tid = req.query.tid;
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
 
-  
-  if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
-    return res.status(400).json({ error: "All fields are required" });
+  if (isNaN(bid) || !tid) {
+    return res.status(400).json({ error: "Invalid Booking ID or Teacher ID" });
   }
 
-  const cidNum = parseInt(cid, 10);
-  const peopleNum = parseInt(people, 10);
-  if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res
-      .status(400)
-      .json({ error: "Classroom ID and number of people must be numbers" });
-  }
-
-  
-  if (stime >= etime) {
-    return res
-      .status(400)
-      .json({ error: "Starting time must be before ending time." });
-  }
-
-  
-  if (stime < "06:30") {
-    return res.status(400).json({
-      error: "Booking cannot before 06:30 because the school close.",
-    });
-  }
-  if (etime > "18:00") {
-    return res.status(400).json({
-      error:
-        "Booking cannot end after 18:00 because the school closes at 6 PM.",
-    });
-  }
-
-  
-  const timeResult = await pool.query(`
-      SELECT 
-        CURRENT_DATE AS today,
-        TO_CHAR(CURRENT_TIME, 'HH24:MI:SS') AS now
-    `);
-  const today = timeResult.rows[0].today.toISOString().split("T")[0]; // YYYY-MM-DD
-  const now = timeResult.rows[0].now; // HH:MM:SS
-
-  if (bdate < today) {
-    return res
-      .status(400)
-      .json({ error: "Booking date cannot be in the past." });
-  }
-
-  const currentTimeStr = now.substring(0, 5); // HH:MM
-  if (bdate === today && stime <= currentTimeStr) {
-    return res
-      .status(400)
-      .json({ error: "Booking time cannot be in the past." });
-  }
   try {
-    
-    const capacityResult = await pool.query(
-      "SELECT capacity FROM classroom WHERE cid = $1",
-      [cidNum]
-    );
-
-    if (capacityResult.rows.length === 0) {
-      return res.status(400).json({ error: "Invalid classroom ID" });
-    }
-
-    const capacity = capacityResult.rows[0].capacity;
-
-    if (peopleNum > capacity) {
-      return res.status(400).json({
-        error: `This venue can only accommodate ${capacity} people. Please choose another venue or reduce the number.`,
-      });
-    }
-
-    
-    const conflict = await pool.query(
-      `
-      SELECT 1 FROM booking 
-      WHERE cid = $1 
-        AND bdate = $2 
-        AND bid != $3  
-        AND (
-          (stime < $4 AND etime > $4) OR  
-          (stime < $5 AND etime > $5) OR  
-          (stime >= $4 AND etime <= $5)   
-        )
-      `,
-      [cidNum, bdate, bid, etime, stime]
-    );
-
-    if (conflict.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ error: "This time slot is already booked by someone else." });
-    }
-
-    
     const result = await pool.query(
-      `UPDATE booking 
-       SET cid = $1, bdate = $2, stime = $3, etime = $4, 
-           reason = $5, people = $6, special = $7
-       WHERE bid = $8 AND tid = $9
-       RETURNING bid`,
-      [cidNum, bdate, stime, etime, reason, peopleNum, special, bid, tid]
+      `UPDATE booking SET cid = $1, bdate = $2, stime = $3, etime = $4, reason = $5, people = $6, special = $7
+       WHERE bid = $8 AND tid = $9 RETURNING bid`,
+      [cid, bdate, stime, etime, reason, people, special, bid, tid]
     );
-
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Booking not found or not yours" });
+      return res
+        .status(404)
+        .json({ error: "Booking not found or unauthorized" });
     }
-
-    res.json({ success: true, message: "Booking updated successfully" });
+    res.json({ success: true });
   } catch (err) {
     console.error("Update booking error:", err);
-    res.status(500).json({ error: "Update failed", details: err.message });
-  }
-});
-
-
-app.get("/all-bookings", async (req, res) => {
-  const { cid, bdate } = req.query; 
-
-  try {
-    let query = `
-      SELECT b.cid, b.bdate, b.stime, b.etime, t.tname
-      FROM booking b
-      JOIN teacher t ON b.tid = t.tid
-      WHERE b.bdate >= CURRENT_DATE
-    `;
-    const params = [];
-
-    if (cid) {
-      params.push(cid);
-      query += ` AND b.cid = $${params.length}`;
-    }
-    if (bdate) {
-      params.push(bdate);
-      query += ` AND b.bdate = $${params.length}`;
-    }
-
-    query += ` ORDER BY b.bdate ASC, b.stime ASC`;
-
-    const result = await pool.query(query, params);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("Public all-bookings error:", err);
-    res.status(500).json({ error: "Failed to fetch bookings" });
-  }
-});
-
-
-app.put("/admin/booking/:bid", async (req, res) => {
-  const { cid, bdate, stime, etime, reason, people, special } = req.body;
-  const bid = parseInt(req.params.bid, 10);
-
-  if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
-  const cidNum = parseInt(cid, 10);
-  const peopleNum = parseInt(people, 10);
-  if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res
-      .status(400)
-      .json({ error: "Classroom ID and number of people must be numbers" });
-  }
-
-  
-  if (stime >= etime) {
-    return res
-      .status(400)
-      .json({ error: "Starting time must be before ending time." });
-  }
-
-  
-  if (stime < "06:30") {
-    return res.status(400).json({
-      error: "Booking cannot before 06:30 because the school close.",
-    });
-  }
-  if (etime > "18:00") {
-    return res.status(400).json({
-      error:
-        "Booking cannot end after 18:00 because the school closes at 6 PM.",
-    });
-  }
-
-  
-  const today = new Date().toISOString().split("T")[0];
-  if (bdate < today) {
-    return res
-      .status(400)
-      .json({ error: "Booking date cannot be in the past." });
-  }
-
- 
-  const now = new Date().toISOString().split("T")[1].split(".")[0]; 
-  if (bdate === today && stime < now.substring(0, 5)) {
-    
-    return res
-      .status(400)
-      .json({ error: "Booking time cannot be in the past." });
-  }
-
-  try {
-   
-    const capacityResult = await pool.query(
-      "SELECT capacity FROM classroom WHERE cid = $1",
-      [cidNum]
-    );
-
-    if (capacityResult.rows.length === 0) {
-      return res.status(400).json({ error: "Invalid classroom ID" });
-    }
-
-    const capacity = capacityResult.rows[0].capacity;
-
-    if (peopleNum > capacity) {
-      return res.status(400).json({
-        error: `This venue can only accommodate ${capacity} people. Please choose another venue or reduce the number.`,
-      });
-    }
-
-    
-    const conflict = await pool.query(
-      `
-      SELECT 1 FROM booking 
-      WHERE cid = $1 
-        AND bdate = $2 
-        AND bid != $3  
-        AND (
-          (stime < $4 AND etime > $4) OR  
-          (stime < $5 AND etime > $5) OR  
-          (stime >= $4 AND etime <= $5)   
-        )
-      `,
-      [cidNum, bdate, bid, etime, stime]
-    );
-
-    if (conflict.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ error: "This time slot is already booked by someone else." });
-    }
-
-    
-    const result = await pool.query(
-      `UPDATE booking 
-       SET cid = $1, bdate = $2, stime = $3, etime = $4, 
-           reason = $5, people = $6, special = $7
-       WHERE bid = $8
-       RETURNING bid`,
-      [cidNum, bdate, stime, etime, reason, peopleNum, special, bid]
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-
-    res.json({
-      success: true,
-      message: "Booking updated successfully by admin",
-    });
-  } catch (err) {
-    console.error("Admin update error:", err);
     res.status(500).json({ error: "Update failed" });
   }
 });
-
-
-app.delete("/admin/booking/:bid", async (req, res) => {
-  const bid = parseInt(req.params.bid, 10);
-
-  try {
-    const result = await pool.query(
-      `DELETE FROM booking WHERE bid = $1 RETURNING bid`,
-      [bid]
-    );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-
-    res.json({
-      success: true,
-      message: "Booking deleted successfully by admin",
-    });
-  } catch (err) {
-    console.error("Admin delete error:", err);
-    res.status(500).json({ error: "Delete failed" });
-  }
-});
-
 
 app.get("/admin/all-bookings", async (req, res) => {
   const { cid, tid, bid, startDate, endDate } = req.query;
@@ -605,7 +323,6 @@ app.get("/admin/all-bookings", async (req, res) => {
   }
 });
 
-
 app.get("/announcements", async (req, res) => {
   try {
     const result = await pool.query(
@@ -617,7 +334,6 @@ app.get("/announcements", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch announcements" });
   }
 });
-
 
 app.post("/admin/announcement", async (req, res) => {
   const { message } = req.body;
@@ -636,7 +352,6 @@ app.post("/admin/announcement", async (req, res) => {
     res.status(500).json({ error: "Add failed" });
   }
 });
-
 
 app.put("/admin/announcement/:id", async (req, res) => {
   const id = parseInt(req.params.id, 10);
@@ -660,7 +375,6 @@ app.put("/admin/announcement/:id", async (req, res) => {
   }
 });
 
-
 app.delete("/admin/announcement/:id", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
@@ -681,7 +395,6 @@ app.delete("/admin/announcement/:id", async (req, res) => {
     res.status(500).json({ error: "Delete failed" });
   }
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
