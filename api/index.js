@@ -64,7 +64,9 @@ app.post("/login", async (req, res) => {
 
 
 app.post("/book", async (req, res) => {
-  const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
+  try {  
+   
+    const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
 
   if (
