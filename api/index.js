@@ -1,14 +1,14 @@
 require("dotenv").config();
 const express = require("express");
-const { Pool } = require("@neondatabase/serverless"); // 改用 Neon serverless driver
+const { Pool } = require("@neondatabase/serverless"); 
 const ws = require("ws");
 const path = require("path");
 
 const app = express();
 app.use(express.json()); // 解析 JSON 请求
-app.use(express.static(path.join(__dirname, "public"))); // 提供静态文件（HTML）
+app.use(express.static(path.join(__dirname, "public"))); 
 
-// 数据库连接，使用环境变量（本地从 .env 读，Vercel 从面板读）
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
@@ -18,17 +18,17 @@ pool.on("connect", (client) => {
   client.query("SET TIME ZONE 'Asia/Hong_Kong';");
 });
 
-// 欢迎页面路由
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// 预约页面路由
+
 app.get("/reserve", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "booking.html"));
 });
 
-// 用户登录 API
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -50,8 +50,8 @@ app.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    // 這裡簡單用 res.json 回傳角色，前端會根據角色跳轉
-    // （注意：真實項目建議用 session 或 JWT，這裡為了簡單先這樣）
+    
+    
     res.json({
       success: true,
       role: user.role, // 'A' 或 'T'
@@ -64,12 +64,12 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// 输入数据到数据库（POST 请求）
+
 app.post("/book", async (req, res) => {
-  // 假設前端傳來的資料還是只有教室和時間，先擴充其他欄位
+  
   const { tid, cid, bdate, stime, etime, reason, people, special } = req.body;
 
-  // 后端必填检查
+  
   if (
     !tid ||
     !cid ||
@@ -89,13 +89,13 @@ app.post("/book", async (req, res) => {
     return res.status(400).json({ error: "It must be a number" });
   }
 
-  // time驗證（結束時間必須大於開始）
+  
   if (stime >= etime) {
     return res
       .status(400)
       .json({ error: "Starting time must be before ending time." });
   }
-  // time驗證（不能超過18:00）
+ 
   if (stime < "06:30") {
     return res.status(400).json({
       error: "Booking cannot before 06:30 because the school close.",
@@ -107,14 +107,14 @@ app.post("/book", async (req, res) => {
         "Booking cannot end after 18:00 because the school closes at 6 PM.",
     });
   }
-  // date驗證
+  
   const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
     return res
       .status(400)
       .json({ error: "Booking date cannot be in the past." });
   }
-  // time驗證（不能是今天之前的時間）
+  
   const now = new Date().toISOString().split("T")[1].split(".")[0];
   if (bdate === today && stime < now) {
     return res
@@ -122,7 +122,7 @@ app.post("/book", async (req, res) => {
       .json({ error: "Booking time cannot be in the past." });
   }
 
-  // 課室容量驗證
+  
   try {
     const capacityResult = await pool.query(
       `SELECT capacity FROM classroom WHERE cid = $1`,
@@ -137,7 +137,7 @@ app.post("/book", async (req, res) => {
       });
     }
 
-    // 2. 是否被book？
+    
     const conflict = await pool.query(
       `
       SELECT 1 FROM booking 
@@ -158,7 +158,7 @@ app.post("/book", async (req, res) => {
         .json({ error: "This venue is already booked for this time slot." });
     }
 
-    // 輸入資料
+   
     const result = await pool.query(
       `INSERT INTO booking (tid, cid, bdate, stime, etime, reason, people, special) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
@@ -172,7 +172,7 @@ app.post("/book", async (req, res) => {
       success: true,
       bookingId: newBookingId,
       message: "Booking successful!",
-    }); // 确保是 JSON
+    }); 
   } catch (err) {
     console.error(err);
     console.error("Database insert error:", err);
@@ -182,9 +182,9 @@ app.post("/book", async (req, res) => {
   }
 });
 
-// 从数据库读取数据（GET 请求）
-// 獲取指定老師的未來預約（用於 T_edit）
-// 獲取指定老師的預約（支援 bid、cid、bdate 篩選）
+
+
+
 app.get("/my-bookings", async (req, res) => {
   const tid = req.query.tid;
   const bid = req.query.bid;
@@ -230,7 +230,7 @@ app.get("/my-bookings", async (req, res) => {
   }
 });
 
-// 刪除預約（老師只能刪自己的）
+
 app.delete("/booking/:bid", async (req, res) => {
   const bid = req.params.bid;
   const tid = req.query.tid;
@@ -252,13 +252,13 @@ app.delete("/booking/:bid", async (req, res) => {
   }
 });
 
-// 更新預約（老師只能改自己的），加入完整驗證
+
 app.put("/booking/:bid", async (req, res) => {
   const bid = req.params.bid;
   const tid = req.query.tid;
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
 
-  // 1. 必填檢查
+  
   if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -271,14 +271,14 @@ app.put("/booking/:bid", async (req, res) => {
       .json({ error: "Classroom ID and number of people must be numbers" });
   }
 
-  // 2. 時間驗證：結束時間必須大於開始時間
+  
   if (stime >= etime) {
     return res
       .status(400)
       .json({ error: "Starting time must be before ending time." });
   }
 
-  // 3. 時間驗證：不能超過 18:00
+  
   if (stime < "06:30") {
     return res.status(400).json({
       error: "Booking cannot before 06:30 because the school close.",
@@ -291,7 +291,7 @@ app.put("/booking/:bid", async (req, res) => {
     });
   }
 
-  // 4. 日期驗證：不能是過去的日期
+  
   const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
     return res
@@ -299,17 +299,17 @@ app.put("/booking/:bid", async (req, res) => {
       .json({ error: "Booking date cannot be in the past." });
   }
 
-  // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
-  const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
+  
+  const now = new Date().toISOString().split("T")[1].split(".")[0]; 
   if (bdate === today && stime < now.substring(0, 5)) {
-    // 只比對 HH:MM
+    
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
   }
 
   try {
-    // 6. 課室容量驗證
+    
     const capacityResult = await pool.query(
       "SELECT capacity FROM classroom WHERE cid = $1",
       [cidNum]
@@ -327,17 +327,17 @@ app.put("/booking/:bid", async (req, res) => {
       });
     }
 
-    // 7. 時間衝突檢查（排除自己這筆記錄）
+    
     const conflict = await pool.query(
       `
       SELECT 1 FROM booking 
       WHERE cid = $1 
         AND bdate = $2 
-        AND bid != $3  -- 排除正在編輯的這筆
+        AND bid != $3  
         AND (
-          (stime < $4 AND etime > $4) OR  -- 新結束時間落在別人時段內
-          (stime < $5 AND etime > $5) OR  -- 新開始時間落在別人時段內
-          (stime >= $4 AND etime <= $5)   -- 新時段完全包含在別人時段內
+          (stime < $4 AND etime > $4) OR  
+          (stime < $5 AND etime > $5) OR  
+          (stime >= $4 AND etime <= $5)   
         )
       `,
       [cidNum, bdate, bid, etime, stime]
@@ -349,7 +349,7 @@ app.put("/booking/:bid", async (req, res) => {
         .json({ error: "This time slot is already booked by someone else." });
     }
 
-    // 8. 執行更新
+    
     const result = await pool.query(
       `UPDATE booking 
        SET cid = $1, bdate = $2, stime = $3, etime = $4, 
@@ -370,9 +370,9 @@ app.put("/booking/:bid", async (req, res) => {
   }
 });
 
-// 公共接口：所有老师都能查看（不暴露 tid 筛选）
+
 app.get("/all-bookings", async (req, res) => {
-  const { cid, bdate } = req.query; // 只支持 cid 和单日 bdate
+  const { cid, bdate } = req.query; 
 
   try {
     let query = `
@@ -402,9 +402,7 @@ app.get("/all-bookings", async (req, res) => {
   }
 });
 
-// ==================== 管理员专属路由 ====================
 
-// PUT /admin/booking/:bid - 管理员更新任何预约（不检查 tid）
 app.put("/admin/booking/:bid", async (req, res) => {
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
   const bid = parseInt(req.params.bid, 10);
@@ -421,14 +419,14 @@ app.put("/admin/booking/:bid", async (req, res) => {
       .json({ error: "Classroom ID and number of people must be numbers" });
   }
 
-  // 2. 時間驗證：結束時間必須大於開始時間
+  
   if (stime >= etime) {
     return res
       .status(400)
       .json({ error: "Starting time must be before ending time." });
   }
 
-  // 3. 時間驗證：不能超過 18:00
+  
   if (stime < "06:30") {
     return res.status(400).json({
       error: "Booking cannot before 06:30 because the school close.",
@@ -441,7 +439,7 @@ app.put("/admin/booking/:bid", async (req, res) => {
     });
   }
 
-  // 4. 日期驗證：不能是過去的日期
+  
   const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
     return res
@@ -449,17 +447,17 @@ app.put("/admin/booking/:bid", async (req, res) => {
       .json({ error: "Booking date cannot be in the past." });
   }
 
-  // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
-  const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
+ 
+  const now = new Date().toISOString().split("T")[1].split(".")[0]; 
   if (bdate === today && stime < now.substring(0, 5)) {
-    // 只比對 HH:MM
+    
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
   }
 
   try {
-    // 6. 課室容量驗證
+   
     const capacityResult = await pool.query(
       "SELECT capacity FROM classroom WHERE cid = $1",
       [cidNum]
@@ -477,17 +475,17 @@ app.put("/admin/booking/:bid", async (req, res) => {
       });
     }
 
-    // 7. 時間衝突檢查（排除自己這筆記錄）
+    
     const conflict = await pool.query(
       `
       SELECT 1 FROM booking 
       WHERE cid = $1 
         AND bdate = $2 
-        AND bid != $3  -- 排除正在編輯的這筆
+        AND bid != $3  
         AND (
-          (stime < $4 AND etime > $4) OR  -- 新結束時間落在別人時段內
-          (stime < $5 AND etime > $5) OR  -- 新開始時間落在別人時段內
-          (stime >= $4 AND etime <= $5)   -- 新時段完全包含在別人時段內
+          (stime < $4 AND etime > $4) OR  
+          (stime < $5 AND etime > $5) OR  
+          (stime >= $4 AND etime <= $5)   
         )
       `,
       [cidNum, bdate, bid, etime, stime]
@@ -499,7 +497,7 @@ app.put("/admin/booking/:bid", async (req, res) => {
         .json({ error: "This time slot is already booked by someone else." });
     }
 
-    // 管理员直接更新，不检查 tid
+    
     const result = await pool.query(
       `UPDATE booking 
        SET cid = $1, bdate = $2, stime = $3, etime = $4, 
@@ -523,7 +521,7 @@ app.put("/admin/booking/:bid", async (req, res) => {
   }
 });
 
-// DELETE /admin/booking/:bid - 管理员删除任何预约
+
 app.delete("/admin/booking/:bid", async (req, res) => {
   const bid = parseInt(req.params.bid, 10);
 
@@ -547,8 +545,7 @@ app.delete("/admin/booking/:bid", async (req, res) => {
   }
 });
 
-// 可选：GET /admin/booking/:bid - 获取单笔详情（未来扩展用）
-// ==================== 新增：管理员专用 - 获取所有预约（支持按老师和日期范围筛选） ====================
+
 app.get("/admin/all-bookings", async (req, res) => {
   const { cid, tid, bid, startDate, endDate } = req.query;
 
@@ -597,8 +594,7 @@ app.get("/admin/all-bookings", async (req, res) => {
   }
 });
 
-// ======================= 提示管理 API =======================
-// 讀取所有提示 (公開，供 booking 頁面使用)
+
 app.get("/announcements", async (req, res) => {
   try {
     const result = await pool.query(
@@ -611,7 +607,7 @@ app.get("/announcements", async (req, res) => {
   }
 });
 
-// admin 添加提示
+
 app.post("/admin/announcement", async (req, res) => {
   const { message } = req.body;
   if (!message || message.trim() === "") {
@@ -630,7 +626,7 @@ app.post("/admin/announcement", async (req, res) => {
   }
 });
 
-// admin 修改提示
+
 app.put("/admin/announcement/:id", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { message } = req.body;
@@ -653,7 +649,7 @@ app.put("/admin/announcement/:id", async (req, res) => {
   }
 });
 
-// admin 刪除提示
+
 app.delete("/admin/announcement/:id", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
@@ -675,7 +671,7 @@ app.delete("/admin/announcement/:id", async (req, res) => {
   }
 });
 
-// 监听端口（Vercel 会自动处理端口）
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`服务器运行在端口 ${port}`);
