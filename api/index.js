@@ -101,7 +101,7 @@ app.post("/book", async (req, res) => {
     const timeResult = await pool.query(`
       SELECT 
         CURRENT_DATE AS today,
-        TO_CHAR(CURRENT_TIME, 'HH24:MI:SS') AS now
+        TO_CHAR(CURRENT_TIMESTAMP, 'HH24:MI:SS') AS now
     `);
     const today = timeResult.rows[0].today.toISOString().split("T")[0];
     const now = timeResult.rows[0].now;
