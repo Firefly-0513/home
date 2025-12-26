@@ -40,7 +40,7 @@
       .layout-container {
         display: flex;
         min-height: calc(100% - 15vh);
-        width: 100%; /* 確保佈局容器填滿寬度 */
+        width: 100%; 
       }
 
       .left_colour {
@@ -50,7 +50,7 @@
         top: 15vh;
         padding: 2%;
         box-sizing: border-box;
-        flex-shrink: 0; /* 防止 left_colour 壓縮 */
+        flex-shrink: 0; 
       }
       .left_text {
         list-style-type: none;
@@ -77,7 +77,7 @@
         box-sizing: border-box;
         text-align: center;
         font-weight: bold;
-        flex: 1;/* 確保 main 填滿剩餘空間 */
+        flex: 1;
         background-color: rgb(248, 242, 247); 
       }
 
@@ -89,11 +89,11 @@
 
       .main .left {
         width: 100%;
-        border: 4px solid #c2353a; /* 黑色包邊 */
+        border: 4px solid #c2353a; 
         box-sizing: border-box;
         padding: 7vh 0 15px 2vw;
         border-radius: 50px;
-        margin-top: 5vh; /* 向下移動 20px */
+        margin-top: 5vh; 
         margin-right: 5vw;
         margin-left: 5vw;
         background-color: rgb(255, 255, 255);
@@ -166,7 +166,7 @@
         border: 1px solid #fb85b4; 
         border-radius: 10px;
       }
-      /* 公告標題（System Announcements:） */
+      
       .announcement-header {
         font-size: 2.2vw;
         font-weight: bold;
@@ -175,7 +175,7 @@
         text-align: left;
       }
 
-      /* 公告列表容器 */
+      
       #announcementList {
         display: flex;
         flex-direction: column;
@@ -183,11 +183,11 @@
         margin: 0 20px 30px 20px;
         margin-right: 5vw;
         margin-left: 5vw;
-        width: 100%; /* 添加这行，确保占满整行宽度 */
-        box-sizing: border-box; /* 确保 padding 和 margin 不会超出宽度 */
+        width: 100%; 
+        box-sizing: border-box; 
       }
 
-      /* 復用與 A_home.html 完全相同的 booking-box 樣式顯示公告 */
+      
       .announcement-box {
         width: 100%;
         border: 4px solid #c2353a;
@@ -211,7 +211,7 @@
       .announcement-box .announcement-time {
         font-size: 1.4vw;
         color: #929090;
-        align-self: flex-end; /* 時間靠右 */
+        align-self: flex-end; 
         margin-top: 5px;
       }
 
@@ -226,7 +226,6 @@
   </head>
 
   <body>
-    <!-- top -->
     <div class="inline-container">
       <a href="A_home.html">
         <img src="image/school_logo(nb).png" alt="LKPFC Logo" />
@@ -241,7 +240,7 @@
     </div>
     </div>
 
-    <!-- left -->
+    
     <div class="layout-container">
       <div class="left_colour">
         <ul class="left_text">
@@ -252,7 +251,7 @@
         </ul>
       </div>
 
-      <!-- main -->
+      
       <div class="main">
         <div class="top">
           <p>Welcome for booking</p>
@@ -267,7 +266,7 @@
           ></div>
         </div>
 
-        <!-- 公告顯示區域（放在粉色線下方、表單上方） -->
+        
         <p class="announcement-header">System Announcements：</p>
         <div id="announcementList">
       
@@ -275,7 +274,7 @@
 
         <div class="left">
           <form id="bookingForm">
-              <input type="hidden" id="tid" /> <!-- 隱藏欄位，給後端用 -->
+              <input type="hidden" id="tid" /> 
 
             <div class="form-input">
               <label>Classroom :</label>
@@ -357,7 +356,7 @@
               window.location.href = '/index.html';
               return;
             }
-            document.getElementById('tid').value = tid; // 隱藏 input 確保後端能收到
+            document.getElementById('tid').value = tid; 
           });
 
 
@@ -377,16 +376,16 @@
                   special: document.getElementById("special").value.trim(),
                 };
 
-                // 驗證輸入
+                
 
-                // date驗證
+               
                 const today = new Date().toISOString().split("T")[0];
                 if (data.bdate < today) {
                   alert("Error: Booking date cannot be in the past.");
                   return;
                 }
 
-                // time驗證（不能是今天之前的時間）
+                
                 const now = new Date()
                   .toISOString()
                   .split("T")[1]
@@ -396,7 +395,7 @@
                   return;
                 }
 
-                // time驗證(etime必須大於stime)
+                
                 if (data.stime >= data.etime) {
                   alert("Error: Starting time must be before ending time.");
                   return;
@@ -407,26 +406,25 @@
                   return;
                 }
 
-                // 額外好心提示：如果開始時間已經很晚，也提醒
+                
                 if (data.stime >= "17:00") {
                   alert("Warning: Starting at or after 17:00 may not leave enough time before school closes at 18:00.");
-                  // 不強制擋，但提醒一下
                 }
 
                 try {
                   const res = await fetch("/book", {
-                    // 這裡是您改的路由，確認正確
+                    
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                   });
 
-                  const text = await res.text(); // 先读文本，避免 json() 失败
-                  console.log("console:", text); // 在浏览器 Console 查看完整响应
+                  const text = await res.text(); 
+                  console.log("console:", text); 
 
                   let result;
                   try {
-                    result = JSON.parse(text); // 尝试解析 JSON
+                    result = JSON.parse(text); 
                   } catch (parseErr) {
                     document.getElementById("book").style.color = "red";
                     document.getElementById("book").textContent =
@@ -450,7 +448,7 @@
                   alert("Cant connect to server. Please try again later.");
                 }
               });
-            // 載入並顯示公告
+            
             async function loadAnnouncementsForBooking() {
               const list = document.getElementById("announcementList");
               try {
@@ -477,10 +475,9 @@
               }
             }
 
-          // 頁面載入時自動執行
+
             document.addEventListener("DOMContentLoaded", () => {
               loadAnnouncementsForBooking();
-              // 你的其他原有代碼保持不變
             });
           </script>
         </div>
