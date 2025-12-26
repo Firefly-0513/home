@@ -108,15 +108,22 @@ app.post("/book", async (req, res) => {
     });
   }
   
-  const today = new Date().toISOString().split("T")[0];
+  const timeResult = await pool.query(`
+      SELECT 
+        CURRENT_DATE AS today,
+        TO_CHAR(CURRENT_TIME, 'HH24:MI:SS') AS now
+    `);
+  const today = timeResult.rows[0].today.toISOString().split("T")[0]; // YYYY-MM-DD
+  const now = timeResult.rows[0].now; // HH:MM:SS
+
   if (bdate < today) {
     return res
       .status(400)
       .json({ error: "Booking date cannot be in the past." });
   }
-  
-  const now = new Date().toISOString().split("T")[1].split(".")[0];
-  if (bdate === today && stime < now) {
+
+  const currentTimeStr = now.substring(0, 5); // HH:MM
+  if (bdate === today && stime <= currentTimeStr) {
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
@@ -292,22 +299,26 @@ app.put("/booking/:bid", async (req, res) => {
   }
 
   
-  const today = new Date().toISOString().split("T")[0];
+  const timeResult = await pool.query(`
+      SELECT 
+        CURRENT_DATE AS today,
+        TO_CHAR(CURRENT_TIME, 'HH24:MI:SS') AS now
+    `);
+  const today = timeResult.rows[0].today.toISOString().split("T")[0]; // YYYY-MM-DD
+  const now = timeResult.rows[0].now; // HH:MM:SS
+
   if (bdate < today) {
     return res
       .status(400)
       .json({ error: "Booking date cannot be in the past." });
   }
 
-  
-  const now = new Date().toISOString().split("T")[1].split(".")[0]; 
-  if (bdate === today && stime < now.substring(0, 5)) {
-    
+  const currentTimeStr = now.substring(0, 5); // HH:MM
+  if (bdate === today && stime <= currentTimeStr) {
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
   }
-
   try {
     
     const capacityResult = await pool.query(
