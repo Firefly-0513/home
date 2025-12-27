@@ -338,7 +338,7 @@
         const cid = document.getElementById("filterCid").value;
         const bdate = document.getElementById("filterDate").value;
 
-        let url = "/all-bookings";
+        let url = "/admin/all-bookings";
         if (cid || bdate) {
           url += "?";
           if (cid) url += `cid=${cid}&`;
