@@ -369,6 +369,37 @@ app.put("/booking/:bid", async (req, res) => {
   }
 });
 
+app.get("/public/bookings", async (req, res) => {
+  const { cid, bdate } = req.query;
+
+  try {
+    let query = `
+      SELECT b.cid, b.bdate, b.stime, b.etime, t.tname
+      FROM booking b
+      JOIN teacher t ON b.tid = t.tid
+      WHERE b.bdate >= CURRENT_DATE
+    `;
+    const params = [];
+
+    if (cid) {
+      params.push(cid);
+      query += ` AND b.cid = $${params.length}`;
+    }
+    if (bdate) {
+      params.push(bdate);
+      query += ` AND b.bdate = $${params.length}`;
+    }
+
+    query += ` ORDER BY b.bdate ASC, b.stime ASC`;
+
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Public bookings error:", err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
+  }
+});
+
 app.get("/admin/all-bookings", async (req, res) => {
   const { cid, tid, bid, startDate, endDate } = req.query;
 
