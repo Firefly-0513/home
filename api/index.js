@@ -450,33 +450,29 @@ app.get("/admin/all-bookings", async (req, res) => {
 
 
 app.put("/admin/booking/:bid", async (req, res) => {
-  const bid = parseInt(req.params.bid, 10);
   const { cid, bdate, stime, etime, reason, people, special } = req.body;
+  const bid = parseInt(req.params.bid, 10);
 
-  if (
-    !tid ||
-    !cid ||
-    !bdate ||
-    !stime ||
-    !etime ||
-    !reason ||
-    !people ||
-    !special
-  ) {
-    return res.status(400).json({ error: "Your must fill all fields" });
+  if (!cid || !bdate || !stime || !etime || !reason || !people || !special) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   const cidNum = parseInt(cid, 10);
   const peopleNum = parseInt(people, 10);
   if (isNaN(cidNum) || isNaN(peopleNum)) {
-    return res.status(400).json({ error: "It must be a number" });
+    return res
+      .status(400)
+      .json({ error: "Classroom ID and number of people must be numbers" });
   }
 
+  // 2. 時間驗證：結束時間必須大於開始時間
   if (stime >= etime) {
     return res
       .status(400)
       .json({ error: "Starting time must be before ending time." });
   }
+
+  // 3. 時間驗證：不能超過 18:00
   if (stime < "06:30") {
     return res.status(400).json({
       error: "Booking cannot before 06:30 because the school close.",
@@ -489,98 +485,95 @@ app.put("/admin/booking/:bid", async (req, res) => {
     });
   }
 
-  const timeResult = await pool.query(`
-      SELECT 
-        CURRENT_DATE AS today,
-        TO_CHAR(CURRENT_TIMESTAMP, 'HH24:MI:SS') AS now
-    `);
-  const today = timeResult.rows[0].today.toISOString().split("T")[0];
-  const now = timeResult.rows[0].now;
-
+  // 4. 日期驗證：不能是過去的日期
+  const today = new Date().toISOString().split("T")[0];
   if (bdate < today) {
     return res
       .status(400)
       .json({ error: "Booking date cannot be in the past." });
   }
 
-  const currentTimeStr = now.substring(0, 5);
-  if (bdate === today && stime <= currentTimeStr) {
+  // 5. 當天時間驗證：如果是今天，不能選已經過去的開始時間
+  const now = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
+  if (bdate === today && stime < now.substring(0, 5)) {
+    // 只比對 HH:MM
     return res
       .status(400)
       .json({ error: "Booking time cannot be in the past." });
   }
 
-  const capacityResult = await pool.query(
-    `SELECT capacity FROM classroom WHERE cid = $1`,
-    [cidNum]
-  );
-
-  if (capacityResult.rows.length === 0) {
-    return res.status(404).json({ error: "Venue not found" });
-  }
-
-  const capacity = capacityResult.rows[0].capacity;
-
-  if (peopleNum > capacity) {
-    return res.status(400).json({
-      error: `The venue only can contain ${capacity} peoples, you need to change another venue.`,
-    });
-  }
-
-  const conflict = await pool.query(
-    `
-      SELECT 1 FROM booking 
-      WHERE cid = $1 
-      AND bdate = $2 
-      AND (
-        (stime < $3 AND etime > $3) OR  
-        (stime < $4 AND etime > $4) OR  
-        (stime >= $3 AND etime <= $4)   
-      )
-    `,
-    [cidNum, bdate, etime, stime]
-  );
-
-  if (conflict.rows.length > 0) {
-    return res
-      .status(400)
-      .json({ error: "This venue is already booked for this time slot." });
-  }
-
-  if (isNaN(bid) || !tid) {
-    return res.status(400).json({ error: "Invalid Booking ID or Teacher ID" });
-  }
-
   try {
-    const result = await pool.query(
-      `
-      UPDATE booking 
-      SET cid = $1, bdate = $2, stime = $3, etime = $4, 
-          reason = $5, people = $6, special = COALESCE($7, special)
-      WHERE bid = $8
-      RETURNING bid
-    `,
-      [cid, bdate, stime, etime, reason, people, special || null, bid]
+    // 6. 課室容量驗證
+    const capacityResult = await pool.query(
+      "SELECT capacity FROM classroom WHERE cid = $1",
+      [cidNum]
     );
 
-    res.json({ success: true, bookingId: result.rows[0].bid });
+    if (capacityResult.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid classroom ID" });
+    }
+
+    const capacity = capacityResult.rows[0].capacity;
+
+    if (peopleNum > capacity) {
+      return res.status(400).json({
+        error: `This venue can only accommodate ${capacity} people. Please choose another venue or reduce the number.`,
+      });
+    }
+
+    // 7. 時間衝突檢查（排除自己這筆記錄）
+    const conflict = await pool.query(
+      `
+      SELECT 1 FROM booking 
+      WHERE cid = $1 
+        AND bdate = $2 
+        AND bid != $3  -- 排除正在編輯的這筆
+        AND (
+          (stime < $4 AND etime > $4) OR  -- 新結束時間落在別人時段內
+          (stime < $5 AND etime > $5) OR  -- 新開始時間落在別人時段內
+          (stime >= $4 AND etime <= $5)   -- 新時段完全包含在別人時段內
+        )
+      `,
+      [cidNum, bdate, bid, etime, stime]
+    );
+
+    if (conflict.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "This time slot is already booked by someone else." });
+    }
+
+    // 管理员直接更新，不检查 tid
+    const result = await pool.query(
+      `UPDATE booking 
+       SET cid = $1, bdate = $2, stime = $3, etime = $4, 
+           reason = $5, people = $6, special = $7
+       WHERE bid = $8
+       RETURNING bid`,
+      [cidNum, bdate, stime, etime, reason, peopleNum, special, bid]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Booking updated successfully by admin",
+    });
   } catch (err) {
-    console.error("Update booking error:", err);
-    res.status(500).json({ error: "Update failed", details: err.message });
+    console.error("Admin update error:", err);
+    res.status(500).json({ error: "Update failed" });
   }
 });
 
-
+// DELETE /admin/booking/:bid - 管理员删除任何预约
 app.delete("/admin/booking/:bid", async (req, res) => {
   const bid = parseInt(req.params.bid, 10);
 
-  if (isNaN(bid)) {
-    return res.status(400).json({ error: "Invalid booking ID" });
-  }
-
   try {
     const result = await pool.query(
-      "DELETE FROM booking WHERE bid = $1 RETURNING bid",
+      `DELETE FROM booking WHERE bid = $1 RETURNING bid`,
       [bid]
     );
 
@@ -588,9 +581,12 @@ app.delete("/admin/booking/:bid", async (req, res) => {
       return res.status(404).json({ error: "Booking not found" });
     }
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      message: "Booking deleted successfully by admin",
+    });
   } catch (err) {
-    console.error("Delete booking error:", err);
+    console.error("Admin delete error:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 });
