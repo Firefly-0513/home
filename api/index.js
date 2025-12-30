@@ -454,7 +454,6 @@ app.put("/admin/booking/:bid", async (req, res) => {
   const bid = parseInt(req.params.bid, 10);
 
   if (
-    !tid ||
     !cid ||
     !bdate ||
     !stime ||
@@ -547,8 +546,8 @@ app.put("/admin/booking/:bid", async (req, res) => {
       .json({ error: "This venue is already booked for this time slot." });
   }
 
-  if (isNaN(bid) || !tid) {
-    return res.status(400).json({ error: "Invalid Booking ID or Teacher ID" });
+  if (isNaN(bid)) {
+    return res.status(400).json({ error: "Invalid Booking ID " });
   }
 
   try{
